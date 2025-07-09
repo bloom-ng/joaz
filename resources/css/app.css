@@ -1,0 +1,31 @@
+@import "tailwindcss";
+@source "../views";
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@theme {
+    --font-sans: "Instrument Sans", ui-sans-serif, system-ui, sans-serif,
+        "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+        "Noto Color Emoji";
+}
+
+@layer base {
+    @font-face {
+        font-family: "bricolage";
+        src: url("/fonts/BricolageGrotesque-VariableFont_opsz,wdth,wght.ttf")
+            format("truetype");
+        font-weight: 400;
+        font-style: normal;
+    }
+
+    @font-face {
+        font-family: "RustlerBarter";
+        src: url("/fonts/BricolageGrotesque-VariableFont_opsz,wdth,wght.ttf")
+            format("truetype");
+        font-weight: 400;
+        font-style: normal;
+    }
+}
