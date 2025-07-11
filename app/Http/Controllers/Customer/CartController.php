@@ -40,7 +40,7 @@ class CartController extends Controller
         $product = Product::findOrFail($request->product_id);
 
         // Check stock availability
-        if ($product->stock_quantity < $request->quantity) {
+        if ($product->quantity < $request->quantity) {
             return back()->withErrors(['quantity' => 'Insufficient stock available.']);
         }
 
@@ -59,7 +59,7 @@ class CartController extends Controller
             // Update quantity
             $newQuantity = $existingItem->quantity + $request->quantity;
 
-            if ($product->stock_quantity < $newQuantity) {
+            if ($product->quantity < $newQuantity) {
                 return back()->withErrors(['quantity' => 'Insufficient stock available.']);
             }
 
@@ -91,7 +91,7 @@ class CartController extends Controller
         $product = $cartItem->product;
 
         // Check stock availability
-        if ($product->stock_quantity < $request->quantity) {
+        if ($product->quantity < $request->quantity) {
             return back()->withErrors(['quantity' => 'Insufficient stock available.']);
         }
 

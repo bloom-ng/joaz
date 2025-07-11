@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
 use App\Models\Product;
 use App\Models\Category;
+use Illuminate\View\View;
 use App\Models\ProductImage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\View\View;
-use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -33,24 +34,23 @@ class ProductController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'required|string',
-            'price' => 'required|numeric|min:0',
+            'price_usd' => 'required|numeric|min:0',
+            'price_ngn' => 'required|numeric|min:0',
             'sale_price' => 'nullable|numeric|min:0',
             'category_id' => 'required|exists:categories,id',
-            'sku' => 'required|string|unique:products,sku',
-            'stock_quantity' => 'required|integer|min:0',
+            'quantity' => 'required|integer|min:0',
             'is_active' => 'boolean',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         $product = Product::create($validated);
 
-        // Handle image uploads
+        // Handle image uploads (multiple)
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $image) {
                 $path = $image->store('products', 'public');
                 $product->images()->create([
-                    'image_path' => $path,
-                    'is_primary' => $product->images()->count() === 0,
+                    'image' => $path,
                 ]);
             }
         }
@@ -77,25 +77,46 @@ class ProductController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'required|string',
-            'price' => 'required|numeric|min:0',
+            'price_usd' => 'required|numeric|min:0',
+            'price_ngn' => 'required|numeric|min:0',
             'sale_price' => 'nullable|numeric|min:0',
             'category_id' => 'required|exists:categories,id',
-            'sku' => 'required|string|unique:products,sku,' . $product->id,
-            'stock_quantity' => 'required|integer|min:0',
+            'quantity' => 'required|integer|min:0',
             'is_active' => 'boolean',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        $product->update($validated);
+        $product->update([
+            'name' => $validated['name'],
+            'description' => $validated['description'],
+            'price_usd' => $validated['price_usd'],
+            'price_ngn' => $validated['price_ngn'],
+            'sale_price' => $validated['sale_price'] ?? null,
+            'category_id' => $validated['category_id'],
+            'quantity' => $validated['quantity'],
+            'is_active' => $validated['is_active'] ?? false,
+        ]);
+
+        // If new images are uploaded, add them (do not delete old images unless user deletes them)
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $imageFile) {
+                $path = $imageFile->store('products', 'public');
+                $product->images()->create(['image' => $path]);
+            }
+        }
 
         return redirect()->route('admin.products.index')
             ->with('success', 'Product updated successfully.');
     }
 
+
     public function destroy(Product $product): RedirectResponse
     {
         // Delete associated images from storage
         foreach ($product->images as $image) {
-            Storage::disk('public')->delete($image->image_path);
+            if (!empty($image->image)) {
+                Storage::disk('public')->delete($image->image);
+            }
         }
 
         $product->delete();
@@ -113,8 +134,7 @@ class ProductController extends Controller
         foreach ($request->file('images') as $image) {
             $path = $image->store('products', 'public');
             $product->images()->create([
-                'image_path' => $path,
-                'is_primary' => $product->images()->count() === 0,
+                'image' => $path,
             ]);
         }
 
@@ -123,7 +143,10 @@ class ProductController extends Controller
 
     public function deleteImage(Product $product, ProductImage $image): RedirectResponse
     {
-        Storage::disk('public')->delete($image->image_path);
+        Log::debug('Attempting to delete product image', ['image_path' => $image->image, 'image_id' => $image->id]);
+        if (!empty($image->image)) {
+            Storage::disk('public')->delete($image->image);
+        }
         $image->delete();
 
         return redirect()->back()->with('success', 'Image deleted successfully.');

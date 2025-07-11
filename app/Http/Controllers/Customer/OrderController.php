@@ -67,7 +67,7 @@ class OrderController extends Controller
 
         // Check stock availability
         foreach ($cart->items as $item) {
-            if ($item->product->stock_quantity < $item->quantity) {
+            if ($item->product->quantity < $item->quantity) {
                 return back()->withErrors(['stock' => "Insufficient stock for {$item->product->name}."]);
             }
         }
@@ -107,7 +107,7 @@ class OrderController extends Controller
                 ]);
 
                 // Update product stock
-                $item->product->decrement('stock_quantity', $item->quantity);
+                $item->product->decrement('quantity', $item->quantity);
             }
 
             // Deactivate cart

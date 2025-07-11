@@ -13,7 +13,7 @@ class ShopController extends Controller
     {
         $query = Product::with(['category', 'images'])
             ->where('is_active', true)
-            ->where('stock_quantity', '>', 0);
+            ->where('quantity', '>', 0);
 
         // Filter by category
         if ($request->has('category') && $request->category) {
@@ -54,7 +54,7 @@ class ShopController extends Controller
 
     public function show(Product $product)
     {
-        if (!$product->is_active || $product->stock_quantity <= 0) {
+        if (!$product->is_active || $product->quantity <= 0) {
             abort(404);
         }
 
@@ -65,7 +65,7 @@ class ShopController extends Controller
             ->where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)
             ->where('is_active', true)
-            ->where('stock_quantity', '>', 0)
+            ->where('quantity', '>', 0)
             ->limit(4)
             ->get();
 
