@@ -30,6 +30,9 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
+Route::get('/register', [\App\Http\Controllers\RegistrationController::class, 'showRegistrationForm'])->name('register');
+Route::post('/register', [\App\Http\Controllers\RegistrationController::class, 'register'])->name('register.post');
+
 // Admin authentication routes
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/login', [AdminAuthController::class, 'showLoginForm'])->name('login');

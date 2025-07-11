@@ -12,71 +12,57 @@ class CategoryController extends Controller
 {
     public function index(): View
     {
-        $categories = Category::withCount('products')
-            ->latest()
-            ->paginate(10);
-
+        $categories = Category::with('parent')->latest()->paginate(10);
         return view('admin.categories.index', compact('categories'));
     }
 
     public function create(): View
     {
-        return view('admin.categories.create');
+        $categories = Category::all();
+        return view('admin.categories.create', compact('categories'));
     }
 
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:categories,name',
-            'description' => 'nullable|string',
-            'is_active' => 'boolean',
+            'parent_category_id' => 'nullable|exists:categories,id',
         ]);
-
         Category::create($validated);
-
-        return redirect()->route('admin.categories.index')
-            ->with('success', 'Category created successfully.');
+        return redirect()->route('admin.categories.index')->with('success', 'Category created successfully.');
     }
 
     public function show(Category $category): View
     {
-        $category->load(['products' => function ($query) {
-            $query->latest()->paginate(10);
-        }]);
-
+        $category->load('parent', 'children', 'products');
         return view('admin.categories.show', compact('category'));
     }
 
     public function edit(Category $category): View
     {
-        return view('admin.categories.edit', compact('category'));
+        $categories = Category::where('id', '!=', $category->id)->get();
+        return view('admin.categories.edit', compact('category', 'categories'));
     }
 
     public function update(Request $request, Category $category): RedirectResponse
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:categories,name,' . $category->id,
-            'description' => 'nullable|string',
-            'is_active' => 'boolean',
+            'parent_category_id' => 'nullable|exists:categories,id',
         ]);
-
         $category->update($validated);
-
-        return redirect()->route('admin.categories.index')
-            ->with('success', 'Category updated successfully.');
+        return redirect()->route('admin.categories.index')->with('success', 'Category updated successfully.');
     }
 
     public function destroy(Category $category): RedirectResponse
     {
-        // Check if category has products
-        if ($category->products()->count() > 0) {
-            return redirect()->route('admin.categories.index')
-                ->with('error', 'Cannot delete category with associated products.');
+        if ($category->children()->count() > 0) {
+            return redirect()->route('admin.categories.index')->with('error', 'Cannot delete a category with subcategories.');
         }
-
+        if ($category->products()->count() > 0) {
+            return redirect()->route('admin.categories.index')->with('error', 'Cannot delete a category with products.');
+        }
         $category->delete();
-
-        return redirect()->route('admin.categories.index')
-            ->with('success', 'Category deleted successfully.');
+        return redirect()->route('admin.categories.index')->with('success', 'Category deleted successfully.');
     }
 }
