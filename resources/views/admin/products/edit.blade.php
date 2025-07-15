@@ -235,15 +235,6 @@
                                 <span class="text-red-500 text-sm mt-1">{{ $message }}</span>
                             @enderror
                         </div>
-                        <div class="flex items-center">
-                            <label class="flex items-center">
-                                <input type="checkbox" name="is_active" id="is_active"
-                                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" value="1"
-                                    {{ old("is_active", $product->is_active) ? "checked" : "" }}>
-                                <span class="ml-2 text-sm font-medium text-gray-700">Product is active and available for
-                                    purchase</span>
-                            </label>
-                        </div>
                     </div>
                 </div>
 

@@ -12,7 +12,6 @@ class ShopController extends Controller
     public function index(Request $request)
     {
         $query = Product::with(['category', 'images'])
-            ->where('is_active', true)
             ->where('quantity', '>', 0);
 
         // Filter by category (include descendants)
@@ -65,7 +64,7 @@ class ShopController extends Controller
 
     public function show(Product $product)
     {
-        if (!$product->is_active || $product->quantity <= 0) {
+        if ($product->quantity <= 0) {
             abort(404);
         }
 

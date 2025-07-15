@@ -25,10 +25,9 @@ class DashboardController extends Controller
         ];
 
         // Get recent orders
-        $recent_orders = Order::with(['user', 'orderItems.product'])
+        $recentOrders = Order::with(['user', 'orderItems.product'])
             ->latest()
-            ->take(5)
-            ->get();
+            ->paginate(5);
 
         // Get top selling products
         $top_products = Product::withCount('orderItems')
@@ -36,6 +35,6 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
-        return view('admin.dashboard', compact('stats', 'recent_orders', 'top_products'));
+        return view('admin.dashboard', compact('stats', 'recentOrders', 'top_products'));
     }
 }

@@ -47,12 +47,7 @@
                     <div class="text-gray-600 font-semibold text-lg">{{ $product->category?->name ?? 'No Category' }}</div>
                     <div class="text-gray-700 text-sm">Category</div>
                 </div>
-                <div class="bg-gray-50 border-2 border-gray-200 rounded-lg p-4 text-center">
-                    <div class="font-semibold text-lg {{ $product->is_active ? 'text-green-600' : 'text-red-600' }}">
-                        {{ $product->is_active ? 'Active' : 'Inactive' }}
-                    </div>
-                    <div class="text-gray-700 text-sm">Status</div>
-                </div>
+                <!-- Removed is_active status display -->
             </div>
         </div>
 

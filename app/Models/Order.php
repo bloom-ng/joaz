@@ -59,6 +59,14 @@ class Order extends Model
     }
 
     /**
+     * Get the order items for the order.
+     */
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
+
+    /**
      * Get the transactions for the order.
      */
     public function transactions()

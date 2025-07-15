@@ -39,7 +39,6 @@ class ProductController extends Controller
             'sale_price' => 'nullable|numeric|min:0',
             'category_id' => 'required|exists:categories,id',
             'quantity' => 'required|integer|min:0',
-            'is_active' => 'boolean',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
@@ -82,7 +81,6 @@ class ProductController extends Controller
             'sale_price' => 'nullable|numeric|min:0',
             'category_id' => 'required|exists:categories,id',
             'quantity' => 'required|integer|min:0',
-            'is_active' => 'boolean',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
@@ -94,7 +92,6 @@ class ProductController extends Controller
             'sale_price' => $validated['sale_price'] ?? null,
             'category_id' => $validated['category_id'],
             'quantity' => $validated['quantity'],
-            'is_active' => $validated['is_active'] ?? false,
         ]);
 
         // If new images are uploaded, add them (do not delete old images unless user deletes them)
