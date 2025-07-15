@@ -77,10 +77,6 @@
                     <h2 class="text-lg font-semibold text-gray-800">Recent Orders</h2>
                 </div>
                 <div class="p-6">
-                    @php
-                        $recentOrders = \App\Models\Order::with('user')->latest()->take(5)->get();
-                    @endphp
-
                     @if ($recentOrders->count() > 0)
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200">
@@ -88,7 +84,7 @@
                                     <tr>
                                         <th
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Order</th>
+                                            Order Number</th>
                                         <th
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Customer</th>
@@ -107,23 +103,39 @@
                                     @foreach ($recentOrders as $order)
                                         <tr>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                                {{ $order->order_number }}
+                                                <a href="{{ route('admin.orders.show', $order) }}" class="text-blue-600 underline hover:text-blue-800 transition-colors duration-150">
+                                                    {{ $order->tracking_number }}
+                                                </a>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                 {{ $order->user->name }}
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                ₦{{ number_format($order->total, 2) }}
+                                                ₦{{ number_format($order->total_amount, 2) }}
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 <span
-                                                    class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                                {{ $order->status === 'completed'
-                                                    ? 'bg-green-100 text-green-800'
-                                                    : ($order->status === 'pending'
-                                                        ? 'bg-yellow-100 text-yellow-800'
-                                                        : 'bg-red-100 text-red-800') }}">
-                                                    {{ ucfirst($order->status) }}
+                                                    class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                                                    @switch($order->order_status)
+                                                        @case('pending')
+                                                            bg-yellow-100 text-yellow-800
+                                                            @break
+                                                        @case('processing')
+                                                            bg-blue-100 text-blue-800
+                                                            @break
+                                                        @case('shipped')
+                                                            bg-purple-100 text-purple-800
+                                                            @break
+                                                        @case('delivered')
+                                                            bg-green-100 text-green-800
+                                                            @break
+                                                        @case('cancelled')
+                                                            bg-red-100 text-red-800
+                                                            @break
+                                                        @default
+                                                            bg-gray-100 text-gray-800
+                                                    @endswitch">
+                                                    {{ ucfirst($order->order_status) }}
                                                 </span>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -133,6 +145,9 @@
                                     @endforeach
                                 </tbody>
                             </table>
+                        </div>
+                        <div class="mt-4">
+                            {{ $recentOrders->links() }}
                         </div>
                     @else
                         <p class="text-gray-500 text-center py-4">No orders found.</p>

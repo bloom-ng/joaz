@@ -12,14 +12,24 @@ class ShopController extends Controller
     public function index(Request $request)
     {
         $query = Product::with(['category', 'images'])
-            ->where('is_active', true)
-            ->where('stock_quantity', '>', 0);
+            ->where('quantity', '>', 0);
 
-        // Filter by category
+        // Filter by category (include descendants)
         if ($request->has('category') && $request->category) {
-            $query->whereHas('category', function ($q) use ($request) {
-                $q->where('slug', $request->category);
-            });
+            $category = Category::find($request->category);
+            if ($category) {
+                // Get all descendant IDs recursively
+                $categoryIds = collect([$category->id]);
+                $fetchDescendants = function ($cat) use (&$categoryIds, &$fetchDescendants) {
+                    foreach ($cat->children as $child) {
+                        $categoryIds->push($child->id);
+                        $fetchDescendants($child);
+                    }
+                };
+                $category->load('children');
+                $fetchDescendants($category);
+                $query->whereIn('category_id', $categoryIds);
+            }
         }
 
         // Search by name or description
@@ -54,7 +64,7 @@ class ShopController extends Controller
 
     public function show(Product $product)
     {
-        if (!$product->is_active || $product->stock_quantity <= 0) {
+        if ($product->quantity <= 0) {
             abort(404);
         }
 
@@ -65,7 +75,7 @@ class ShopController extends Controller
             ->where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)
             ->where('is_active', true)
-            ->where('stock_quantity', '>', 0)
+            ->where('quantity', '>', 0)
             ->limit(4)
             ->get();
 

@@ -30,35 +30,18 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-// Admin authentication routes
+Route::get('/register', [\App\Http\Controllers\RegistrationController::class, 'showRegistrationForm'])->name('register');
+Route::post('/register', [\App\Http\Controllers\RegistrationController::class, 'register'])->name('register.post');
+
+// Admin routes (all grouped under 'admin' prefix and 'admin.' name)
 Route::prefix('admin')->name('admin.')->group(function () {
+    // Admin authentication (public)
     Route::get('/login', [AdminAuthController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [AdminAuthController::class, 'login'])->name('login.post');
     Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
-});
 
-// Authentication routes
-Route::middleware('auth')->group(function () {
-    // Customer routes
-    Route::middleware('role:customer')->prefix('customer')->name('customer.')->group(function () {
-        Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');
-        Route::get('/products/{product}', [ShopController::class, 'show'])->name('products.show');
-
-        // Cart routes
-        Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-        Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
-        Route::put('/cart/update/{cartItem}', [CartController::class, 'update'])->name('cart.update');
-        Route::delete('/cart/remove/{cartItem}', [CartController::class, 'remove'])->name('cart.remove');
-        Route::post('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
-
-        // Customer orders
-        Route::get('/orders', [CustomerOrderController::class, 'index'])->name('orders.index');
-        Route::get('/orders/{order}', [CustomerOrderController::class, 'show'])->name('orders.show');
-        Route::post('/orders', [CustomerOrderController::class, 'store'])->name('orders.store');
-    });
-
-    // Admin routes
-    Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
+    // Admin management routes (require auth and admin role)
+    Route::middleware(['auth', 'role:admin'])->group(function () {
         // Dashboard
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -87,6 +70,27 @@ Route::middleware('auth')->group(function () {
         Route::resource('vouchers', VoucherController::class);
         Route::post('vouchers/{voucher}/activate', [VoucherController::class, 'activate'])->name('vouchers.activate');
         Route::post('vouchers/{voucher}/deactivate', [VoucherController::class, 'deactivate'])->name('vouchers.deactivate');
+    });
+});
+
+// Authentication routes
+Route::middleware('auth')->group(function () {
+    // Customer routes
+    Route::middleware('role:customer')->prefix('customer')->name('customer.')->group(function () {
+        Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');
+        Route::get('/products/{product}', [ShopController::class, 'show'])->name('products.show');
+
+        // Cart routes
+        Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+        Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+        Route::put('/cart/update/{cartItem}', [CartController::class, 'update'])->name('cart.update');
+        Route::delete('/cart/remove/{cartItem}', [CartController::class, 'remove'])->name('cart.remove');
+        Route::post('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
+
+        // Customer orders
+        Route::get('/orders', [CustomerOrderController::class, 'index'])->name('orders.index');
+        Route::get('/orders/{order}', [CustomerOrderController::class, 'show'])->name('orders.show');
+        Route::post('/orders', [CustomerOrderController::class, 'store'])->name('orders.store');
     });
 });
 

@@ -8,6 +8,7 @@ use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Storage;
 
 class CustomerController extends Controller
 {
@@ -42,16 +43,42 @@ class CustomerController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $customer->id,
             'phone' => 'nullable|string|max:20',
-            'is_active' => 'boolean',
+            // Profile fields
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'gender' => 'nullable|in:male,female,other',
+            'date_of_birth' => 'nullable|date',
+            'bio' => 'nullable|string',
+            'social_links' => 'nullable|string', // will be parsed to array
         ]);
 
-        $customer->update($validated);
+        $customer->update([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'phone' => $validated['phone'] ?? $customer->phone,
+        ]);
 
-        // Update profile if exists
+        // Handle avatar upload
+        $avatarPath = null;
+        if ($request->hasFile('avatar')) {
+            $avatarPath = $request->file('avatar')->store('avatars', 'public');
+        }
+
+        // Prepare profile data
+        $profileData = [
+            'gender' => $validated['gender'] ?? null,
+            'date_of_birth' => $validated['date_of_birth'] ?? null,
+            'bio' => $validated['bio'] ?? null,
+            'social_links' => isset($validated['social_links']) ? array_filter(array_map('trim', explode(',', $validated['social_links']))) : null,
+        ];
+        if ($avatarPath) {
+            $profileData['avatar'] = $avatarPath;
+        }
+
+        // Update or create profile
         if ($customer->profile) {
-            $customer->profile->update([
-                'phone' => $validated['phone'] ?? $customer->profile->phone,
-            ]);
+            $customer->profile->update($profileData);
+        } else {
+            $customer->profile()->create($profileData);
         }
 
         return redirect()->route('admin.customers.show', $customer)

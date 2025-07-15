@@ -19,6 +19,7 @@ class Product extends Model
         'description',
         'price_usd',
         'price_ngn',
+        'sale_price',
         'quantity',
         'category_id',
     ];
@@ -31,6 +32,7 @@ class Product extends Model
     protected $casts = [
         'price_usd' => 'double',
         'price_ngn' => 'double',
+        'sale_price' => 'double',
         'quantity' => 'integer',
     ];
 
