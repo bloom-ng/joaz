@@ -14,11 +14,28 @@ use Illuminate\Http\RedirectResponse;
 
 class ProductController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        $products = Product::with(['category', 'images'])
-            ->latest()
-            ->paginate(10);
+        $query = Product::with(['category', 'images']);
+
+        // Handle search functionality
+        if ($request->filled('search')) {
+            $search = $request->get('search');
+            
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'LIKE', "%{$search}%")
+                  ->orWhere('price_usd', 'LIKE', "%{$search}%")
+                  ->orWhere('price_ngn', 'LIKE', "%{$search}%")
+                  ->orWhereHas('category', function ($categoryQuery) use ($search) {
+                      $categoryQuery->where('name', 'LIKE', "%{$search}%");
+                  });
+            });
+        }
+
+        $products = $query->latest()->paginate(10);
+        
+        // Preserve search parameters in pagination links
+        $products->appends($request->query());
 
         return view('admin.products.index', compact('products'));
     }

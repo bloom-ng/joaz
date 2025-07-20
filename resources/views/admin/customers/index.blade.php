@@ -5,6 +5,36 @@
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold text-gray-800">Customers</h1>
     </div>
+    
+    <!-- Search Form -->
+    <div class="bg-white shadow-lg rounded-xl p-6 mb-6">
+        <form method="GET" action="{{ route('admin.customers.index') }}" class="flex items-center gap-4">
+            <div class="flex-1">
+                <label for="search" class="block text-sm font-medium text-gray-700 mb-2">Search Customers</label>
+                <input type="text" 
+                       id="search" 
+                       name="search" 
+                       value="{{ request('search') }}"
+                       placeholder="Search by name, email, or phone..."
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+            </div>
+            <div class="flex gap-2 mt-6">
+                <button type="submit" 
+                        class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-lg font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
+                    <i class="fas fa-search mr-2"></i>
+                    Search
+                </button>
+                @if(request('search'))
+                    <a href="{{ route('admin.customers.index') }}"
+                       class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-lg font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors">
+                        <i class="fas fa-times mr-2"></i>
+                        Clear
+                    </a>
+                @endif
+            </div>
+        </form>
+    </div>
+    
     <div class="bg-white shadow-lg rounded-xl p-6">
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">

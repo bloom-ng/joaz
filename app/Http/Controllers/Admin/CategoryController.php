@@ -10,9 +10,22 @@ use Illuminate\View\View;
 
 class CategoryController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        $categories = Category::with('parent')->latest()->paginate(10);
+        $query = Category::with('parent');
+
+        // Handle search functionality
+        if ($request->filled('search')) {
+            $search = $request->get('search');
+            
+            $query->where('name', 'LIKE', "%{$search}%");
+        }
+
+        $categories = $query->latest()->paginate(10);
+        
+        // Preserve search parameters in pagination links
+        $categories->appends($request->query());
+
         return view('admin.categories.index', compact('categories'));
     }
 
