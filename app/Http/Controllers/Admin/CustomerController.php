@@ -12,12 +12,25 @@ use Illuminate\Support\Facades\Storage;
 
 class CustomerController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        $customers = User::role('customer')
-            ->withCount('orders')
-            ->latest()
-            ->paginate(15);
+        $query = User::role('customer')->withCount('orders');
+
+        // Handle search functionality
+        if ($request->filled('search')) {
+            $search = $request->get('search');
+            
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'LIKE', "%{$search}%")
+                  ->orWhere('email', 'LIKE', "%{$search}%")
+                  ->orWhere('phone', 'LIKE', "%{$search}%");
+            });
+        }
+
+        $customers = $query->latest()->paginate(15);
+        
+        // Preserve search parameters in pagination links
+        $customers->appends($request->query());
 
         return view('admin.customers.index', compact('customers'));
     }
