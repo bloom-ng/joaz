@@ -1,17 +1,18 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\ProductController;
-use App\Http\Controllers\Admin\CategoryController;
-use App\Http\Controllers\Admin\OrderController;
-use App\Http\Controllers\Admin\CustomerController;
-use App\Http\Controllers\Admin\TransactionController;
-use App\Http\Controllers\Admin\VoucherController;
-use App\Http\Controllers\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\PaymentController;
-use App\Http\Controllers\Customer\ShopController;
+use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\RegistrationController;
+use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\VoucherController;
 use App\Http\Controllers\Customer\CartController;
+use App\Http\Controllers\Customer\ShopController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\CustomerController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\TransactionController;
+use App\Http\Controllers\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Customer\OrderController as CustomerOrderController;
 
 /*
@@ -30,8 +31,18 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-Route::get('/register', [\App\Http\Controllers\RegistrationController::class, 'showRegistrationForm'])->name('register');
-Route::post('/register', [\App\Http\Controllers\RegistrationController::class, 'register'])->name('register.post');
+Route::get('/login', [\App\Http\Controllers\Customer\CustomerLoginController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [\App\Http\Controllers\Customer\CustomerLoginController::class, 'login'])->name('login.post');
+Route::post('/logout', [\App\Http\Controllers\Customer\CustomerLoginController::class, 'logout'])->name('logout');
+
+// Customer password reset/forgot
+Route::get('/password/forgot', [\App\Http\Controllers\Customer\CustomerLoginController::class, 'showLinkRequestForm'])->name('password.request');
+Route::post('/password/email', [\App\Http\Controllers\Customer\CustomerLoginController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::get('/password/reset/{token}', [\App\Http\Controllers\Customer\CustomerLoginController::class, 'showResetForm'])->name('password.reset');
+Route::post('/password/reset', [\App\Http\Controllers\Customer\CustomerLoginController::class, 'reset'])->name('password.update');
+
+Route::get('/register', [RegistrationController::class, 'showRegistrationForm'])->name('register');
+Route::post('/register', [RegistrationController::class, 'register'])->name('register.post');
 
 // Admin routes (all grouped under 'admin' prefix and 'admin.' name)
 Route::prefix('admin')->name('admin.')->group(function () {
