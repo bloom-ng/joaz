@@ -1,81 +1,130 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - Joaz Hair Products</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>Signup - Joaz Hair</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+            extend: {
+                fontFamily: {
+                bricolage: ['"Bricolage Grotesque"', 'sans-serif'],
+                }
+            }
+            }
+        }
+    </script>
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-50 min-h-screen flex items-center justify-center font-[bricolage]">
-    <div class="max-w-md w-full space-y-8">
-        <div class="bg-white rounded-lg shadow-lg p-8">
-            <div class="text-center mb-8">
-                <div class="mx-auto h-16 w-16 bg-[#85BB3F] rounded-full flex items-center justify-center mb-4">
-                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 01-8 0m8 0a4 4 0 00-8 0m8 0V5a4 4 0 00-8 0v2m8 0v2a4 4 0 01-8 0V7"></path></svg>
+<body class="h-screen font-bricolage md:overflow-hidden">
+    <div class="flex flex-col md:flex-row">
+        <div class="w-full md:w-[45%] h-[40vh] md:h-screen">
+        <img src="/images/models-left.png" alt="" class="w-full h-full hidden md:block object-cover">
+        <img src="/images/models-left-mobile.png" alt="" class="w-full h-full block md:hidden object-cover">
+        </div>
+        
+        <!-- Mobile Signup Form (hidden on md and above) -->
+        <div class="flex flex-col h-[60vh] w-full items-center bg-white pt-10 p-4 md:hidden">
+            <div class="flex flex-col gap-4 w-full max-w-sm justify-center items-center">
+                <div><img class="w-10 h-12" src="/images/logo-2.png" alt=""></div>
+                <p class="text-xl font-bold pb-2 text-center">Signup to access your account</p>
+                <div class="flex flex-col gap-3 w-full justify-center">
+                    <form class="flex flex-col justify-between h-full gap-4 w-full" method="POST" action="{{ route('register.post') }}">
+                        @csrf
+                        <div class="flex flex-col gap-3 w-full">
+                            <input placeholder="Name" type="text" name="name" id="name-mobile" value="{{ old('name') }}" class="bg-white w-full border border-[#212121/80] rounded-md placeholder-[#212121/60] p-3" required>
+                            @error('name')
+                                <p class="text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                            
+                            <input placeholder="Email address" type="email" name="email" id="email-mobile" value="{{ old('email') }}" class="bg-white w-full border border-[#212121/80] rounded-md placeholder-[#212121/60] p-3" required>
+                            @error('email')
+                                <p class="text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                            
+                            <div class="flex flex-row justify-between relative">
+                                <input placeholder="Password" type="password" name="password" id="password-mobile" class="bg-white w-full border border-[#212121/80] rounded-md placeholder-[#212121/60] p-3" required>
+                                <img class="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer" src="/images/eye.png" alt="" onclick="togglePassword('password-mobile')">
+                            </div>
+                            @error('password')
+                                <p class="text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                            
+                            <div class="flex flex-row justify-between relative">
+                                <input placeholder="Confirm password" type="password" name="password_confirmation" id="password_confirmation-mobile" class="bg-white w-full border border-[#212121/80] rounded-md placeholder-[#212121/60] p-3" required>
+                                <img class="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer" src="/images/eye.png" alt="" onclick="togglePassword('password_confirmation-mobile')">
+                            </div>
+                        </div>
+                        <div class="flex flex-row mt-[10%] pb-8 justify-center pt-2 items-center">
+                            <button type="submit" class="w-full text-md py-3 text-white rounded-lg" 
+                                    style="background: linear-gradient(91.36deg, #85BB3F 0%, #212121 162.21%);">
+                                SIGNUP
+                            </button>
+                        </div>
+                    </form>
                 </div>
-                <h2 class="text-3xl font-bold text-gray-900 mb-2">Create Account</h2>
-                <p class="text-gray-600">Register to start shopping</p>
             </div>
+        </div>
 
-            @if ($errors->any())
-                <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-                    <ul class="list-disc list-inside">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
+        <!-- Desktop Signup Form (hidden on mobile) -->
+        <div class="hidden md:flex flex-col h-screen w-[55%] justify-center items-center bg-white pr-10">
+            <div class="flex flex-col gap-3 w-[90%] justify-center items-center border border-[#21212199/70] rounded-xl p-8">
+                <div><img class="w-12 h-14" src="/images/logo-2.png" alt=""></div>
+                <p class="text-xl font-bold pb-3">Signup to access your account</p>
+                <div class="flex flex-col gap-2 w-full justify-center">
+                    <form class="flex flex-col justify-center gap-2 w-full" method="POST" action="{{ route('register.post') }}">
+                        @csrf
+                        <div class="flex flex-col gap-2 w-full px-16">
+                            <input placeholder="Name" type="text" name="name" id="name-desktop" value="{{ old('name') }}" class="bg-white w-full border border-[#212121/80] rounded-md placeholder-[#212121/60] p-2 py-2.5" required>
+                            @error('name')
+                                <p class="text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                            
+                            <input placeholder="Email address" type="email" name="email" id="email-desktop" value="{{ old('email') }}" class="bg-white w-full border border-[#212121/80] rounded-md placeholder-[#212121/60] p-2 py-2.5" required>
+                            @error('email')
+                                <p class="text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                            
+                            <div class="flex flex-row justify-between relative">
+                                <input placeholder="Password" type="password" name="password" id="password-desktop" class="bg-white w-full border border-[#212121/80] rounded-md placeholder-[#212121/60] p-2 py-2.5" required>
+                                <img class="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer" src="/images/eye.png" alt="" onclick="togglePassword('password-desktop')">
+                            </div>
+                            @error('password')
+                                <p class="text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                            
+                            <div class="flex flex-row justify-between relative">
+                                <input placeholder="Confirm password" type="password" name="password_confirmation" id="password_confirmation-desktop" class="bg-white w-full border border-[#212121/80] rounded-md placeholder-[#212121/60] p-2 py-2.5" required>
+                                <img class="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer" src="/images/eye.png" alt="" onclick="togglePassword('password_confirmation-desktop')">
+                            </div>
 
-            <form method="POST" action="{{ route('register.post') }}" class="space-y-6">
-                @csrf
-                <div>
-                    <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
-                    <input id="name" name="name" type="text" required value="{{ old('name') }}"
-                        class="block w-full px-3 py-3 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#85BB3F] focus:border-[#85BB3F]"
-                        placeholder="Enter your name">
+                            <div class="flex flex-row justify-center pt-4 items-center">
+                                <button type="submit" class="w-full text-md py-4 text-white rounded-lg p-2" 
+                                        style="background: linear-gradient(91.36deg, #85BB3F 0%, #212121 162.21%);">
+                                    SIGNUP
+                                </button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
-                <div>
-                    <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
-                    <input id="email" name="email" type="email" required value="{{ old('email') }}"
-                        class="block w-full px-3 py-3 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#85BB3F] focus:border-[#85BB3F]"
-                        placeholder="Enter your email">
-                </div>
-                <div>
-                    <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
-                    <input id="phone" name="phone" type="text" required value="{{ old('phone') }}"
-                        class="block w-full px-3 py-3 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#85BB3F] focus:border-[#85BB3F]"
-                        placeholder="Enter your phone number">
-                </div>
-                <div>
-                    <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Password</label>
-                    <input id="password" name="password" type="password" required
-                        class="block w-full px-3 py-3 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#85BB3F] focus:border-[#85BB3F]"
-                        placeholder="Enter your password">
-                </div>
-                <div>
-                    <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-2">Confirm Password</label>
-                    <input id="password_confirmation" name="password_confirmation" type="password" required
-                        class="block w-full px-3 py-3 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#85BB3F] focus:border-[#85BB3F]"
-                        placeholder="Confirm your password">
-                </div>
-                <div>
-                    <button type="submit"
-                        class="w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#85BB3F] hover:bg-[#85BB3F]/70 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#85BB3F] transition duration-150 ease-in-out">
-                        Register
-                    </button>
-                </div>
-            </form>
-            <div class="mt-6 text-center">
-                <p class="text-sm text-gray-600">
-                    Already have an account?
-                    <a href="{{ route('admin.login') }}" class="font-medium text-[#85BB3F] hover:text-[#85BB3F]">Sign In</a>
-                </p>
-                <p class="text-sm text-gray-600 mt-2">
-                    <a href="{{ route('home') }}" class="font-medium text-[#85BB3F] hover:text-[#85BB3F]">← Back to Home</a>
-                </p>
             </div>
         </div>
     </div>
+
+    <script>
+        function togglePassword(fieldId) {
+            const passwordInput = document.getElementById(fieldId);
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+            } else {
+                passwordInput.type = 'password';
+            }
+        }
+    </script>
 </body>
 </html>

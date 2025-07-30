@@ -30,6 +30,18 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
+Route::get('/login', function () {
+    return view('auth.login');
+})->name('login');
+
+Route::get('/forgot-password', function () {
+    return view('auth.forgot-password');
+})->name('forgot-password');
+
+Route::get('/reset-password', function () {
+    return view('auth.reset-password');
+})->name('reset-password');
+
 Route::get('/register', [\App\Http\Controllers\RegistrationController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [\App\Http\Controllers\RegistrationController::class, 'register'])->name('register.post');
 
