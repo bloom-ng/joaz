@@ -40,9 +40,11 @@
                     <img class="w-12 h-12" src="/images/logo.png" alt="">
                 </div>
                 <div class="flex flex-row items-center gap-11 text-md font-semibold">
+                    @auth
                     <div>
                         <img class="h-4" src="/images/profile.png" alt="">
                     </div>
+                    @endauth
                     <div>
                         <a href="">HOME</a>
                     </div>
@@ -58,6 +60,13 @@
                     <div>
                         <img class="h-5" src="/images/cart.png" alt="">
                     </div>
+                    @guest
+                    <div style="background: linear-gradient(91.36deg, #85BB3F 0%, #212121 162.21%);" class="text-[#FCFCFC] px-10 py-3 rounded-lg"> 
+                        <a href="/signin">LOGIN</a>
+                    </div>
+                    @endguest
+                    
+                    
                 </div>
             </div>
             <div class="text-center flex flex-col">
