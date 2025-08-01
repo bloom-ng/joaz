@@ -57,7 +57,7 @@ class ShopController extends Controller
         }
 
         $products = $query->paginate(12);
-        $categories = Category::where('is_active', true)->get();
+        $categories = Category::with('parent')->get();
 
         return view('customer.shop.index', compact('products', 'categories'));
     }

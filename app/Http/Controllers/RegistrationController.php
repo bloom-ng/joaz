@@ -7,12 +7,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class RegistrationController extends Controller
 {
     public function showRegistrationForm()
     {
-        return view('auth.register');
+        $countries = \DB::table('countries')->orderBy('name')->get();
+        return view('auth.register', compact('countries'));
     }
 
     public function register(Request $request)
@@ -20,6 +22,8 @@ class RegistrationController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
+            'phone' => 'required|string|max:20|unique:users,phone',
+            'country_id' => 'required|exists:countries,id',
             'password' => 'required|string|min:8|confirmed',
         ]);
 
@@ -32,6 +36,8 @@ class RegistrationController extends Controller
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
+            'phone' => $request->phone,
+            'country_id' => $request->country_id,
             'password' => Hash::make($request->password),
         ]);
 
@@ -40,6 +46,6 @@ class RegistrationController extends Controller
 
         Auth::login($user);
 
-        return redirect()->route('customer.shop.index')->with('success', 'Registration successful!');
+        return redirect()->route('home')->with('success', 'Registration successful!');
     }
 }
