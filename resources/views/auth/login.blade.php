@@ -102,6 +102,9 @@
                                     LOGIN
                                 </button>
                             </div>
+                            <div class="flex flex-row justify-center pt-4 items-center">
+                                <p>Don't have an account? <a href="/register" class="text-[#85BB3F] font-semibold">Register</a></p>
+                            </div>
                         </div>
                     </form>
                 </div>

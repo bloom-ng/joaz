@@ -61,9 +61,11 @@
                         <img class="h-5" src="/images/cart.png" alt="">
                     </div>
                     @guest
-                    <div style="background: linear-gradient(91.36deg, #85BB3F 0%, #212121 162.21%);" class="text-[#FCFCFC] px-10 py-3 rounded-lg"> 
-                        <a href="/signin">LOGIN</a>
-                    </div>
+                    <a href="/signin">
+                        <div style="background: linear-gradient(91.36deg, #85BB3F 0%, #212121 162.21%);" class="text-[#FCFCFC] px-10 py-3 rounded-lg"> 
+                            LOGIN
+                        </div>
+                    </a>
                     @endguest
                     
                     
