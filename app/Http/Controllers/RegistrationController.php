@@ -13,7 +13,7 @@ class RegistrationController extends Controller
 {
     public function showRegistrationForm()
     {
-        $countries = \DB::table('countries')->orderBy('name')->get();
+        $countries = DB::table('countries')->orderBy('name')->get();
         return view('auth.register', compact('countries'));
     }
 
