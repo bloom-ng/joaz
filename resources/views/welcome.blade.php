@@ -179,7 +179,7 @@
                     <div class="w-1/2 h-full">
                         <img src="/images/models2.png" alt="" class="w-full h-full object-cover">
                     </div>
-                    <div class="flex -ml-1 flex-col items-center justify-center h-full w-1/2 bg-[#FCFCFC] px-16">
+                    <div class="flex -ml-[1%] flex-col items-center justify-center h-full w-1/2 bg-[#FCFCFC] px-16">
                         <div class="flex flex-col gap-2 w-full max-w-md justify-center items-center">
                             <div><img class="w-12 h-14" src="/images/logo-2.png" alt=""></div>
                             <h1 class="text-3xl font-meduim text-center font-rustler">MAINTAIN YOUR HAIR EXTENSIONS</h1>
@@ -218,11 +218,11 @@
                         <img class="w-12 h-14" src="/images/logo.png" alt="">
                         <p class="leading-5 pt-2 text-[16px] font-semibold">SHOP NO BPF14,FIRST FLOOR.OLD <br> BANEX PLAZA WUSE 2, Abuja, Nigeria</p>
                     </div>
+                    <div class="flex flex-row gap-4">
+                        <img class="w-4 h-4" src="/images/instagram.png" alt="">
+                        <img class="w-4 h-4" src="/images/tiktok.png" alt="">
+                    </div>
                     <div class="flex flex-row gap-36 justify-between items-center">
-                        <div class="flex flex-row gap-4">
-                            <img class="w-4 h-4" src="/images/instagram.png" alt="">
-                            <img class="w-4 h-4" src="/images/tiktok.png" alt="">
-                        </div>
                         <div class="flex flex-row text-[20px] font-semibold font-bricolage gap-10">
                             <p>HOME</p>
                             <p>SHOP</p>
@@ -230,6 +230,12 @@
                             <p>CONTACT US</p>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <div class="bg-[#212121] px-16 py-12 flex flex-row justify-center items-center">
+                <div>
+                    <p class="text-[#FCFCFC] font-bricolage">JOAZ HAIR EXTENSION © 2025</p>
                 </div>
             </div>
         </div>

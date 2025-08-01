@@ -82,8 +82,8 @@
                                 <input placeholder="Password" type="password" name="password" id="password-mobile"
                                     class="bg-white w-full border border-[#212121/80] rounded-md placeholder-[#212121/60] p-3"
                                     required>
-                                <img class="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer"
-                                    src="/images/eye.png" alt="" onclick="togglePassword('password-mobile')">
+                                                                <img class="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer"
+                                    src="/images/eye.png" alt="" onclick="togglePassword('password-mobile', this)">
                             </div>
                             @error("password")
                                 <p class="text-sm text-red-600">{{ $message }}</p>
@@ -94,9 +94,9 @@
                                     id="password_confirmation-mobile"
                                     class="bg-white w-full border border-[#212121/80] rounded-md placeholder-[#212121/60] p-3"
                                     required>
-                                <img class="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer"
+                                                                <img class="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer"
                                     src="/images/eye.png" alt=""
-                                    onclick="togglePassword('password_confirmation-mobile')">
+                                    onclick="togglePassword('password_confirmation-mobile', this)">
                             </div>
                         </div>
                         <div class="flex flex-row mt-[10%] pb-8 justify-center pt-2 items-center">
@@ -166,9 +166,9 @@
                                 <input placeholder="Password" type="password" name="password" id="password-desktop"
                                     class="bg-white w-full border border-[#212121/80] rounded-md placeholder-[#212121/60] p-2 py-2.5"
                                     required>
-                                <img class="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer"
+                                                                <img class="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer"
                                     src="/images/eye.png" alt=""
-                                    onclick="togglePassword('password-desktop')">
+                                    onclick="togglePassword('password-desktop', this)">
                             </div>
                             @error("password")
                                 <p class="text-sm text-red-600">{{ $message }}</p>
@@ -179,9 +179,9 @@
                                     id="password_confirmation-desktop"
                                     class="bg-white w-full border border-[#212121/80] rounded-md placeholder-[#212121/60] p-2 py-2.5"
                                     required>
-                                <img class="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer"
+                                                                <img class="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer"
                                     src="/images/eye.png" alt=""
-                                    onclick="togglePassword('password_confirmation-desktop')">
+                                    onclick="togglePassword('password_confirmation-desktop', this)">
                             </div>
 
                             <div class="flex flex-row justify-center pt-4 items-center">
@@ -197,13 +197,16 @@
         </div>
     </div>
 
+
     <script>
-        function togglePassword(fieldId) {
-            const passwordInput = document.getElementById(fieldId);
+        function togglePassword(inputId, eyeIcon) {
+            const passwordInput = document.getElementById(inputId);
             if (passwordInput.type === 'password') {
                 passwordInput.type = 'text';
+                eyeIcon.src = '/images/open-eye.png';
             } else {
                 passwordInput.type = 'password';
+                eyeIcon.src = '/images/eye.png';
             }
         }
     </script>
