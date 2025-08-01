@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('phone')->unique();
             $table->string('password');
             $table->enum('role', ['admin', 'customer'])->default('customer');
+            $table->unsignedBigInteger('country_id')->nullable();
+            $table->foreign('country_id')->references('id')->on('countries')->onDelete('set null');
             $table->timestamps();
         });
 
