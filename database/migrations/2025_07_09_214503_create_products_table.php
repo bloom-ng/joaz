@@ -17,6 +17,7 @@ return new class extends Migration
             $table->text('description');
             $table->double('price_usd');
             $table->double('price_ngn');
+            $table->double('sale_price')->default(0);
             $table->integer('quantity')->default(0);
             $table->foreignId('category_id')->nullable()->constrained()->onDelete('set null');
             $table->timestamps();

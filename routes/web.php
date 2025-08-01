@@ -27,9 +27,7 @@ use App\Http\Controllers\Customer\OrderController as CustomerOrderController;
 */
 
 // Public routes
-Route::get('/', function () {
-    return view('welcome');
-})->name('home');
+Route::get('/', [ShopController::class,'home'])->name('home');
 
 Route::get('/signin', function () {
     return view('auth.login');
