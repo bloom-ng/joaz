@@ -10,21 +10,21 @@
                 Add Product
             </a>
         </div>
-        
+
         <!-- Search Form -->
         <div class="bg-white shadow-lg rounded-xl p-6 mb-6">
             <form method="GET" action="{{ route('admin.products.index') }}" class="flex items-center gap-4">
                 <div class="flex-1">
                     <label for="search" class="block text-sm font-medium text-gray-700 mb-2">Search Products</label>
-                    <input type="text" 
-                           id="search" 
-                           name="search" 
+                    <input type="text"
+                           id="search"
+                           name="search"
                            value="{{ request('search') }}"
                            placeholder="Search by name, price (USD/NGN), or category..."
                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
                 </div>
                 <div class="flex gap-2 mt-6">
-                    <button type="submit" 
+                    <button type="submit"
                             class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-lg font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
                         <i class="fas fa-search mr-2"></i>
                         Search
@@ -39,7 +39,7 @@
                 </div>
             </form>
         </div>
-        
+
         <div class="bg-white shadow-lg rounded-xl p-6">
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
@@ -59,9 +59,6 @@
                                 Price</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Quantity</th>
-
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Active</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Category</th>
 
@@ -120,15 +117,6 @@
                                 </td>
                                 <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{{ $product->quantity }}</td>
 
-                                <td class="px-4 py-3 whitespace-nowrap">
-                                    @if ($product->is_active)
-                                        <span
-                                            class="inline-flex items-center px-2 py-1  text-xs font-medium bg-green-100 text-green-800 ">Active</span>
-                                    @else
-                                        <span
-                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 border border-red-200">Inactive</span>
-                                    @endif
-                                </td>
                                 <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
                                     {{ $product->category?->name }}</td>
 

@@ -21,7 +21,7 @@ class ProductController extends Controller
         // Handle search functionality
         if ($request->filled('search')) {
             $search = $request->get('search');
-            
+
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'LIKE', "%{$search}%")
                   ->orWhere('price_usd', 'LIKE', "%{$search}%")
@@ -33,7 +33,7 @@ class ProductController extends Controller
         }
 
         $products = $query->latest()->paginate(10);
-        
+
         // Preserve search parameters in pagination links
         $products->appends($request->query());
 
@@ -106,7 +106,7 @@ class ProductController extends Controller
             'description' => $validated['description'],
             'price_usd' => $validated['price_usd'],
             'price_ngn' => $validated['price_ngn'],
-            'sale_price' => $validated['sale_price'] ?? null,
+            'sale_price' => $validated['sale_price'] ?? 0,
             'category_id' => $validated['category_id'],
             'quantity' => $validated['quantity'],
         ]);

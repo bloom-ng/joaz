@@ -38,7 +38,7 @@
                             <input placeholder="Email address" type="email" name="email" id="email-mobile" class="bg-white w-full border border-[#212121/80] rounded-md placeholder-[#212121/60] p-3">
                             <div class="flex flex-row justify-between relative">
                                 <input placeholder="Password" type="password" name="password" id="password-mobile" class="bg-white w-full border border-[#212121/80] rounded-md placeholder-[#212121/60] p-3">
-                                <img class="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer" src="/images/eye.png" alt="" onclick="togglePassword('password-mobile')">
+                                                                <img class="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer" src="/images/eye.png" alt="" onclick="togglePassword('password-mobile', this)">
                             </div>
 
                             <div class="flex flex-row justify-between items-center">
@@ -79,7 +79,7 @@
                             <input placeholder="Email address" type="email" name="email" id="email-desktop" class="bg-white w-full border border-[#212121/80] rounded-md placeholder-[#212121/60] p-2 py-2.5">
                             <div class="flex flex-row justify-between relative">
                                 <input placeholder="Password" type="password" name="password" id="password-desktop" class="bg-white w-full border border-[#212121/80] rounded-md placeholder-[#212121/60] p-2 py-2.5">
-                                <img class="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer" src="/images/eye.png" alt="" onclick="togglePassword('password-desktop')">
+                                                                <img class="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer" src="/images/eye.png" alt="" onclick="togglePassword('password-desktop', this)">
                             </div>
 
                             <div class="flex flex-row justify-between">
@@ -102,11 +102,26 @@
                                     LOGIN
                                 </button>
                             </div>
+                            <div class="flex flex-row justify-center pt-4 items-center">
+                                <p>Don't have an account? <a href="/register" class="text-[#85BB3F] font-semibold">Register</a></p>
+                            </div>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
+    <script>
+        function togglePassword(inputId, eyeIcon) {
+            const passwordInput = document.getElementById(inputId);
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.src = '/images/open-eye.png';
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.src = '/images/eye.png';
+            }
+        }
+    </script>
 </body>
 </html> 
