@@ -31,42 +31,47 @@
                 <div><img class="w-10 h-12" src="/images/logo-2.png" alt=""></div>
                 <h1 class="text-lg font-bold pb-2 text-center">Reset your password</h1>
                 <div class="flex flex-col gap-3 w-full justify-center">
-                    <form class="flex flex-col justify-between h-full gap-4 w-full" action="">
+                    @if (session('status'))
+                        <div class="text-green-600 text-sm text-center mb-4">
+                            {{ session('status') }}
+                        </div>
+                    @endif
+                    @if ($errors->any())
+                        <div class="text-red-600 text-sm text-center mb-4">
+                            @foreach ($errors->all() as $error)
+                                <p>{{ $error }}</p>
+                            @endforeach
+                        </div>
+                    @endif
+                    <form class="flex flex-col justify-between h-full gap-4 w-full" action="{{ route('password.update') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="token" value="{{ request()->route('token') ?? request('token') ?? '' }}">
+                        <input type="hidden" name="email" value="{{ request('email') ?? old('email') }}">
                         <div class="flex flex-col gap-3 w-full">
-                            <!-- Old Password Field -->
-                            <div class="flex flex-row justify-between relative">
-                                <input 
-                                    type="password" 
-                                    name="old_password" 
-                                    id="old_password-mobile" 
-                                    class="bg-white w-full border border-[#212121/80] rounded-md placeholder-[#212121/60] p-3"
-                                    placeholder="Old password"
-                                >
-                                <img class="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer" src="/images/eye.png" alt="" onclick="togglePassword('old_password-mobile')">
-                            </div>
-
                             <!-- New Password Field -->
                             <div class="flex flex-row justify-between relative">
                                 <input 
                                     type="password" 
-                                    name="new_password" 
-                                    id="new_password-mobile" 
+                                    name="password" 
+                                    id="password-mobile" 
                                     class="bg-white w-full border border-[#212121/80] rounded-md placeholder-[#212121/60] p-3"
                                     placeholder="New password"
+                                    required
                                 >
-                                <img class="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer" src="/images/eye.png" alt="" onclick="togglePassword('new_password-mobile')">
+                                <img class="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer" src="/images/eye.png" alt="" onclick="togglePassword('password-mobile', this)">
                             </div>
 
                             <!-- Confirm Password Field -->
                             <div class="flex flex-row justify-between relative">
                                 <input 
                                     type="password" 
-                                    name="confirm_password" 
-                                    id="confirm_password-mobile" 
+                                    name="password_confirmation" 
+                                    id="password_confirmation-mobile" 
                                     class="bg-white w-full border border-[#212121/80] rounded-md placeholder-[#212121/60] p-3"
                                     placeholder="Confirm password"
+                                    required
                                 >
-                                <img class="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer" src="/images/eye.png" alt="" onclick="togglePassword('confirm_password-mobile')">
+                                <img class="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer" src="/images/eye.png" alt="" onclick="togglePassword('password_confirmation-mobile', this)">
                             </div>
                         </div>
                         <div class="flex flex-row mt-[10%] pb-8 justify-center pt-2 items-center">
@@ -90,42 +95,47 @@
                     <div><img class="w-12 h-14" src="/images/logo-2.png" alt=""></div>
                     <h1 class="text-xl font-bold pb-3 text-center">Reset your password</h1>
                     <div class="flex flex-col gap-2 w-full justify-center">
-                        <form class="flex flex-col justify-center gap-2 w-full" action="">
+                        @if (session('status'))
+                            <div class="text-green-600 text-sm text-center mb-4">
+                                {{ session('status') }}
+                            </div>
+                        @endif
+                        @if ($errors->any())
+                            <div class="text-red-600 text-sm text-center mb-4">
+                                @foreach ($errors->all() as $error)
+                                    <p>{{ $error }}</p>
+                                @endforeach
+                            </div>
+                        @endif
+                        <form class="flex flex-col justify-center gap-2 w-full" action="{{ route('password.update') }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="token" value="{{ request()->route('token') ?? request('token') ?? '' }}">
+                            <input type="hidden" name="email" value="{{ request('email') ?? old('email') }}">
                             <div class="flex flex-col gap-2 w-full">
-                                <!-- Old Password Field -->
-                                <div class="flex flex-row justify-between relative">
-                                    <input 
-                                        type="password" 
-                                        name="old_password" 
-                                        id="old_password-desktop" 
-                                        class="bg-white w-full border border-[#212121/80] rounded-md placeholder-[#212121/60] p-2 py-2.5"
-                                        placeholder="Old password"
-                                    >
-                                    <img class="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer" src="/images/eye.png" alt="" onclick="togglePassword('old_password-desktop')">
-                                </div>
-
                                 <!-- New Password Field -->
                                 <div class="flex flex-row justify-between relative">
                                     <input 
                                         type="password" 
-                                        name="new_password" 
-                                        id="new_password-desktop" 
+                                        name="password" 
+                                        id="password-desktop" 
                                         class="bg-white w-full border border-[#212121/80] rounded-md placeholder-[#212121/60] p-2 py-2.5"
                                         placeholder="New password"
+                                        required
                                     >
-                                    <img class="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer" src="/images/eye.png" alt="" onclick="togglePassword('new_password-desktop')">
+                                    <img class="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer" src="/images/eye.png" alt="" onclick="togglePassword('password-desktop', this)">
                                 </div>
 
                                 <!-- Confirm Password Field -->
                                 <div class="flex flex-row justify-between relative">
                                     <input 
                                         type="password" 
-                                        name="confirm_password" 
-                                        id="confirm_password-desktop" 
+                                        name="password_confirmation" 
+                                        id="password_confirmation-desktop" 
                                         class="bg-white w-full border border-[#212121/80] rounded-md placeholder-[#212121/60] p-2 py-2.5"
                                         placeholder="Confirm password"
+                                        required
                                     >
-                                    <img class="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer" src="/images/eye.png" alt="" onclick="togglePassword('confirm_password-desktop')">
+                                    <img class="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer" src="/images/eye.png" alt="" onclick="togglePassword('password_confirmation-desktop', this)">
                                 </div>
 
                                 <!-- Submit Button -->
@@ -147,12 +157,14 @@
     </div>
 
     <script>
-        function togglePassword(fieldId) {
-            const passwordInput = document.getElementById(fieldId);
+        function togglePassword(inputId, eyeIcon) {
+            const passwordInput = document.getElementById(inputId);
             if (passwordInput.type === 'password') {
                 passwordInput.type = 'text';
+                eyeIcon.src = '/images/open-eye.png';
             } else {
                 passwordInput.type = 'password';
+                eyeIcon.src = '/images/eye.png';
             }
         }
     </script>

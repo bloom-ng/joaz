@@ -177,7 +177,7 @@
                 <h2 class="text-3xl font-rustler pb-8">REVIEWS</h2>
                 
                 <!-- Customer Image Gallery -->
-                                                <div class="w-full overflow-hidden relative mb-8">
+                <div class="w-full overflow-hidden relative mb-8">
                     <div class="flex w-max animate-scroll hover:pause">
                                             <!-- Original Images -->
                         <div class="flex flex-row gap-4 pr-4">
@@ -346,7 +346,6 @@
                 </div>
                 <div class="flex flex-row justify-center pt-10 items-center gap-2">
                     <h1 class="text-md font-semibold font-bricolage border-b-[1px] border-[#212121]">VIEW ALL</h1>
-                    <img class="w-4 h-4" src="/images/arrow-right.png" alt="">
                 </div>
             </div>
         </section>
