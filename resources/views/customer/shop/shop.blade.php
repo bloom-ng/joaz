@@ -23,7 +23,18 @@
     </script>
 
     <!-- Load RustlerBarter font from public/fonts -->
-    <style>
+        <style>
+        @keyframes scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+        .animate-scroll {
+            animation: scroll 40s linear infinite;
+        }
+        .hover\:pause:hover {
+            animation-play-state: paused;
+        }
+
         @font-face {
             font-family: 'RustlerBarter';
             src: url('/fonts/RustlerBarter.otf') format('opentype');
@@ -37,7 +48,7 @@
 </head>
 
 <body class="bg-[#FCFCFC] text-[#212121]">
-    <div class="flex flex-col">
+    <div class="flex bg-[#FCFCFC] flex-col">
         <!-- Header Section -->
         <div class="flex flex-row text-[#212121] items-center font-bricolage px-16 py-8 justify-between">
             <div>
@@ -161,63 +172,68 @@
         </main>
 
         <!-- Reviews Section -->
-        <section class="px-16 py-12">
+        <section class="py-12 bg-[#FCFCFC]">
             <div class="flex flex-col items-center">
                 <h2 class="text-3xl font-rustler pb-8">REVIEWS</h2>
                 
                 <!-- Customer Image Gallery -->
-                <div class="flex flex-row gap-4 mb-8 overflow-x-auto">
-                    <div class="w-24 h-24 bg-gray-300 rounded-lg flex-shrink-0">
-                        <img src="/images/customer1.png" alt="Customer" class="w-full h-full object-cover rounded-lg">
+                                                <div class="w-full overflow-hidden relative mb-8">
+                    <div class="flex w-max animate-scroll hover:pause">
+                                            <!-- Original Images -->
+                        <div class="flex flex-row gap-4 pr-4">
+                            <div class="w-[370px] flex-shrink-0 aspect-[370/320]">
+                                <img class="w-full h-full object-cover" src="/images/frame_59.png" alt="">
+                            </div>
+                            <div class="w-[370px] flex-shrink-0 aspect-[370/320]">
+                                <img class="w-full h-full object-cover" src="/images/frame_60.png" alt="">
+                            </div>
+                            <div class="w-[370px] flex-shrink-0 aspect-[370/320]">
+                                <img class="w-full h-full object-cover" src="/images/frame_59.png" alt="">
+                            </div>
+                            <div class="w-[370px] flex-shrink-0 aspect-[370/320]">
+                                <img class="w-full h-full object-cover" src="/images/frame_60.png" alt="">
+                            </div>
+                            <div class="w-[370px] flex-shrink-0 aspect-[370/320]">
+                                <img class="w-full h-full object-cover" src="/images/frame_59.png" alt="">
+                            </div>
+                        </div>
+
+                        <!-- Duplicated Images for seamless loop -->
+                        <div class="flex flex-row gap-4 pr-4">
+                            <div class="w-[370px] flex-shrink-0 aspect-[370/320]">
+                                <img class="w-full h-full object-cover" src="/images/frame_59.png" alt="">
+                            </div>
+                            <div class="w-[370px] flex-shrink-0 aspect-[370/320]">
+                                <img class="w-full h-full object-cover" src="/images/frame_60.png" alt="">
+                            </div>
+                            <div class="w-[370px] flex-shrink-0 aspect-[370/320]">
+                                <img class="w-full h-full object-cover" src="/images/frame_59.png" alt="">
+                            </div>
+                            <div class="w-[370px] flex-shrink-0 aspect-[370/320]">
+                                <img class="w-full h-full object-cover" src="/images/frame_60.png" alt="">
+                            </div>
+                            <div class="w-[370px] flex-shrink-0 aspect-[370/320]">
+                                <img class="w-full h-full object-cover" src="/images/frame_59.png" alt="">
+                            </div>
+                        </div>
                     </div>
-                    <div class="w-24 h-24 bg-gray-300 rounded-lg flex-shrink-0">
-                        <img src="/images/customer2.png" alt="Customer" class="w-full h-full object-cover rounded-lg">
-                    </div>
-                    <div class="w-24 h-24 bg-gray-300 rounded-lg flex-shrink-0">
-                        <img src="/images/customer3.png" alt="Customer" class="w-full h-full object-cover rounded-lg">
-                    </div>
-                    <div class="w-24 h-24 bg-gray-300 rounded-lg flex-shrink-0">
-                        <img src="/images/customer4.png" alt="Customer" class="w-full h-full object-cover rounded-lg">
-                    </div>
+                </div>
                 </div>
 
                 <!-- Individual Reviews -->
-                <div class="flex flex-col gap-8 w-full max-w-4xl">
-                    <!-- Review 1 -->
-                    <div class="flex flex-col gap-4 p-6 bg-white rounded-lg shadow-sm">
-                        <div class="flex flex-row items-center justify-between">
-                            <div class="flex flex-row items-center gap-3">
-                                <img class="w-12 h-12 rounded-full" src="/images/pfp.png" alt="Profile Picture">
-                                <div class="flex flex-col">
-                                    <span class="font-semibold font-bricolage">Jane Hopper</span>
-                                    <div class="flex flex-row gap-1">
-                                        <img class="w-4 h-4" src="/images/star.png" alt="Star">
-                                        <img class="w-4 h-4" src="/images/star.png" alt="Star">
-                                        <img class="w-4 h-4" src="/images/star.png" alt="Star">
-                                        <img class="w-4 h-4" src="/images/star.png" alt="Star">
-                                        <img class="w-4 h-4" src="/images/star.png" alt="Star">
-                                    </div>
-                                </div>
-                            </div>
-                            <span class="text-sm text-gray-500">Date posted 31/05/2023</span>
-                        </div>
-                        <p class="text-sm font-bricolage leading-6">
-                            Shiny french curls extension after 3 weeks? Here's how: Shiny french curls extension after 3 weeks? Here's how: Shiny french curls extension after 3 weeks? Here's how: Shiny french curls extension after 3 weeks? Here's how: Shiny french curls extension after 3 weeks?
-                        </p>
-                        <div class="flex flex-row items-center gap-2">
-                            <span class="text-sm text-gray-600">Was this review helpful?</span>
-                            <button class="w-6 h-6 text-gray-400 hover:text-[#85BB3F]">👍</button>
-                            <button class="w-6 h-6 text-gray-400 hover:text-[#85BB3F]">👎</button>
-                        </div>
-                    </div>
+                <div class="flex flex-col bg-[#FCFCFC] gap-8 w-full px-16">
 
-                    <!-- Review 2 -->
-                    <div class="flex flex-col gap-4 p-6 bg-white rounded-lg shadow-sm">
+                    <h1 class="text-2xl font-semibold font-bricolage text-[#212121]">Top Reviews</h1>
+
+                    <!-- Review 1 -->
+                    <div class="flex flex-col gap-4 py-6 bg-[#FCFCFC] rounded-lg">
                         <div class="flex flex-row items-center justify-between">
-                            <div class="flex flex-row items-center gap-3">
-                                <img class="w-12 h-12 rounded-full" src="/images/pfp.png" alt="Profile Picture">
-                                <div class="flex flex-col">
-                                    <span class="font-semibold font-bricolage">Sarah Johnson</span>
+                            <div class="flex flex-row gap-2">
+                                <div>
+                                    <img class="w-16 h-16 rounded-full" src="/images/pfp.png" alt="">
+                                </div>
+                                <div class="flex flex-col -mt-2 justify-center text-lg font-semibold">
+                                    <p>Jane Hopper</p>
                                     <div class="flex flex-row gap-1">
                                         <img class="w-4 h-4" src="/images/star.png" alt="Star">
                                         <img class="w-4 h-4" src="/images/star.png" alt="Star">
@@ -227,18 +243,66 @@
                                     </div>
                                 </div>
                             </div>
-                            <span class="text-sm text-gray-500">Date posted 28/05/2023</span>
+                            <div class="flex flex-col -mt-2">
+                                <p class="font-semibold font-bricolage">Date posted</p>
+                                <p>31/05/2025</p>
+                            </div>
                         </div>
-                        <p class="text-sm font-bricolage leading-6">
-                            Amazing quality! The extensions are so soft and natural-looking. I've been using them for weeks and they still look perfect. Highly recommend for anyone looking for quality hair extensions.
-                        </p>
-                        <div class="w-32 h-32 bg-gray-300 rounded-lg">
-                            <img src="/images/customer-review.png" alt="Customer Review" class="w-full h-full object-cover rounded-lg">
+                        <p>Shiny french curls extension after 3 weeks? Here's how: Shiny french curls extension after 3 weeks? Here's how: Shiny french curls extension after 3 weeks? Here's how: Shiny french curls extension after 3 weeks? Here's how: Shiny french curls extension after 3 weeks?</p>
+                        <div class="flex flex-row gap-2.5 justify-end">
+                            <div class="flex flex-row gap-2">
+                                <div>
+                                    <img class="w-6 h-6" src="/images/thumbs-down.png" alt="">
+                                </div>
+                                <div>
+                                    <img class="w-6 h-6" src="/images/thumbs-up.png" alt="">
+                                </div>
+                            </div>
+                            <p class="font-bricolage">Was this review helpful?</p>
                         </div>
-                        <div class="flex flex-row items-center gap-2">
-                            <span class="text-sm text-gray-600">Was this review helpful?</span>
-                            <button class="w-6 h-6 text-gray-400 hover:text-[#85BB3F]">👍</button>
-                            <button class="w-6 h-6 text-gray-400 hover:text-[#85BB3F]">👎</button>
+                    </div>
+
+                    <div class="flex flex-col ">
+                        <hr>
+                    </div>
+
+                    <!-- Review 2 -->
+                    <div class="flex flex-col gap-4 py-6 bg-[#FCFCFC] rounded-lg">
+                        <div class="flex flex-row items-center justify-between">
+                            <div class="flex flex-row gap-2">
+                                <div>
+                                    <img class="w-16 h-16 rounded-full" src="/images/pfp.png" alt="">
+                                </div>
+                                <div class="flex flex-col -mt-2 justify-center text-lg font-semibold">
+                                    <p>Jane Hopper</p>
+                                    <div class="flex flex-row gap-1">
+                                        <img class="w-4 h-4" src="/images/star.png" alt="Star">
+                                        <img class="w-4 h-4" src="/images/star.png" alt="Star">
+                                        <img class="w-4 h-4" src="/images/star.png" alt="Star">
+                                        <img class="w-4 h-4" src="/images/star.png" alt="Star">
+                                        <img class="w-4 h-4" src="/images/star-outline.png" alt="Star">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex flex-col -mt-2">
+                                <p class="font-semibold font-bricolage">Date posted</p>
+                                <p>31/05/2025</p>
+                            </div>
+                        </div>
+                        <p>Shiny french curls extension after 3 weeks? Here's how: Shiny french curls extension after 3 weeks? Here's how: Shiny french curls extension after 3 weeks? Here's how: Shiny french curls extension after 3 weeks? Here's how: Shiny french curls extension after 3 weeks?</p>
+                        <div class="w-[200px] aspect-[370/320]">
+                            <img class="w-full h-full object-cover" src="/images/frame_59.png" alt="">
+                        </div>
+                        <div class="flex flex-row gap-2.5 justify-end">
+                            <div class="flex flex-row gap-2">
+                                <div>
+                                    <img class="w-6 h-6" src="/images/thumbs-down.png" alt="">
+                                </div>
+                                <div>
+                                    <img class="w-6 h-6" src="/images/thumbs-up.png" alt="">
+                                </div>
+                            </div>
+                            <p class="font-bricolage">Was this review helpful?</p>
                         </div>
                     </div>
                 </div>
@@ -251,52 +315,39 @@
                 <h2 class="text-3xl font-rustler pb-8">CUSTOMERS ALSO VIEW</h2>
                 
                 <!-- Product Grid -->
-                <div class="flex flex-row justify-center gap-8 mb-8">
-                    <!-- Product Card 1 -->
-                    <div class="flex flex-col gap-3 w-80">
-                        <div class="w-full h-80 bg-gray-300 rounded-lg overflow-hidden">
-                            <img src="/images/product1.png" alt="French Curls Braids" class="w-full h-full object-cover">
-                        </div>
-                        <h3 class="text-lg font-semibold font-bricolage">FRENCH CURLS BRAIDS</h3>
-                        <p class="text-sm font-bricolage text-gray-600">12" (4 to 5 packs recommended)</p>
-                        <div class="flex flex-row justify-between items-center">
-                            <span class="text-lg font-bold">₹ 1080/pack</span>
-                            <a href="#" class="text-sm font-semibold font-bricolage border-b border-[#212121] hover:text-[#85BB3F] transition-colors">SHOP</a>
+                <div class="flex flex-row justify-center gap-4">
+                    <div class="flex text-left flex-col gap-2">
+                        <img src="/images/product1.png" alt="">
+                        <h1 class="text-md leading-[2px] pt-2 font-bricolage">FRENCH CURLS BRAIDS</h1>
+                        <p class="text-md font-bricolage">12” ( 4 to 5 packs recommended)</p>
+                        <div class="-mt-3 flex flex-row justify-between">
+                            <p class="flex flex-row gap-1 items-center text-md font-bricolage"><img class="w-4 h-4" src="/images/naira.png" alt="">7,000/pack</p>
+                           <p class="text-md font-semibold font-bricolage border-b-[1px] border-[#212121]">SHOP</p>
                         </div>
                     </div>
-
-                    <!-- Product Card 2 -->
-                    <div class="flex flex-col gap-3 w-80">
-                        <div class="w-full h-80 bg-gray-300 rounded-lg overflow-hidden">
-                            <img src="/images/product2.png" alt="French Curls Braids" class="w-full h-full object-cover">
-                        </div>
-                        <h3 class="text-lg font-semibold font-bricolage">FRENCH CURLS BRAIDS</h3>
-                        <p class="text-sm font-bricolage text-gray-600">12" (4 to 5 packs recommended)</p>
-                        <div class="flex flex-row justify-between items-center">
-                            <span class="text-lg font-bold">₹ 1080/pack</span>
-                            <a href="#" class="text-sm font-semibold font-bricolage border-b border-[#212121] hover:text-[#85BB3F] transition-colors">SHOP</a>
+                    <div class="flex text-left flex-col gap-2">
+                        <img src="/images/product3.png" alt="">
+                        <h1 class="text-md leading-[2px] pt-2 font-bricolage">FRENCH CURLS BRAIDS</h1>
+                        <p class="text-md font-bricolage">12” ( 4 to 5 packs recommended)</p>
+                        <div class="-mt-3 flex flex-row justify-between">
+                            <p class="flex flex-row gap-1 items-center text-md font-bricolage"><img class="w-4 h-4" src="/images/naira.png" alt="">7,000/pack</p>
+                           <p class="text-md font-semibold font-bricolage border-b-[1px] border-[#212121]">SHOP</p>
                         </div>
                     </div>
-
-                    <!-- Product Card 3 -->
-                    <div class="flex flex-col gap-3 w-80">
-                        <div class="w-full h-80 bg-gray-300 rounded-lg overflow-hidden">
-                            <img src="/images/product3.png" alt="French Curls Braids" class="w-full h-full object-cover">
-                        </div>
-                        <h3 class="text-lg font-semibold font-bricolage">FRENCH CURLS BRAIDS</h3>
-                        <p class="text-sm font-bricolage text-gray-600">12" (4 to 5 packs recommended)</p>
-                        <div class="flex flex-row justify-between items-center">
-                            <span class="text-lg font-bold">₹ 1080/pack</span>
-                            <a href="#" class="text-sm font-semibold font-bricolage border-b border-[#212121] hover:text-[#85BB3F] transition-colors">SHOP</a>
+                    <div class="flex text-left flex-col gap-2">
+                        <img src="/images/product4.png" alt="">
+                        <h1 class="text-md leading-[2px] pt-2 font-bricolage">FRENCH CURLS BRAIDS</h1>
+                        <p class="text-md font-bricolage">12” ( 4 to 5 packs recommended)</p>
+                        <div class="-mt-3 flex flex-row justify-between">
+                            <p class="flex flex-row gap-1 items-center text-md font-bricolage"><img class="w-4 h-4" src="/images/naira.png" alt="">7,000/pack</p>
+                           <p class="text-md font-semibold font-bricolage border-b-[1px] border-[#212121]">SHOP</p>
                         </div>
                     </div>
                 </div>
-
-                <!-- View All Button -->
-                <button class="px-8 py-3 text-white font-semibold rounded-lg" 
-                        style="background: linear-gradient(91.36deg, #85BB3F 0%, #212121 162.21%);">
-                    VIEW ALL
-                </button>
+                <div class="flex flex-row justify-center pt-10 items-center gap-2">
+                    <h1 class="text-md font-semibold font-bricolage border-b-[1px] border-[#212121]">VIEW ALL</h1>
+                    <img class="w-4 h-4" src="/images/arrow-right.png" alt="">
+                </div>
             </div>
         </section>
 
