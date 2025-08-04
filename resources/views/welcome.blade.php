@@ -142,43 +142,45 @@
         </div>
     </div>
 
-        <div class="flex flex-col items-center justify-center px-16 py-10">
-            <h1 class="text-3xl font-rustler pb-4">FRENCH CURL BRAIDS</h1>
-            <p class="text-xl w-[45vw] font-bricolage text-center">French Curl Hair is soft, lightweight, and easy to
-                maintain, giving you a classy, bouncy look perfect for knotless or boho braids.</p>
-            <p class="text-md font-semibold font-bricolage border-b-[1px] border-[#212121] pt-5">LEARN HAIR TIPS</p>
-        </div>
+            <div class="flex flex-col items-center justify-center px-16 py-10">
+                <h1 class="text-3xl font-rustler pb-4">FRENCH CURL BRAIDS</h1>
+                <p class="text-xl w-[45vw] font-bricolage text-center">French Curl Hair is soft, lightweight, and easy to
+                    maintain, giving you a classy, bouncy look perfect for knotless or boho braids.</p>
+                <p class="text-md font-semibold font-bricolage border-b-[1px] border-[#212121] pt-5">LEARN HAIR TIPS</p>
+            </div>
 
-        <div class="flex flex-col items-center justify-center px-16 py-10">
-            <h1 class="text-3xl font-rustler pb-4">OUR COLLECTION</h1>
-            <div class="flex flex-row justify-center gap-4">
-                @foreach($randomCategoryProducts as $product)
-                    <div class="flex text-left flex-col gap-2">
-                        @if($product->images->isNotEmpty())
-                            <img src="{{ asset("storage/" . $product->images->first()->image) }}" alt="{{ $product->name }}" class="w-full h-64 object-cover">
-                        @else
-                            <div class="w-full h-64 bg-gray-200 flex items-center justify-center">
-                                <span>No Image</span>
+            <div class="flex flex-col items-center justify-center px-16 py-10">
+                <h1 class="text-3xl font-rustler pb-4">OUR COLLECTION</h1>
+                <div class="flex flex-row justify-center gap-4">
+                    @foreach($randomCategoryProducts as $product)
+                        <div class="flex text-left flex-col gap-2">
+                            @if($product->images->isNotEmpty())
+                                <img src="{{ asset("storage/" . $product->images->first()->image) }}" alt="{{ $product->name }}" class="w-full h-64 object-cover">
+                            @else
+                                <div class="w-full h-64 bg-gray-200 flex items-center justify-center">
+                                    <span>No Image</span>
+                                </div>
+                            @endif
+                            <h1 class="text-md leading-[2px] pt-2 font-bricolage">{{ strtoupper($product->name) }}</h1>
+                            <p class="text-md font-bricolage">{{ $product->description ?: 'Premium quality product' }}</p>
+                            <div class="-mt-3 flex flex-row justify-between">
+                                <p class="flex flex-row gap-1 items-center text-md font-bricolage">
+                                    <img class="w-4 h-4" src="{{ asset('images/naira.png') }}" alt="">
+                                    {{ number_format($product->price_ngn) }}
+                                </p>
+                                <a href="" class="text-md font-semibold font-bricolage border-b-[1px] border-[#212121] hover:text-gray-600">
+                                    SHOP
+                                </a>
                             </div>
-                        @endif
-                        <h1 class="text-md leading-[2px] pt-2 font-bricolage">{{ strtoupper($product->name) }}</h1>
-                        <p class="text-md font-bricolage">{{ $product->description ?: 'Premium quality product' }}</p>
-                        <div class="-mt-3 flex flex-row justify-between">
-                            <p class="flex flex-row gap-1 items-center text-md font-bricolage">
-                                <img class="w-4 h-4" src="{{ asset('images/naira.png') }}" alt="">
-                                {{ number_format($product->price_ngn) }}
-                            </p>
-                            <a href="" class="text-md font-semibold font-bricolage border-b-[1px] border-[#212121] hover:text-gray-600">
-                                SHOP
-                            </a>
                         </div>
-                    </div>
-                @endforeach
+                    @endforeach
+                </div>
+                <div class="flex flex-row justify-center pt-10 items-center gap-2">
+                    <h1 class="text-md font-semibold font-bricolage border-b-[1px] border-[#212121]">VIEW ALL</h1>
+                </div>
             </div>
-            <div class="flex flex-row justify-center pt-10 items-center gap-2">
-                <h1 class="text-md font-semibold font-bricolage border-b-[1px] border-[#212121]">VIEW ALL</h1>
-            </div>
-        </div>
+
+            <!-- subscribe section -->
             <div class="bg-[#212121] flex flex-col justify-center items-center">
                 <div class="flex flex-row w-full h-[85vh] p-16 justify-center items-center">
                     <div class="w-1/2 h-full">
@@ -218,17 +220,13 @@
             </div>
         </div>
 
+        <!-- footer section -->
         <div class="flex flex-col px-16 py-10 bg-[#FCFCFC]">
             <div class="flex flex-row justify-between items-center">
                 <div class="flex flex-col font-bricolage">
                     <img class="w-12 h-14" src="/images/logo.png" alt="">
                     <p class="leading-5 pt-2 text-[16px] font-semibold">SHOP NO BPF14,FIRST FLOOR.OLD <br> BANEX PLAZA
                         WUSE 2, Abuja, Nigeria</p>
-                </div>
-                <div class="flex flex-row gap-36 justify-between items-center">
-                    <div class="flex flex-row gap-4">
-                        <img class="w-4 h-4" src="/images/instagram.png" alt="">
-                        <img class="w-4 h-4" src="/images/tiktok.png" alt="">
                     </div>
                     <div class="flex flex-row gap-4">
                         <img class="w-4 h-4" src="/images/instagram.png" alt="">
@@ -248,7 +246,6 @@
             <div class="bg-[#212121] px-16 py-12 flex flex-row justify-center items-center">
                 <div>
                     <p class="text-[#FCFCFC] font-bricolage">JOAZ HAIR EXTENSION © 2025</p>
-                </div>
             </div>
         </div>
     </div>
