@@ -38,7 +38,16 @@ class CustomerLoginController extends Controller
             $user = Auth::user();
             if ($user->hasRole('customer')) {
                 $request->session()->regenerate();
-                return redirect()->intended(route('customer.shop.index'));
+                
+                // Check if the intended URL is the login page itself
+                $intended = $request->session()->get('url.intended');
+                if ($intended && (str_contains($intended, '/login') || str_contains($intended, '/signin'))) {
+                    // If intended URL is login page, redirect to welcome page
+                    return redirect()->route('home');
+                }
+                
+                // Otherwise use the intended URL or default to welcome page
+                return redirect()->intended(route('home'));
             } else {
                 Auth::logout();
                 return redirect()->back()->withErrors(['email' => 'You do not have customer access.']);
