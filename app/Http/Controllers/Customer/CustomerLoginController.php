@@ -8,12 +8,16 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\PasswordResetMail;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class CustomerLoginController extends Controller
 {
     public function showLoginForm()
     {
-        return view('customer.auth.login'); 
+        return view('auth.login'); 
     }
 
     public function login(Request $request)
@@ -34,7 +38,16 @@ class CustomerLoginController extends Controller
             $user = Auth::user();
             if ($user->hasRole('customer')) {
                 $request->session()->regenerate();
-                return redirect()->intended(route('customer.shop.index'));
+                
+                // Check if the intended URL is the login page itself
+                $intended = $request->session()->get('url.intended');
+                if ($intended && (str_contains($intended, '/login') || str_contains($intended, '/signin'))) {
+                    // If intended URL is login page, redirect to welcome page
+                    return redirect()->route('home');
+                }
+                
+                // Otherwise use the intended URL or default to welcome page
+                return redirect()->intended(route('home'));
             } else {
                 Auth::logout();
                 return redirect()->back()->withErrors(['email' => 'You do not have customer access.']);
@@ -54,7 +67,7 @@ class CustomerLoginController extends Controller
     // Forgot Password
     public function showLinkRequestForm()
     {
-        return view('customer.auth.passwords.email'); // Blade not required, just method stub
+        return view('auth.forgot-password'); // Use existing forgot-password view
     }
 
     public function sendResetLinkEmail(Request $request)
@@ -67,21 +80,45 @@ class CustomerLoginController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        $status = Password::broker()->sendResetLink(
-            $request->only('email')
+        $email = $request->email;
+        $user = \App\Models\User::where('email', $email)->first();
+        
+        // Generate reset token
+        $token = Str::random(64);
+        
+        // Store token in password_reset_tokens table
+        DB::table('password_reset_tokens')->updateOrInsert(
+            ['email' => $email],
+            [
+                'email' => $email,
+                'token' => $token,
+                'created_at' => now()
+            ]
         );
-
-        if ($status === Password::RESET_LINK_SENT) {
-            return redirect()->back()->with('status', __($status));
+        
+        // Generate reset URL
+        $resetUrl = route('password.reset', ['token' => $token, 'email' => $email]);
+        
+        // Prepare email data
+        $emailData = [
+            'name' => $user->name ?? $user->email,
+            'reset_url' => $resetUrl,
+            'email' => $email
+        ];
+        
+        // Send custom email
+        try {
+            Mail::to($email)->send(new PasswordResetMail($emailData));
+            return redirect()->back()->with('status', 'We have emailed your password reset link!');
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['email' => 'Failed to send reset email. Please try again.']);
         }
-
-        return redirect()->back()->withErrors(['email' => __($status)]);
     }
 
     // Reset Password
     public function showResetForm(Request $request, $token = null)
     {
-        return view('customer.auth.passwords.reset'); // Blade not required, just method stub
+        return view('auth.reset-password'); // Use existing reset-password view
     }
 
     public function reset(Request $request)
