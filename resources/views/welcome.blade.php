@@ -103,7 +103,7 @@
                                 <img class="w-4 h-4" src="{{ asset("images/naira.png") }}" alt="">
                                 {{ number_format($product->price_ngn) }}
                             </p>
-                            <a href=""
+                            <a href="{{ route('product-details', $product->id) }}"
                                 class="text-md font-semibold font-bricolage border-b-[1px] border-[#212121] hover:text-[#85BB3F] transition-colors">
                                 SHOP
                             </a>
@@ -168,7 +168,7 @@
                                     <img class="w-4 h-4" src="{{ asset('images/naira.png') }}" alt="">
                                     {{ number_format($product->price_ngn) }}
                                 </p>
-                                <a href="" class="text-md font-semibold font-bricolage border-b-[1px] border-[#212121] hover:text-gray-600">
+                                                                <a href="{{ route('product-details', $product->id) }}" class="text-md font-semibold font-bricolage border-b-[1px] border-[#212121] hover:text-gray-600">
                                     SHOP
                                 </a>
                             </div>
@@ -196,17 +196,17 @@
                             <div class="flex flex-col gap-4 w-full justify-center">
                                 <form class="flex flex-col gap-4 w-full" action="">
                                     <div class="flex flex-col pb-5 gap-4 w-full">
-                                        <input 
-                                            type="email" 
-                                            name="email" 
+                                        <input
+                                            type="email"
+                                            name="email"
                                             class="bg-[#FCFCFC] w-full border border-[#212121/80] rounded-md placeholder-[#212121/60] py-2.5 p-3"
                                             placeholder="Email address"
                                         >
                                     </div>
                                     <div class="flex flex-row justify-center pt-2 items-center">
-                                        <button 
-                                            type="submit" 
-                                            class="w-full text-md py-3 text-white rounded-lg" 
+                                        <button
+                                            type="submit"
+                                            class="w-full text-md py-3 text-white rounded-lg"
                                             style="background: linear-gradient(91.36deg, #85BB3F 0%, #212121 162.21%);"
                                         >
                                             SUBSCRIBE

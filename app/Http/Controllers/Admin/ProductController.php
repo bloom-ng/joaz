@@ -57,6 +57,12 @@ class ProductController extends Controller
             'category_id' => 'required|exists:categories,id',
             'quantity' => 'required|integer|min:0',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'variants' => 'nullable|array',
+            'variants.*.color' => 'nullable|string|max:255',
+            'variants.*.length_in_inches' => 'nullable|numeric|min:0',
+            'variants.*.price_usd_modifier' => 'nullable|numeric',
+            'variants.*.price_ngn_modifier' => 'nullable|numeric',
+            'variants.*.stock' => 'nullable|integer|min:0',
         ]);
 
         $product = Product::create($validated);
@@ -68,6 +74,13 @@ class ProductController extends Controller
                 $product->images()->create([
                     'image' => $path,
                 ]);
+            }
+        }
+
+        // Handle variants
+        if (isset($validated['variants'])) {
+            foreach ($validated['variants'] as $variantData) {
+                $product->variants()->create($variantData);
             }
         }
 
@@ -84,7 +97,7 @@ class ProductController extends Controller
     public function edit(Product $product): View
     {
         $categories = Category::all();
-        $product->load('images');
+        $product->load('images', 'variants');
         return view('admin.products.edit', compact('product', 'categories'));
     }
 
@@ -99,6 +112,13 @@ class ProductController extends Controller
             'category_id' => 'required|exists:categories,id',
             'quantity' => 'required|integer|min:0',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'variants' => 'nullable|array',
+            'variants.*.id' => 'nullable|exists:product_variants,id',
+            'variants.*.color' => 'nullable|string|max:255',
+            'variants.*.length_in_inches' => 'nullable|numeric|min:0',
+            'variants.*.price_usd_modifier' => 'nullable|numeric',
+            'variants.*.price_ngn_modifier' => 'nullable|numeric',
+            'variants.*.stock' => 'nullable|integer|min:0',
         ]);
 
         $product->update([
@@ -110,6 +130,30 @@ class ProductController extends Controller
             'category_id' => $validated['category_id'],
             'quantity' => $validated['quantity'],
         ]);
+
+        // Handle variants
+        $submittedVariantIds = [];
+        if (isset($validated['variants'])) {
+            foreach ($validated['variants'] as $variantData) {
+                if (!empty($variantData['id'])) {
+                    // Update existing variant
+                    $variant = $product->variants()->find($variantData['id']);
+                    if ($variant) {
+                        $variant->update($variantData);
+                        $submittedVariantIds[] = $variant->id;
+                    }
+                } else {
+                    // Create new variant, ensuring it has data before creating
+                    if (!empty($variantData['color']) || !empty($variantData['length_in_inches'])) {
+                        $newVariant = $product->variants()->create($variantData);
+                        $submittedVariantIds[] = $newVariant->id;
+                    }
+                }
+            }
+        }
+
+        // Delete variants that were removed from the form
+        $product->variants()->whereNotIn('id', $submittedVariantIds)->delete();
 
         // If new images are uploaded, add them (do not delete old images unless user deletes them)
         if ($request->hasFile('images')) {

@@ -18,7 +18,7 @@
             }
         }
     </script>
-    
+
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body class="h-screen font-bricolage md:overflow-hidden">
@@ -55,10 +55,10 @@
                                 <div class="text-sm font-medium cursor-pointer hover:underline">Forgot password?</div>
                             </div>
 
-                            
+
                         </div>
                         <div class="flex flex-row mt-[10%] pb-8 justify-center pt-2 items-center">
-                            <button type="submit" class="w-full text-md py-3 text-white rounded-lg" 
+                            <button type="submit" class="w-full text-md py-3 text-white rounded-lg"
                                     style="background: linear-gradient(91.36deg, #85BB3F 0%, #212121 162.21%);">
                                 LOGIN
                             </button>
@@ -93,11 +93,11 @@
                                     <label for="remember-desktop" class="text-sm font-medium">Remember me</label>
                                 </div>
 
-                                <div class="text-sm font-medium cursor-pointer hover:underline">Forgot password?</div>
+                                <div class="text-sm font-medium cursor-pointer hover:underline"><a href="/forgot-password">Forgot password?</a></div>
                             </div>
 
                             <div class="flex flex-row justify-center pt-4 items-center">
-                                <button type="submit" class="w-full text-md py-4 text-white rounded-lg p-2" 
+                                <button type="submit" class="w-full text-md py-4 text-white rounded-lg p-2"
                                         style="background: linear-gradient(91.36deg, #85BB3F 0%, #212121 162.21%);">
                                     LOGIN
                                 </button>
@@ -124,4 +124,4 @@
         }
     </script>
 </body>
-</html> 
+</html>

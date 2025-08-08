@@ -95,6 +95,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the reviews for the user.
+     */
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    /**
      * Check if user is admin.
      */
     public function isAdmin(): bool

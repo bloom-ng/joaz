@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\TransactionController;
+use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Customer\OrderController as CustomerOrderController;
 
@@ -28,11 +29,8 @@ use App\Http\Controllers\Customer\OrderController as CustomerOrderController;
 
 // Public routes
 Route::get('/', [ShopController::class,'home'])->name('home');
-
-// Public shop page
-Route::get('/shop', function () {
-    return view('customer.shop.shop');
-})->name('shop');
+Route::get('product-details/{id}', [ShopController::class, 'productDetails'])->name('shop.productDetails');
+Route::get('shop/category/{category:slug}', [ShopController::class, 'showCategory'])->name('shop.category');
 
 Route::get('/signin', function () {
     return view('auth.login');
@@ -46,7 +44,7 @@ Route::get('/reset-password', function () {
     return view('auth.reset-password');
 })->name('reset-password');
 
-Route::get('/login', [\App\Http\Controllers\Customer\CustomerLoginController::class, 'showLoginForm'])->name('login');
+// Route::get('/login', [\App\Http\Controllers\Customer\CustomerLoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [\App\Http\Controllers\Customer\CustomerLoginController::class, 'login'])->name('login.post');
 Route::post('/logout', [\App\Http\Controllers\Customer\CustomerLoginController::class, 'logout'])->name('logout');
 
@@ -96,6 +94,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('vouchers', VoucherController::class);
         Route::post('vouchers/{voucher}/activate', [VoucherController::class, 'activate'])->name('vouchers.activate');
         Route::post('vouchers/{voucher}/deactivate', [VoucherController::class, 'deactivate'])->name('vouchers.deactivate');
+
+        // Reviews management
+        Route::resource('reviews', ReviewController::class);
     });
 });
 
