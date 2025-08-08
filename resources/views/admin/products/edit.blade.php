@@ -238,6 +238,52 @@
                     </div>
                 </div>
 
+                <!-- Product Variants Section -->
+                <div class="border-b border-gray-200 pb-4">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3 flex items-center">
+                        <svg class="w-4 h-4 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m-9 8h12a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                        </svg>
+                        Product Variants
+                    </h3>
+
+                    <div id="variants-container">
+                        @foreach($product->variants as $index => $variant)
+                            <div class="variant-group grid grid-cols-1 md:grid-cols-6 gap-4 items-center mb-3 p-3 bg-gray-50 rounded-lg">
+                                <input type="hidden" name="variants[{{ $index }}][id]" value="{{ $variant->id }}">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Color</label>
+                                    <input type="text" name="variants[{{ $index }}][color]" class="w-full border py-2 px-3 border-gray-300 rounded-lg" value="{{ old('variants.'.$index.'.color', $variant->color) }}" placeholder="e.g., Red">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Length (inches)</label>
+                                    <input type="number" step="0.01" name="variants[{{ $index }}][length_in_inches]" class="w-full border py-2 px-3 border-gray-300 rounded-lg" value="{{ old('variants.'.$index.'.length_in_inches', $variant->length_in_inches) }}" placeholder="e.g., 10.5">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Price Modifier (USD)</label>
+                                    <input type="number" step="0.01" name="variants[{{ $index }}][price_usd_modifier]" class="w-full border py-2 px-3 border-gray-300 rounded-lg" value="{{ old('variants.'.$index.'.price_usd_modifier', $variant->price_usd_modifier) }}" placeholder="e.g., 5.00">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Price Modifier (NGN)</label>
+                                    <input type="number" step="0.01" name="variants[{{ $index }}][price_ngn_modifier]" class="w-full border py-2 px-3 border-gray-300 rounded-lg" value="{{ old('variants.'.$index.'.price_ngn_modifier', $variant->price_ngn_modifier) }}" placeholder="e.g., 2500.00">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Stock</label>
+                                    <input type="number" name="variants[{{ $index }}][stock]" class="w-full border py-2 px-3 border-gray-300 rounded-lg" value="{{ old('variants.'.$index.'.stock', $variant->stock) }}" placeholder="e.g., 100">
+                                </div>
+                                <div class="pt-5">
+                                    <button type="button" class="remove-variant-btn text-red-500 hover:text-red-700 font-medium">Remove</button>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    <button type="button" id="add-variant-btn" class="mt-2 inline-flex items-center px-3 py-2 border border-dashed border-gray-400 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                        Add New Variant
+                    </button>
+                </div>
+
                 <!-- Add New Images Section (Inside main form) -->
                 <div class="pb-4">
                     <h3 class="text-lg font-semibold text-gray-800 mb-3 flex items-center">
@@ -359,86 +405,114 @@
             </div>
         </div>
     </div>
+@endsection
 
-    <script>
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Logic for handling image deletion confirmation modal
+        const deleteModal = document.getElementById('deleteImageModal');
+        if (deleteModal) {
+            const confirmDeleteBtn = document.getElementById('confirmDeleteImage');
+            const cancelDeleteBtn = document.getElementById('cancelDeleteImage');
+            let formToSubmit;
 
-        // Handle form submission errors
-        window.addEventListener('load', function() {
-            // Check for validation errors and scroll to first error
-            const firstError = document.querySelector('.text-red-500');
-            if (firstError) {
-                firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
+            document.querySelectorAll('.open-delete-modal').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    formToSubmit = e.target.closest('form');
+                    deleteModal.classList.remove('hidden');
+                });
+            });
 
-            // Check for global error messages
-            const errorMessage = document.querySelector('.bg-red-50');
-            if (errorMessage) {
-                errorMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-        });
+            cancelDeleteBtn.addEventListener('click', () => {
+                deleteModal.classList.add('hidden');
+            });
 
-        // Real-time validation feedback
-        document.querySelectorAll('input[required], select[required], textarea[required]').forEach(field => {
-            field.addEventListener('blur', function() {
-                const errorElement = this.parentElement.querySelector('.text-red-500');
-                if (!this.value.trim() && this.hasAttribute('required')) {
-                    if (!errorElement) {
-                        const error = document.createElement('span');
-                        error.className = 'text-red-500 text-sm mt-1';
-                        error.textContent = 'This field is required.';
-                        this.parentElement.appendChild(error);
-                    }
-                } else if (errorElement) {
-                    errorElement.remove();
+            confirmDeleteBtn.addEventListener('click', () => {
+                if (formToSubmit) {
+                    formToSubmit.submit();
                 }
             });
-        });
+        }
 
-        document.getElementById('images').addEventListener('change', function(e) {
-            const files = e.target.files;
-            const container = e.target.closest('.border-dashed');
-            // Remove warning about replacing images (no longer relevant)
-            // Remove existing preview
-            const existingPreview = container.querySelector('.image-preview');
-            if (existingPreview) {
-                existingPreview.remove();
-            }
-            if (files.length > 0) {
-                const preview = document.createElement('div');
-                preview.className = 'image-preview mt-6';
-                Array.from(files).forEach(file => {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const img = document.createElement('img');
-                        img.src = e.target.result;
-                        img.className = 'w-full h-16 object-cover rounded border-2 border-gray-200';
-                        preview.appendChild(img);
-                    };
-                    reader.readAsDataURL(file);
-                });
-                container.appendChild(preview);
-            }
-        });
+        // Logic for image upload preview
+        const imageInput = document.getElementById('images');
+        const imagePreviewContainer = document.querySelector('.image-preview-container');
+        if (imageInput && imagePreviewContainer) {
+            imageInput.addEventListener('change', function(e) {
+                const files = e.target.files;
 
-        let formToDelete = null;
-        document.querySelectorAll('.open-delete-modal').forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                e.preventDefault();
-                formToDelete = this.closest('form');
-                document.getElementById('deleteImageModal').classList.remove('hidden');
+                // Clear existing previews in the specific container
+                const existingPreviews = imagePreviewContainer.querySelectorAll('.image-preview');
+                existingPreviews.forEach(p => p.remove());
+
+                if (files.length > 0) {
+                    const previewGrid = document.createElement('div');
+                    previewGrid.className = 'image-preview mt-4 grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2';
+
+                    Array.from(files).forEach(file => {
+                        const reader = new FileReader();
+                        reader.onload = function(event) {
+                            const imgWrapper = document.createElement('div');
+                            imgWrapper.className = 'relative';
+                            const img = document.createElement('img');
+                            img.src = event.target.result;
+                            img.className = 'w-full h-16 object-cover rounded border border-gray-200';
+                            imgWrapper.appendChild(img);
+                            previewGrid.appendChild(imgWrapper);
+                        };
+                        reader.readAsDataURL(file);
+                    });
+                    imagePreviewContainer.appendChild(previewGrid);
+                }
             });
-        });
-        document.getElementById('cancelDeleteImage').addEventListener('click', function() {
-            document.getElementById('deleteImageModal').classList.add('hidden');
-            formToDelete = null;
-        });
-        document.getElementById('confirmDeleteImage').addEventListener('click', function() {
-            if (formToDelete) {
-                formToDelete.submit();
-                document.getElementById('deleteImageModal').classList.add('hidden');
-                formToDelete = null;
-            }
-        });
-    </script>
+        }
 
-@endsection
+        // Logic for Product Variants
+        const variantsContainer = document.getElementById('variants-container');
+        if (variantsContainer) {
+            let variantIndex = {{ $product->variants->count() }};
+
+            document.getElementById('add-variant-btn').addEventListener('click', function () {
+                const newVariantForm = `
+                    <div class="variant-group grid grid-cols-1 md:grid-cols-6 gap-4 items-center mb-3 p-3 bg-gray-50 rounded-lg">
+                        <input type="hidden" name="variants[${variantIndex}][id]" value="">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Color</label>
+                            <input type="text" name="variants[${variantIndex}][color]" class="w-full border py-2 px-3 border-gray-300 rounded-lg" placeholder="e.g., Red">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Length (inches)</label>
+                            <input type="number" step="0.01" name="variants[${variantIndex}][length_in_inches]" class="w-full border py-2 px-3 border-gray-300 rounded-lg" placeholder="e.g., 10.5">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Price Modifier (USD)</label>
+                            <input type="number" step="0.01" name="variants[${variantIndex}][price_usd_modifier]" class="w-full border py-2 px-3 border-gray-300 rounded-lg" placeholder="e.g., 5.00">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Price Modifier (NGN)</label>
+                            <input type="number" step="0.01" name="variants[${variantIndex}][price_ngn_modifier]" class="w-full border py-2 px-3 border-gray-300 rounded-lg" placeholder="e.g., 2500.00">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Stock</label>
+                            <input type="number" name="variants[${variantIndex}][stock]" class="w-full border py-2 px-3 border-gray-300 rounded-lg" placeholder="e.g., 100">
+                        </div>
+                        <div class="pt-5">
+                            <button type="button" class="remove-variant-btn text-red-500 hover:text-red-700 font-medium">Remove</button>
+                        </div>
+                    </div>
+                `;
+                variantsContainer.insertAdjacentHTML('beforeend', newVariantForm);
+                variantIndex++;
+            });
+
+            variantsContainer.addEventListener('click', function (e) {
+                if (e.target && e.target.classList.contains('remove-variant-btn')) {
+                    e.target.closest('.variant-group').remove();
+                }
+            });
+        }
+    });
+</script>
+@endpush

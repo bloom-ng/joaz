@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Customer;
 
 use App\Models\Product;
 use App\Models\Category;
+use App\Models\ProductImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -69,7 +70,7 @@ class ShopController extends Controller
             abort(404);
         }
 
-        $product->load(['category', 'images']);
+        $product->load(['category', 'images', 'variants']);
 
         // Get related products from same category
         $relatedProducts = Product::with(['category', 'images'])
@@ -80,7 +81,35 @@ class ShopController extends Controller
             ->limit(4)
             ->get();
 
-        return view('customer.shop.show', compact('product', 'relatedProducts'));
+        return view('customer.shop.shop', compact('product', 'relatedProducts'));
+    }
+
+    public function productDetails($id)
+    {
+       
+        $product = Product::with(['category', 'images', 'variants', 'reviews.user'])->findOrFail($id);
+
+        // Fetch related products from the same category, excluding the current one.
+        $relatedProducts = collect();
+        if ($product->category_id) {
+            $relatedProducts = Product::where('category_id', $product->category_id)
+                ->where('id', '!=', $product->id)
+                ->with('images') // Eager load images for performance.
+                ->inRandomOrder()
+                ->limit(3)
+                ->get();
+        }
+
+        // Fetch random product images for the review gallery section.
+        $reviewImages = ProductImage::inRandomOrder()->limit(10)->get();
+
+        return view('customer.shop.shop', compact('product', 'relatedProducts', 'reviewImages'));
+    }
+
+    public function showCategory(Category $category)
+    {
+        $products = $category->products()->with('images')->paginate(9);
+        return view('customer.shop.category', compact('category', 'products'));
     }
 
     public function home()
