@@ -361,7 +361,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 @foreach ($relatedProducts as $relatedProduct)
                     <div class="flex text-left flex-col gap-2">
-                        <a href="{{ route('product-details', $relatedProduct->id) }}">
+                        <a href="{{ route('shop.productDetails', $relatedProduct->id) }}">
                             <img src="{{ $relatedProduct->images->first() ? asset('storage/' . $relatedProduct->images->first()->image) : '/images/product-placeholder.png' }}" alt="{{ $relatedProduct->name }}" class="w-full h-auto object-cover">
                         </a>
                         <h1 class="text-md leading-[2px] pt-2 font-bricolage">{{ $relatedProduct->name }}</h1>
@@ -370,7 +370,7 @@
                             <p class="flex flex-row gap-1 items-center text-md font-bricolage">
                                 <img class="w-4 h-4" src="/images/naira.png" alt="">{{ number_format($relatedProduct->price_ngn, 2) }}/pack
                             </p>
-                            <a href="{{ route('product-details', $relatedProduct->id) }}" class="text-md font-semibold font-bricolage border-b-[1px] border-[#212121]">SHOP</a>
+                            <a href="{{ route('shop.productDetails', $relatedProduct->id) }}" class="text-md font-semibold font-bricolage border-b-[1px] border-[#212121]">SHOP</a>
                         </div>
                     </div>
                 @endforeach

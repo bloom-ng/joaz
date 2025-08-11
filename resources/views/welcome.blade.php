@@ -103,7 +103,7 @@
                                 <img class="w-4 h-4" src="{{ asset("images/naira.png") }}" alt="">
                                 {{ number_format($product->price_ngn) }}
                             </p>
-                            <a href="{{ route('product-details', $product->id) }}"
+                            <a href="{{ route('shop.productDetails', $product->id) }}"
                                 class="text-md font-semibold font-bricolage border-b-[1px] border-[#212121] hover:text-[#85BB3F] transition-colors">
                                 SHOP
                             </a>
@@ -168,7 +168,7 @@
                                     <img class="w-4 h-4" src="{{ asset('images/naira.png') }}" alt="">
                                     {{ number_format($product->price_ngn) }}
                                 </p>
-                                                                <a href="{{ route('product-details', $product->id) }}" class="text-md font-semibold font-bricolage border-b-[1px] border-[#212121] hover:text-gray-600">
+                                                                <a href="{{ route('shop.productDetails', $product->id) }}" class="text-md font-semibold font-bricolage border-b-[1px] border-[#212121] hover:text-gray-600">
                                     SHOP
                                 </a>
                             </div>
