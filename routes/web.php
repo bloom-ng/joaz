@@ -34,6 +34,14 @@ Route::get('/shop', function () {
     return view('customer.shop.shop');
 })->name('shop');
 
+Route::get('/wigs', function () {
+    return view('customer.shop.wigs');
+})->name('wigs');
+
+Route::get('/cart', function () {
+    return view('customer.shop.cart');
+})->name('cart');
+
 Route::get('/signin', function () {
     return view('auth.login');
 })->name('login');
