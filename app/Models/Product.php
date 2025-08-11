@@ -53,6 +53,14 @@ class Product extends Model
     }
 
     /**
+     * Get the variants for the product.
+     */
+    public function variants()
+    {
+        return $this->hasMany(ProductVariant::class);
+    }
+
+    /**
      * Get the cart items for the product.
      */
     public function cartItems()
@@ -66,6 +74,14 @@ class Product extends Model
     public function orderItems()
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    /**
+     * Get the reviews for the product.
+     */
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
     }
 
     /**

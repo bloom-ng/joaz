@@ -245,6 +245,21 @@
                     class="pl-5 text-[13.5px] {{ request()->routeIs('admin.vouchers.*') ? 'text-[#ffffff]' : 'text-[#222222B2]' }}">Vouchers</span>
             </a>
 
+            <a href="{{ route('admin.reviews.index') }}"
+                class="{{ request()->routeIs('admin.reviews.*') ? 'flex items-center py-[12px] px-5 bg-gradient-to-r from-[#85BB3F] to-[#2B2B2B] text-white rounded-xl ml-8 shadow-md mt-7 mr-4 font-[bricolage]' : 'flex items-center py-2 px-8 text-gray-600 mt-7 font-[bricolage]' }}">
+                @if (request()->routeIs('admin.reviews.*'))
+                    <svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 17.27L18.18 21L16.54 13.97L22 9.24L14.81 8.63L12 2L9.19 8.63L2 9.24L7.46 13.97L5.82 21L12 17.27Z" fill="white"/>
+                    </svg>
+                @else
+                    <svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 17.27L18.18 21L16.54 13.97L22 9.24L14.81 8.63L12 2L9.19 8.63L2 9.24L7.46 13.97L5.82 21L12 17.27Z" fill="#222222" fill-opacity="0.7"/>
+                    </svg>
+                @endif
+                <span
+                    class="pl-5 text-[13.5px] {{ request()->routeIs('admin.reviews.*') ? 'text-[#ffffff]' : 'text-[#222222B2]' }}">Reviews</span>
+            </a>
+
             <form method="POST" action="{{ route('admin.logout') }}"
                 class="flex items-center py-2 px-8 text-gray-600 mt-7 font-[bricolage]">
                 @csrf
@@ -495,6 +510,7 @@
     <!-- Font Awesome -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js"
         integrity="sha256-KzZiKy0DWYsnwMF+X1DvQngQ2/FxF7MF3Ff72XcpuPs=" crossorigin="anonymous"></script>
+    @stack('scripts')
 </body>
 
 </html>
