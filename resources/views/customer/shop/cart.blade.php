@@ -155,7 +155,9 @@
         </div>
         
         <div class="flex flex-row justify-start px-16 pb-10 pt-10 items-center gap-2">
-            <h1 class="text-xl font-semibold font-bricolage border-b-[1px] border-[#212121]">CONTINUE SHOPPING</h1>
+            <a href="">
+                <h1 class="text-xl font-semibold font-bricolage border-b-[1px] border-[#212121]">CONTINUE SHOPPING</h1>
+            </a>
         </div>
         
         @include('components.footer')

@@ -75,9 +75,18 @@
 
             <div class="text-center flex flex-col pt-16 pb-10 px-16">
                 <div class="flex flex-row justify-between items-center">
-                    <div class="flex flex-row items-center gap-3">
-                        <h1 class="text-2xl font-bold font-bricolage">SYNTHETIC HAIR</h1>
-                        <img class="w-3 h-2" src="/images/dropdown.png" alt="">
+                    <div class="relative">
+                        <div class="flex flex-row items-center gap-3 cursor-pointer" onclick="toggleDropdown()">
+                            <h1 class="text-2xl font-bold font-bricolage" id="selected-option">SYNTHETIC HAIR</h1>
+                            <img class="w-3 h-2 transition-transform duration-200" id="dropdown-arrow" src="/images/dropdown.png" alt="">
+                        </div>
+                        <div class="absolute top-full left-0 mt-2 bg-white border border-[#212121]/20 rounded-lg shadow-lg z-50 hidden" id="dropdown-menu">
+                            <div class="py-2">
+                                <div class="px-4 py-2 hover:bg-gray-50 cursor-pointer font-bricolage" onclick="selectOption('SYNTHETIC HAIR')">SYNTHETIC HAIR</div>
+                                <div class="px-4 py-2 hover:bg-gray-50 cursor-pointer font-bricolage" onclick="selectOption('HUMAN HAIR')">HUMAN HAIR</div>
+                                <div class="px-4 py-2 hover:bg-gray-50 cursor-pointer font-bricolage" onclick="selectOption('BRANDING EXTENSION')">BRANDING EXTENSION</div>
+                            </div>
+                        </div>
                     </div>
                     <div class="flex flex-row text-xl font-bricolage items-center gap-4">
                         <p>All</p>
@@ -266,3 +275,35 @@
         </div>
     </body>
 </html>
+
+<script>
+    function toggleDropdown() {
+        const dropdownMenu = document.getElementById('dropdown-menu');
+        const dropdownArrow = document.getElementById('dropdown-arrow');
+        
+        if (dropdownMenu.classList.contains('hidden')) {
+            dropdownMenu.classList.remove('hidden');
+            dropdownArrow.style.transform = 'rotate(180deg)';
+        } else {
+            dropdownMenu.classList.add('hidden');
+            dropdownArrow.style.transform = 'rotate(0deg)';
+        }
+    }
+
+    function selectOption(option) {
+        document.getElementById('selected-option').textContent = option;
+        toggleDropdown();
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+        const dropdown = document.querySelector('.relative');
+        const dropdownMenu = document.getElementById('dropdown-menu');
+        const dropdownArrow = document.getElementById('dropdown-arrow');
+        
+        if (!dropdown.contains(event.target)) {
+            dropdownMenu.classList.add('hidden');
+            dropdownArrow.style.transform = 'rotate(0deg)';
+        }
+    });
+</script>
