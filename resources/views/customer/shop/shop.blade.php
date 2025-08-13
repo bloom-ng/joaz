@@ -126,6 +126,25 @@
                             @endif
                         </div>
 
+                        <h3 class="text-4xl font-light font-rustler mt-4">Length</h3>
+                        <div class="flex flex-row items-center justify-center">
+                            @if (count($product->variants) > 0)
+                                @if (count($product->variants) > 1)
+                                    <select name="variant" id="variant" class="text-base font-bricolage">
+                                        @foreach ($product->variants as $variant)
+                                            <option value="{{ $variant->id }}" {{ $variant->id == $product->variants->first()->id ? 'selected' : '' }}>
+                                                {{ $variant->length }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                @else
+                                    <span class="text-base font-bricolage">{{ $product->variants->first()->length }}</span>
+                                @endif
+                            @else
+                                <span class="text-base font-bricolage"></span>
+                            @endif
+                        </div>
+
                     </div>
 
                     <!-- Price -->
@@ -342,7 +361,7 @@
 
             @if($product->category)
             <div class="flex flex-row justify-center pt-10 items-center gap-2">
-                <a href="" class="text-md font-semibold font-bricolage border-b-[1px] border-[#212121]">VIEW ALL IN {{ strtoupper($product->category->name) }}</a>
+                <a href="{{ route('shop.categories') }}" class="text-md font-semibold font-bricolage border-b-[1px] border-[#212121]">VIEW ALL IN {{ strtoupper($product->category->name) }}</a>
             </div>
             @endif
         </div>
@@ -353,7 +372,7 @@
 
         @include('components.footer')
 
-        
+
     </div>
 </body>
 
