@@ -32,9 +32,7 @@ Route::get('/', [ShopController::class,'home'])->name('home');
 Route::get('product-details/{id}', [ShopController::class, 'productDetails'])->name('shop.productDetails');
 Route::get('shop/category/{category:slug}', [ShopController::class, 'showCategory'])->name('shop.category');
 
-Route::get('/wigs', function () {
-    return view('customer.shop.wigs');
-})->name('wigs');
+Route::get('/category/{category?}', [ShopController::class, 'categoryPage'])->name('shop.categories');
 
 Route::get('/cart', function () {
     return view('customer.shop.cart');

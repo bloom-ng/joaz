@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Customer;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\ProductImage;
+use App\Models\OrderItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -86,7 +87,7 @@ class ShopController extends Controller
 
     public function productDetails($id)
     {
-       
+
         $product = Product::with(['category', 'images', 'variants', 'reviews.user'])->findOrFail($id);
 
         // Fetch related products from the same category, excluding the current one.
@@ -111,6 +112,84 @@ class ShopController extends Controller
         $products = $category->products()->with('images')->paginate(9);
         return view('customer.shop.category', compact('category', 'products'));
     }
+
+    public function categoryPage(Request $request, Category $category = null)
+    {
+        $perPage = 9;
+        $searchQuery = $request->input('search');
+
+        // Get 4 random parent categories
+        $parentCategories = Category::whereNull('parent_category_id')
+            ->inRandomOrder()
+            ->take(4)
+            ->get();
+
+        // If category is selected, eager load children
+        $selectedCategory = $category
+            ? $category->load('children')
+            : $parentCategories->first();
+
+        // Get best selling products (top 3 most ordered products)
+        $bestSellers = Product::with('images')
+            ->where('quantity', '>', 0)
+            ->withCount('orderItems')
+            ->orderBy('order_items_count', 'desc')
+            ->take(3)
+            ->get();
+
+        // Prepare default collections
+        $childCategories = collect();
+        $products = collect();
+        $relatedProducts = collect();
+
+        if ($selectedCategory) {
+            // Use already eager-loaded children
+            $childCategories = $selectedCategory->children;
+
+            // Get all category IDs in one go
+            $categoryIds = $childCategories->pluck('id')->push($selectedCategory->id);
+
+            // Build product query
+            $productsQuery = Product::with('images')
+                ->where('quantity', '>', 0)
+                ->whereIn('category_id', $categoryIds);
+
+            // Search filter
+            if ($searchQuery) {
+                $productsQuery->where(function ($query) use ($searchQuery) {
+                    $query->where('name', 'like', "%{$searchQuery}%")
+                          ->orWhere('description', 'like', "%{$searchQuery}%");
+                });
+            }
+
+            // Paginate products
+            $products = $productsQuery->paginate($perPage)
+                ->appends(['search' => $searchQuery]);
+
+            // Related products (excluding current and best sellers)
+            $excludeIds = $products->pluck('id')->merge($bestSellers->pluck('id'))->unique();
+            
+            $relatedProducts = Product::with('images')
+                ->whereIn('category_id', $categoryIds)
+                ->where('quantity', '>', 0)
+                ->whereNotIn('id', $excludeIds)
+                ->inRandomOrder()
+                ->limit(3)
+                ->get();
+        }
+
+        return view('customer.shop.wigs', [
+            'parentCategories' => $parentCategories,
+            'selectedCategory' => $selectedCategory,
+            'childCategories' => $childCategories,
+            'products' => $products,
+            'searchQuery' => $searchQuery,
+            'relatedProducts' => $relatedProducts,
+            'bestSellers' => $bestSellers
+        ]);
+    }
+
+
 
     public function home()
     {
