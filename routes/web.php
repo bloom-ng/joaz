@@ -34,6 +34,7 @@ Route::get('shop/category/{category:slug}', [ShopController::class, 'showCategor
 
 Route::get('/category/{category?}', [ShopController::class, 'categoryPage'])->name('shop.categories');
 
+//public routes added ny lekan to hit for testing
 Route::get('/cart', function () {
     return view('customer.shop.cart');
 })->name('cart');
@@ -81,6 +82,8 @@ Route::get('/address-book', function () {
 Route::get('/my-orders', function () {
     return view('customer.shop.my-orders');
 })->name('my-orders');
+//public routes added ny lekan to hit for testing
+
 
 Route::get('/signin', function () {
     return view('auth.login');
