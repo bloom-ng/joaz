@@ -40,6 +40,50 @@ Route::get('/cart', function () {
     return view('customer.shop.cart');
 })->name('cart');
 
+Route::get('/learn', function () {
+    return view('customer.learn');
+})->name('learn');
+
+Route::get('/readmore', function () {
+    return view('customer.readmore');
+})->name('readmore');
+
+Route::get('/contact-us', function () {
+    return view('customer.contact-us');
+})->name('contact-us');
+
+Route::get('/no-delivery', function () {
+    return view('customer.shop.no-delivery');
+})->name('no-delivery');
+
+Route::get('/order-summary', function () {
+    return view('customer.shop.order-summary');
+})->name('order-summary');
+
+Route::get('/confirm-delivery', function () {
+    return view('customer.shop.confirm-delivery');
+})->name('confirm-delivery');
+
+Route::get('/order-summary2', function () {
+    return view('customer.shop.order-summary2');
+})->name('order-summary2');
+
+Route::get('/payment-redirect', function () {
+    return view('customer.shop.payment-redirect');
+})->name('payment-redirect');
+
+Route::get('/profile-account', function () {
+    return view('customer.shop.profile-account');
+})->name('profile-account');
+
+Route::get('/address-book', function () {
+    return view('customer.shop.address-book');
+})->name('address-book');
+
+Route::get('/my-orders', function () {
+    return view('customer.shop.my-orders');
+})->name('my-orders');
+
 Route::get('/signin', function () {
     return view('auth.login');
 })->name('login');
