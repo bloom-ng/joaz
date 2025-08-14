@@ -126,6 +126,25 @@
                             @endif
                         </div>
 
+                        <h3 class="text-4xl font-light font-rustler mt-4">Length</h3>
+                        <div class="flex flex-row items-center justify-center">
+                            @if (count($product->variants) > 0)
+                                @if (count($product->variants) > 1)
+                                    <select name="variant" id="variant" class="text-base font-bricolage">
+                                        @foreach ($product->variants as $variant)
+                                            <option value="{{ $variant->id }}" {{ $variant->id == $product->variants->first()->id ? 'selected' : '' }}>
+                                                {{ $variant->length }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                @else
+                                    <span class="text-base font-bricolage">{{ $product->variants->first()->length }}</span>
+                                @endif
+                            @else
+                                <span class="text-base font-bricolage"></span>
+                            @endif
+                        </div>
+
                     </div>
 
                     <!-- Price -->
@@ -253,7 +272,7 @@
                         <div class="flex flex-row gap-4 pr-4">
                             @foreach ($reviewImages as $image)
                                 <div class="w-[370px] flex-shrink-0 aspect-[370/320]">
-                                    <img class="w-full h-full object-cover" src="{{ asset('storage/' . $image->image_path) }}" alt="Customer review image">
+                                    <img class="w-full h-full object-cover" src="{{ asset('storage/' . $image->image) }}" alt="Customer review image">
                                 </div>
                             @endforeach
                         </div>
@@ -262,7 +281,7 @@
                         <div class="flex flex-row gap-4 pr-4">
                             @foreach ($reviewImages as $image)
                                 <div class="w-[370px] flex-shrink-0 aspect-[370/320]">
-                                    <img class="w-full h-full object-cover" src="{{ asset('storage/' . $image->image_path) }}" alt="Customer review image">
+                                    <img class="w-full h-full object-cover" src="{{ asset('storage/' . $image->image) }}" alt="Customer review image">
                                 </div>
                             @endforeach
                         </div>
@@ -277,11 +296,17 @@
                 <h1 class="text-2xl font-semibold font-bricolage text-[#212121]">Top Reviews</h1>
 
                 @forelse ($product->reviews as $review)
+                @php
+    $avatar = $review->user->profile->avatar ?? null;
+    $avatarUrl = $avatar && file_exists(public_path('storage/' . $avatar))
+        ? asset('storage/' . $avatar)
+        : asset('images/user-icon.png');
+@endphp
                     <div class="flex flex-col gap-4 py-6 bg-[#FCFCFC] rounded-lg">
                         <div class="flex flex-row items-center justify-between">
                             <div class="flex flex-row gap-2">
                                 <div>
-                                    <img class="w-16 h-16 rounded-full" src="/images/pfp.png" alt="User avatar"> <!-- Placeholder for user avatar -->
+                                    <img src="{{ $avatarUrl }}" alt="User avatar" class="w-10 h-10 rounded-full object-cover"><!-- Placeholder for user avatar -->
                                 </div>
                                 <div class="flex flex-col -mt-2 justify-center text-lg font-semibold">
                                     <p>{{ $review->user->name }}</p>
@@ -342,7 +367,7 @@
 
             @if($product->category)
             <div class="flex flex-row justify-center pt-10 items-center gap-2">
-                <a href="" class="text-md font-semibold font-bricolage border-b-[1px] border-[#212121]">VIEW ALL IN {{ strtoupper($product->category->name) }}</a>
+                <a href="{{ route('shop.categories') }}" class="text-md font-semibold font-bricolage border-b-[1px] border-[#212121]">VIEW ALL IN {{ strtoupper($product->category->name) }}</a>
             </div>
             @endif
         </div>
@@ -353,7 +378,7 @@
 
         @include('components.footer')
 
-        
+
     </div>
 </body>
 
