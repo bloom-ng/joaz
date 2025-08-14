@@ -168,7 +168,7 @@ class ShopController extends Controller
 
             // Related products (excluding current and best sellers)
             $excludeIds = $products->pluck('id')->merge($bestSellers->pluck('id'))->unique();
-            
+
             $relatedProducts = Product::with('images')
                 ->whereIn('category_id', $categoryIds)
                 ->where('quantity', '>', 0)
