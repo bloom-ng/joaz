@@ -116,8 +116,8 @@
                 <div class="grid grid-cols-3 justify-center gap-4 pt-10">
                     @foreach($products as $product)
                         @php
-                            $mainImage = $product->images->first();
-                            $imageUrl = $mainImage ? asset('storage/' . $mainImage->image_path) : '/images/placeholder-product.png';
+                            $mainImage = $product->images->first()->image ?? null;
+                            $imageUrl = $mainImage ? asset('storage/' . $mainImage) : '/images/placeholder-product.png';
                         @endphp
                         <div class="flex text-left flex-col gap-2">
                             <img src="{{ $imageUrl }}" alt="{{ $product->name }}" class="w-full h-64 object-cover">
@@ -125,12 +125,9 @@
                             <div class="flex flex-row justify-between">
                                 <p class="flex flex-row gap-1 items-center text-md font-bricolage">
                                     <img class="w-4 h-4" src="/images/naira.png" alt="">
-                                    {{ number_format($product->price, 0, '.', ',') }}
-                                    @if($product->unit)
-                                        /{{ $product->unit }}
-                                    @endif
+                                    {{ number_format($product->price_ngn, 2) }}
                                 </p>
-                                <a href="" class="text-md font-semibold font-bricolage border-b-[1px] border-[#212121] hover:border-transparent">
+                                <a href="{{ route('shop.productDetails', $product->id) }}" class="text-md font-semibold font-bricolage border-b-[1px] border-[#212121] hover:border-transparent">
                                     SHOP
                                 </a>
                             </div>
@@ -159,7 +156,7 @@
                     <div class="flex text-left flex-col gap-2 flex-1 max-w-[300px]">
                         <a href="{{ route('shop.productDetails', $product->id) }}">
                             @if($product->images->isNotEmpty())
-                                <img src="{{ asset('storage/' . $product->images->first()->image_path) }}" 
+                                <img src="{{ asset('storage/' . $product->images->first()->image_path) }}"
                                      alt="{{ $product->name }}"
                                      class="w-full h-64 object-cover">
                             @else
@@ -172,9 +169,9 @@
                         <div class="flex flex-row justify-between items-center">
                             <p class="flex flex-row gap-1 items-center text-md font-bricolage">
                                 <img class="w-4 h-4" src="{{ asset('images/naira.png') }}" alt="">
-                                {{ number_format($product->price) }}/{{ $product->unit }}
+                                {{ number_format($product->price_ngn, 2) }}
                             </p>
-                            <a href="{{ route('shop.productDetails', $product->id) }}" 
+                            <a href="{{ route('shop.productDetails', $product->id) }}"
                                class="text-md font-semibold font-bricolage border-b-[1px] border-[#212121] hover:text-green-600 transition-colors">
                                 SHOP
                             </a>
@@ -228,7 +225,7 @@
                                 <p class="text-md font-bricolage">{{ $relatedProduct->description }}</p>
                                 <div class="-mt-3 flex flex-row justify-between items-center">
                                     <p class="flex flex-row gap-1 items-center text-md font-bricolage">
-                                        <img class="w-4 h-4" src="/images/naira.png" alt="">{{ number_format($relatedProduct->price_ngn, 2) }}/pack
+                                        <img class="w-4 h-4" src="/images/naira.png" alt="">{{ number_format($relatedProduct->price_ngn, 2) }}
                                     </p>
                                     <a href="{{ route('shop.productDetails', $relatedProduct->id) }}" class="text-md font-semibold font-bricolage border-b-[1px] border-[#212121]">SHOP</a>
                                 </div>
@@ -254,7 +251,7 @@
                     <div class="flex text-left flex-col gap-2 flex-1 max-w-[300px]">
                         <a href="{{ route('shop.productDetails', $product->id) }}">
                             @if($product->images->isNotEmpty())
-                                <img src="{{ asset('storage/' . $product->images->first()->image_path) }}" 
+                                <img src="{{ asset('storage/' . $product->images->first()->image_path) }}"
                                      alt="{{ $product->name }}"
                                      class="w-full h-64 object-cover">
                             @else
@@ -267,9 +264,9 @@
                         <div class="flex flex-row justify-between items-center">
                             <p class="flex flex-row gap-1 items-center text-md font-bricolage">
                                 <img class="w-4 h-4" src="{{ asset('images/naira.png') }}" alt="">
-                                {{ number_format($product->price) }}/{{ $product->unit }}
+                                {{ number_format($product->price_ngn, 2) }}
                             </p>
-                            <a href="{{ route('shop.productDetails', $product->id) }}" 
+                            <a href="{{ route('shop.productDetails', $product->id) }}"
                                class="text-md font-semibold font-bricolage border-b-[1px] border-[#212121] hover:text-green-600 transition-colors">
                                 SHOP
                             </a>

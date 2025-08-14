@@ -14,7 +14,7 @@
             <a href="/">HOME</a>
         </div>
         <div>
-            <a href="/shop">SHOP</a>
+            <a href="{{ route('shop.categories') }}">SHOP</a>
         </div>
         <div>
             <a href="">LEARN</a>
