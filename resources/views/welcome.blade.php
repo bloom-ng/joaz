@@ -51,31 +51,59 @@
             <h1 class="font-rustler text-4xl">BEST SELLER</h1>
             <p class="text-2xl font-bricolage py-6">Slay effortlessly when you Shop from our best seller collection</p>
             <div class="flex flex-row justify-center gap-4">
-                @forelse($mostOrderedProducts as $product)
-                    <div class="flex text-left flex-col gap-2 w-1/4">
-                        @if ($product->images->isNotEmpty())
-                            <img src="{{ asset("storage/" . $product->images->first()->image) }}"
-                                alt="{{ $product->name }}" class="w-full h-64 object-cover">
-                        @else
-                            <div class="w-full h-64 bg-gray-200 flex items-center justify-center">
-                                <span>No Image</span>
+                @if(isset($mostOrderedProducts) && $mostOrderedProducts->count() > 0)
+                    @foreach($mostOrderedProducts as $product)
+                        <div class="flex text-left flex-col gap-2 w-1/4">
+                            @if ($product->images->isNotEmpty())
+                                <img src="{{ asset("storage/" . $product->images->first()->image) }}"
+                                    alt="{{ $product->name }}" class="w-full h-64 object-cover">
+                            @else
+                                <div class="w-full h-64 bg-gray-200 flex items-center justify-center">
+                                    <span>No Image</span>
+                                </div>
+                            @endif
+                            <h1 class="text-md leading-[2px] pt-2 font-bricolage">{{ $product->name }}</h1>
+                            <div class="flex flex-row justify-between">
+                                <p class="flex flex-row gap-1 items-center text-md font-bricolage">
+                                    <img class="w-4 h-4" src="{{ asset("images/naira.png") }}" alt="">
+                                    {{ number_format($product->price_ngn) }}
+                                </p>
+                                <a href="{{ route('shop.productDetails', $product->id) }}"
+                                    class="text-md font-semibold font-bricolage border-b-[1px] border-[#212121] hover:text-[#85BB3F] transition-colors">
+                                    SHOP
+                                </a>
                             </div>
-                        @endif
-                        <h1 class="text-md leading-[2px] pt-2 font-bricolage">{{ $product->name }}</h1>
-                        <div class="flex flex-row justify-between">
-                            <p class="flex flex-row gap-1 items-center text-md font-bricolage">
-                                <img class="w-4 h-4" src="{{ asset("images/naira.png") }}" alt="">
-                                {{ number_format($product->price_ngn) }}
-                            </p>
-                            <a href="{{ route('shop.productDetails', $product->id) }}"
-                                class="text-md font-semibold font-bricolage border-b-[1px] border-[#212121] hover:text-[#85BB3F] transition-colors">
-                                SHOP
-                            </a>
                         </div>
-                    </div>
-                @empty
-                    <p class="text-center py-8">No products found.</p>
-                @endforelse
+                    @endforeach
+                @else
+                    @php
+                        // Fallback to display some products if $mostOrderedProducts is not available
+                        $fallbackProducts = \App\Models\Product::inRandomOrder()->limit(3)->get();
+                    @endphp
+                    @foreach($fallbackProducts as $product)
+                        <div class="flex text-left flex-col gap-2 w-1/4">
+                            @if ($product->images->isNotEmpty())
+                                <img src="{{ asset("storage/" . $product->images->first()->image) }}"
+                                    alt="{{ $product->name }}" class="w-full h-64 object-cover">
+                            @else
+                                <div class="w-full h-64 bg-gray-200 flex items-center justify-center">
+                                    <span>No Image</span>
+                                </div>
+                            @endif
+                            <h1 class="text-md leading-[2px] pt-2 font-bricolage">{{ $product->name }}</h1>
+                            <div class="flex flex-row justify-between">
+                                <p class="flex flex-row gap-1 items-center text-md font-bricolage">
+                                    <img class="w-4 h-4" src="{{ asset("images/naira.png") }}" alt="">
+                                    {{ number_format($product->price_ngn) }}
+                                </p>
+                                <a href="{{ route('shop.productDetails', $product->id) }}"
+                                    class="text-md font-semibold font-bricolage border-b-[1px] border-[#212121] hover:text-[#85BB3F] transition-colors">
+                                    SHOP
+                                </a>
+                            </div>
+                        </div>
+                    @endforeach
+                @endif
             </div>
         </div>
         <div
