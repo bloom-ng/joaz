@@ -198,7 +198,6 @@
                 <span
                     class="pl-5 text-[13.5px] {{ request()->routeIs('admin.customers.*') ? 'text-[#ffffff]' : 'text-[#222222B2]' }}">Customers</span>
             </a>
-
             <a href="{{ route('admin.transactions.index') }}"
                 class="{{ request()->routeIs('admin.transactions.*') ? 'flex items-center py-[12px] px-5 bg-gradient-to-r from-[#85BB3F] to-[#2B2B2B] text-white rounded-xl ml-8 shadow-md mt-7 mr-4 font-[bricolage]' : 'flex items-center py-2 px-8 text-gray-600 mt-7 font-[bricolage]' }}">
                 @if (request()->routeIs('admin.transactions.*'))
@@ -259,6 +258,25 @@
                 <span
                     class="pl-5 text-[13.5px] {{ request()->routeIs('admin.reviews.*') ? 'text-[#ffffff]' : 'text-[#222222B2]' }}">Reviews</span>
             </a>
+            <a href="{{ route('admin.newsletters.index') }}"
+            class="{{ request()->routeIs('admin.newsletters.*') ? 'flex items-center py-[12px] px-5 bg-gradient-to-r from-[#85BB3F] to-[#2B2B2B] text-white rounded-xl ml-8 shadow-md mt-7 mr-4 font-[bricolage]' : 'flex items-center py-2 px-8 text-gray-600 mt-7 font-[bricolage]' }}">
+            @if (request()->routeIs('admin.newsletters.*'))
+                <svg width="25" height="25" viewBox="0 0 25 25" fill="none"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path d="M4 4H20C21.1 4 22 4.9 22 6V18C22 19.1 21.1 20 20 20H4C2.9 20 2 19.1 2 18V6C2 4.9 2.9 4 4 4Z" fill="white" />
+                    <path d="M22 6L12 13L2 6V18H22V6Z" fill="white" />
+                </svg>
+            @else
+                <svg width="25" height="25" viewBox="0 0 25 25" fill="none"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path d="M4 4H20C21.1 4 22 4.9 22 6V18C22 19.1 21.1 20 20 20H4C2.9 20 2 19.1 2 18V6C2 4.9 2.9 4 4 4Z" fill="#222222" fill-opacity="0.7" />
+                    <path d="M22 6L12 13L2 6V18H22V6Z" fill="#222222" fill-opacity="0.7" />
+                </svg>
+            @endif
+            <span
+                class="pl-5 text-[13.5px] {{ request()->routeIs('admin.newsletters.*') ? 'text-[#ffffff]' : 'text-[#222222B2]' }}">Newsletters</span>
+        </a>
+
 
             <form method="POST" action="{{ route('admin.logout') }}"
                 class="flex items-center py-2 px-8 text-gray-600 mt-7 font-[bricolage]">

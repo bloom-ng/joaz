@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\VoucherController;
@@ -11,8 +12,8 @@ use App\Http\Controllers\Customer\ShopController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\NewsletterController;
 use App\Http\Controllers\Admin\TransactionController;
-use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Customer\OrderController as CustomerOrderController;
 
@@ -29,6 +30,10 @@ use App\Http\Controllers\Customer\OrderController as CustomerOrderController;
 
 // Public routes
 Route::get('/', [ShopController::class,'home'])->name('home');
+
+// Newsletter subscription
+Route::post('/newsletter/subscribe', [\App\Http\Controllers\NewsletterSubscriptionController::class, 'store'])
+    ->name('newsletter.subscribe');
 Route::get('product-details/{id}', [ShopController::class, 'productDetails'])->name('shop.productDetails');
 Route::get('shop/category/{category:slug}', [ShopController::class, 'showCategory'])->name('shop.category');
 
@@ -150,6 +155,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         // Reviews management
         Route::resource('reviews', ReviewController::class);
+
+        // Newsletter management
+        Route::get('newsletters', [NewsletterController::class, 'index'])->name('newsletters.index');
+        Route::post('newsletters', [NewsletterController::class, 'store'])->name('newsletters.store');
+        Route::delete('newsletters/{newsletter}', [NewsletterController::class, 'destroy'])->name('newsletters.destroy');
+        Route::get('newsletters/export', [NewsletterController::class, 'exportToCsv'])->name('newsletters.export');
+
     });
 });
 
