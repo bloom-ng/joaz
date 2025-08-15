@@ -116,7 +116,7 @@
         </div>
 
         <!-- Review Content -->
-        <div class="flex flex-col w-[40vw] bg-[#FCFCFC]/65 p-8 rounded-md items-center justify-center text-center">
+        <div class="flex flex-col w-[40vw] bg-[#FCFCFC] p-8 rounded-md items-center justify-center text-center">
             <h1 class="text-3xl font-rustler pb-8">CUSTOMER REVIEWS</h1>
             <img id="review-img" class="w-10 h-10 rounded-full" src="/images/pfp.png" alt="Profile Picture">
             <p id="review-name" class="font-semibold py-1">JANE COOPER</p>
