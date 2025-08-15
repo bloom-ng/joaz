@@ -76,9 +76,9 @@ Route::get('/payment-redirect', function () {
     return view('customer.shop.payment-redirect');
 })->name('payment-redirect');
 
-Route::get('/profile-account', function () {
-    return view('customer.shop.profile-account');
-})->name('profile-account');
+Route::get('/account-center', function () {
+    return view('customer.shop.account-center');
+})->name('account-center');
 
 Route::get('/address-book', function () {
     return view('customer.shop.address-book');
@@ -87,7 +87,7 @@ Route::get('/address-book', function () {
 Route::get('/my-orders', function () {
     return view('customer.shop.my-orders');
 })->name('my-orders');
-//public routes added ny lekan to hit for testing
+//public routes added by lekan to hit for testing
 
 
 Route::get('/signin', function () {
