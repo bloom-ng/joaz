@@ -41,4 +41,11 @@ return [
         'webhook_secret' => env('PAYSTACK_WEBHOOK_SECRET'),
     ],
 
+    'dhl' => [
+        'base_url'       => env('DHL_BASE_URL'),
+        'account_number' => env('DHL_ACCOUNT_NUMBER'),
+        'username'       => env('DHL_USERNAME'),
+        'password'       => env('DHL_PASSWORD'),
+    ],
+
 ];
