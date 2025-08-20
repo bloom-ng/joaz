@@ -113,21 +113,38 @@ class ShopController extends Controller
         return view('customer.shop.category', compact('category', 'products'));
     }
 
-    public function categoryPage(Request $request, Category $category = null)
+    /**
+     * Get children of a category via API
+     */
+    public function getCategoryChildren(Category $category)
+    {
+        $children = $category->children()->select('id', 'name')->get();
+        return response()->json($children);
+    }
+
+    /**
+     * Display the category page with products
+     */
+    public function categoryPage(Request $request, $category = null)
     {
         $perPage = 9;
         $searchQuery = $request->input('search');
 
-        // Get 4 random parent categories
-        $parentCategories = Category::whereNull('parent_category_id')
-            ->inRandomOrder()
-            ->take(4)
-            ->get();
+        // Get all parent categories
+        $parentCategories = Category::whereNull('parent_category_id')->get();
 
-        // If category is selected, eager load children
-        $selectedCategory = $category
-            ? $category->load('children')
-            : $parentCategories->first();
+        // Find the selected category by ID
+        if ($category) {
+            $selectedCategory = Category::with('children')
+                ->find($category);
+        } else {
+            $selectedCategory = $parentCategories->first();
+        }
+
+        // If no category found, redirect to home or show 404
+        if (!$selectedCategory && $category) {
+            abort(404);
+        }
 
         // Get best selling products (top 3 most ordered products)
         $bestSellers = Product::with('images')
@@ -137,28 +154,27 @@ class ShopController extends Controller
             ->take(3)
             ->get();
 
-        // Prepare default collections
-        $childCategories = collect();
+        // Initialize collections
+        $childCategories = $selectedCategory ? $selectedCategory->children : collect();
         $products = collect();
         $relatedProducts = collect();
 
         if ($selectedCategory) {
-            // Use already eager-loaded children
-            $childCategories = $selectedCategory->children;
-
-            // Get all category IDs in one go
-            $categoryIds = $childCategories->pluck('id')->push($selectedCategory->id);
+            // Get all category IDs to search in (selected category + its children)
+            $categoryIds = $childCategories->isNotEmpty()
+                ? $childCategories->pluck('id')->push($selectedCategory->id)
+                : collect([$selectedCategory->id]);
 
             // Build product query
             $productsQuery = Product::with('images')
                 ->where('quantity', '>', 0)
                 ->whereIn('category_id', $categoryIds);
 
-            // Search filter
+            // Apply search filter if provided
             if ($searchQuery) {
                 $productsQuery->where(function ($query) use ($searchQuery) {
                     $query->where('name', 'like', "%{$searchQuery}%")
-                          ->orWhere('description', 'like', "%{$searchQuery}%");
+                        ->orWhere('description', 'like', "%{$searchQuery}%");
                 });
             }
 
@@ -166,16 +182,30 @@ class ShopController extends Controller
             $products = $productsQuery->paginate($perPage)
                 ->appends(['search' => $searchQuery]);
 
-            // Related products (excluding current and best sellers)
+            // Get related products (excluding current products and best sellers)
             $excludeIds = $products->pluck('id')->merge($bestSellers->pluck('id'))->unique();
 
-            $relatedProducts = Product::with('images')
-                ->whereIn('category_id', $categoryIds)
+            $relatedProductsQuery = Product::with('images')
                 ->where('quantity', '>', 0)
-                ->whereNotIn('id', $excludeIds)
-                ->inRandomOrder()
+                ->whereNotIn('id', $excludeIds);
+
+            if ($categoryIds->isNotEmpty()) {
+                $relatedProductsQuery->whereNotIn('category_id', $categoryIds);
+            }
+
+            $relatedProducts = $relatedProductsQuery->inRandomOrder()
                 ->limit(3)
                 ->get();
+
+            // If no related products found, get other random products
+            if ($relatedProducts->isEmpty()) {
+                $relatedProducts = Product::with('images')
+                    ->where('quantity', '>', 0)
+                    ->whereNotIn('id', $excludeIds)
+                    ->inRandomOrder()
+                    ->limit(3)
+                    ->get();
+            }
         }
 
         return view('customer.shop.wigs', [

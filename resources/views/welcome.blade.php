@@ -36,6 +36,7 @@
 </head>
 
 <body class="bg-[#FCFCFC] text-[#212121]">
+    @include('components.cart-notification')
     <div class="flex flex-col">
         @include('components.header')
         <div class="text-center flex flex-col">

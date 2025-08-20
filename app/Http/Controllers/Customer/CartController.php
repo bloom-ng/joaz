@@ -8,22 +8,25 @@ use App\Models\CartItem;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
     public function index()
     {
-        $userId = auth()->id();
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+        $userId = Auth::id();
 
         $cart = Cart::with(['items.product.images'])
             ->where('user_id', $userId)
-            ->where('is_active', true)
             ->first();
 
         if (!$cart) {
             $cart = Cart::create([
                 'user_id' => $userId,
-                'is_active' => true,
+                'total' => 0
             ]);
         }
 
@@ -44,13 +47,21 @@ class CartController extends Controller
             return back()->withErrors(['quantity' => 'Insufficient stock available.']);
         }
 
-        $userId = auth()->id();
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+        $userId = Auth::id();
 
         // Get or create cart
         $cart = Cart::firstOrCreate(
-            ['user_id' => $userId, 'is_active' => true],
-            ['user_id' => $userId, 'is_active' => true]
+            ['user_id' => $userId],
+            ['total' => 0]
         );
+
+        // Check if cart belongs to authenticated user
+        if (Auth::id() !== $cart->user_id) {
+            abort(403);
+        }
 
         // Check if product already in cart
         $existingItem = $cart->items()->where('product_id', $request->product_id)->first();
@@ -63,7 +74,21 @@ class CartController extends Controller
                 return back()->withErrors(['quantity' => 'Insufficient stock available.']);
             }
 
-            $existingItem->update(['quantity' => $newQuantity]);
+            $cartItem = $cart->items()->updateOrCreate(
+                [
+                    'product_id' => $product->id,
+                    'variant_id' => $request->variant_id ?? null,
+                ],
+                [
+                    'quantity' => DB::raw('quantity + ' . $request->quantity),
+                    'price' => $product->price_ngn,
+                ]
+            );
+
+            // Update cart total
+            $cart->updateTotal();
+
+            return back()->with('success', 'Product has been successfully added to your cart');
         } else {
             // Add new item
             $cart->items()->create([
@@ -71,10 +96,10 @@ class CartController extends Controller
                 'quantity' => $request->quantity,
                 'unit_price' => $product->price,
             ]);
-        }
 
-        return redirect()->route('customer.cart.index')
-            ->with('success', 'Product added to cart successfully.');
+            return redirect()->route('customer.cart.index')
+                ->with('success', 'Product added to cart successfully.');
+        }
     }
 
     public function update(Request $request, CartItem $cartItem)
@@ -83,8 +108,13 @@ class CartController extends Controller
             'quantity' => 'required|integer|min:1',
         ]);
 
-        // Check if cart item belongs to authenticated user
-        if ($cartItem->cart->user_id !== auth()->id()) {
+        // Check if cart belongs to authenticated user
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+        $userId = Auth::id();
+
+        if ($cartItem->cart->user_id !== $userId) {
             abort(403);
         }
 
@@ -103,8 +133,13 @@ class CartController extends Controller
 
     public function remove(CartItem $cartItem)
     {
-        // Check if cart item belongs to authenticated user
-        if ($cartItem->cart->user_id !== auth()->id()) {
+        // Check if cart belongs to authenticated user
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+        $userId = Auth::id();
+
+        if ($cartItem->cart->user_id !== $userId) {
             abort(403);
         }
 
