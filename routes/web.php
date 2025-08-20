@@ -35,14 +35,19 @@ Route::get('/', [ShopController::class,'home'])->name('home');
 Route::post('/newsletter/subscribe', [\App\Http\Controllers\NewsletterSubscriptionController::class, 'store'])
     ->name('newsletter.subscribe');
 Route::get('product-details/{id}', [ShopController::class, 'productDetails'])->name('shop.productDetails');
-Route::get('shop/category/{category:slug}', [ShopController::class, 'showCategory'])->name('shop.category');
+// Main category page route - handles both parent and child categories
+Route::get('/category/{category?}', [ShopController::class, 'categoryPage'])
+    ->where('category', '[0-9]+') // Only match numeric category IDs
+    ->name('shop.category');
 
-Route::get('/category/{category?}', [ShopController::class, 'categoryPage'])->name('shop.categories');
-
-//public routes added ny lekan to hit for testing
-Route::get('/cart', function () {
-    return view('customer.shop.cart');
-})->name('cart');
+// Cart routes
+Route::prefix('cart')->name('cart.')->group(function () {
+    Route::get('/', [CartController::class, 'index'])->name('index');
+    Route::post('/add', [CartController::class, 'add'])->name('add');
+    Route::patch('/{cartItem}', [CartController::class, 'update'])->name('update');
+    Route::delete('/{cartItem}', [CartController::class, 'remove'])->name('remove');
+    Route::post('/clear', [CartController::class, 'clear'])->name('clear');
+});
 
 Route::get('/learn', function () {
     return view('customer.learn');

@@ -159,11 +159,24 @@
 
                     <!-- Add to Cart and Quantity Section -->
                     <div class="pt-8">
-                        <form action="" method="POST" class="flex flex-row gap-4 w-full">
+                        @if(session('success'))
+                            <div class="mb-4 p-4 bg-green-100 text-green-700 rounded">
+                                {{ session('success') }}
+                            </div>
+                        @endif
+                        @if($errors->any())
+                            <div class="mb-4 p-4 bg-red-100 text-red-700 rounded">
+                                {{ $errors->first() }}
+                            </div>
+                        @endif
+                        
+                        <form action="{{ route('cart.add') }}" method="POST" class="flex flex-row gap-4 w-full">
                             @csrf
                             <input type="hidden" name="product_id" value="{{ $product->id }}">
                             <input type="hidden" name="quantity" id="form-quantity" value="1">
-                            <input type="hidden" name="variant_id" id="form-variant-id" value="{{ $product->variants->first()->id ?? '' }}">
+                            @if($product->variants->isNotEmpty())
+                                <input type="hidden" name="variant_id" id="form-variant-id" value="{{ $product->variants->first()->id }}">
+                            @endif
 
                             <button type="submit" class="px-12 py-4 text-white font-semibold rounded-lg text-base whitespace-nowrap"
                                 style="background: linear-gradient(91.36deg, #85BB3F 0%, #212121 162.21%);">
@@ -357,7 +370,7 @@
                         <p class="text-md font-bricolage">{{ $relatedProduct->description }}</p>
                         <div class="-mt-3 flex flex-row justify-between items-center">
                             <p class="flex flex-row gap-1 items-center text-md font-bricolage">
-                                <img class="w-4 h-4" src="/images/naira.png" alt="">{{ number_format($relatedProduct->price_ngn, 2) }}/pack
+                                <img class="w-4 h-4" src="/images/naira.png" alt="">{{ number_format($relatedProduct->price_ngn, 2) }}
                             </p>
                             <a href="{{ route('shop.productDetails', $relatedProduct->id) }}" class="text-md font-semibold font-bricolage border-b-[1px] border-[#212121]">SHOP</a>
                         </div>
@@ -367,7 +380,7 @@
 
             @if($product->category)
             <div class="flex flex-row justify-center pt-10 items-center gap-2">
-                <a href="{{ route('shop.categories') }}" class="text-md font-semibold font-bricolage border-b-[1px] border-[#212121]">VIEW ALL IN {{ strtoupper($product->category->name) }}</a>
+                <a href="{{ route('shop.category') }}" class="text-md font-semibold font-bricolage border-b-[1px] border-[#212121]">VIEW ALL IN {{ strtoupper($product->category->name) }}</a>
             </div>
             @endif
         </div>

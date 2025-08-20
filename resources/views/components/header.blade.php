@@ -14,16 +14,23 @@
             <a href="/">HOME</a>
         </div>
         <div>
-            <a href="{{ route('shop.categories') }}">SHOP</a>
+            <a href="{{ route('shop.category') }}">SHOP</a>
         </div>
         <div>
-            <a href="">LEARN</a>
+            <a href="{{ route('learn') }}">LEARN</a>
         </div>
         <div>
-            <a href="">CONTACT US</a>
+            <a href="{{ route('contact-us') }}">CONTACT US</a>
         </div>
         <div>
-            <img class="h-5" src="/images/cart.png" alt="">
+            <a href="{{ route('cart.index') }}" class="relative">
+                <img class="h-5" src="/images/cart.png" alt="Cart">
+                @if(auth()->check() && auth()->user()->cart && auth()->user()->cart->items->count() > 0)
+                    <span class="absolute -top-2 -right-2 bg-[#85BB3F] text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                        {{ auth()->user()->cart->items->sum('quantity') }}
+                    </span>
+                @endif
+            </a>
         </div>
         @guest
             <a href="/signin">

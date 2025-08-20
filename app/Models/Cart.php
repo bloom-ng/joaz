@@ -16,6 +16,7 @@ class Cart extends Model
      */
     protected $fillable = [
         'user_id',
+        'total',
     ];
 
     /**
@@ -42,6 +43,15 @@ class Cart extends Model
         return $this->items->sum(function ($item) use ($currency) {
             return $item->unit_price * $item->quantity;
         });
+    }
+
+    /**
+     * Update the cart's total amount.
+     */
+    public function updateTotal(): void
+    {
+        $this->total = $this->getTotal();
+        $this->save();
     }
 
     /**
