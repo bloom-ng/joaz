@@ -14,7 +14,7 @@
                 <div class="flex flex-col gap-4 w-full justify-center">
                     <form class="flex flex-col gap-4 w-full" action="{{ route('newsletter.subscribe') }}" method="POST">
                         @csrf
-                        @if(session('success'))
+                        @if(session('suc'))
                             <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
                                 <span class="block sm:inline">{{ session('success') }}</span>
                             </div>
@@ -25,9 +25,9 @@
                             </div>
                         @endif
                         <div class="flex flex-col pb-5 gap-4 w-full">
-                            <input 
-                                type="email" 
-                                name="email" 
+                            <input
+                                type="email"
+                                name="email"
                                 value="{{ old('email', auth()->user()->email ?? '') }}"
                                 class="bg-[#FCFCFC] w-full border border-[#212121]/80 rounded-md placeholder-[#212121]/60 py-2.5 p-3"
                                 placeholder="Email address"
@@ -35,9 +35,9 @@
                             >
                         </div>
                         <div class="flex flex-row justify-center pt-2 items-center">
-                            <button 
-                                type="submit" 
-                                class="w-full text-md py-3 text-white rounded-lg hover:opacity-90 transition-opacity" 
+                            <button
+                                type="submit"
+                                class="w-full text-md py-3 text-white rounded-lg hover:opacity-90 transition-opacity"
                                 style="background: linear-gradient(91.36deg, #85BB3F 0%, #212121 162.21%);"
                             >
                                 SUBSCRIBE

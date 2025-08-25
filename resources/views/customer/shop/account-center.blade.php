@@ -53,6 +53,7 @@
 <body class="bg-[#FCFCFC] text-[#212121]">
   <div class="min-h-screen flex flex-col">
     @include('components.header')
+    @include('components.cart-notification')
 
     <!-- Tabs Header -->
     <div class="flex font-bricolage font-semibold px-16 py-12 text-[#212121]/60 flex-row text-xl gap-10">
@@ -66,7 +67,7 @@
     <main>
       <section id="section-account">@include('components.account-section')</section>
       <section id="section-address" class="hidden">@include('components.address-book-section')</section>
-      <section id="section-cart" class="hidden">@include('components.cart-section')</section>
+      <section id="section-cart" class="hidden">@include('components.cart-section', ['cart' => auth()->user()->cart])</section>
       <section id="section-orders" class="hidden">@include('components.orders-section')</section>
     </main>
 

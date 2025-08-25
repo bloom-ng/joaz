@@ -33,7 +33,7 @@
                 <div><img class="w-10 h-12" src="/images/logo-2.png" alt=""></div>
                 <p class="text-xl font-bold pb-2 text-center">Login to access your account</p>
                 <div class="flex flex-col gap-3 w-full justify-center">
-                    <form class="flex flex-col justify-between h-full gap-4 w-full" action="">
+                    <form class="flex flex-col justify-between h-full gap-4 w-full" method="POST" action="{{ route('login.post') }}">
                         <div class="flex flex-col gap-3 w-full">
                             <input placeholder="Email address" type="email" name="email" id="email-mobile" class="bg-white w-full border border-[#212121/80] rounded-md placeholder-[#212121/60] p-3">
                             <div class="flex flex-row justify-between relative">
@@ -74,7 +74,8 @@
                 <div><img class="w-12 h-14" src="/images/logo-2.png" alt=""></div>
                 <p class="text-xl font-bold pb-3">Login to access your account</p>
                 <div class="flex flex-col gap-2 w-full justify-center">
-                    <form class="flex flex-col justify-center gap-2 w-full" action="">
+                    <form class="flex flex-col justify-center gap-2 w-full" method="POST" action="{{ route('login.post') }}">
+                            @csrf
                         <div class="flex flex-col gap-2 w-full px-16">
                             <input placeholder="Email address" type="email" name="email" id="email-desktop" class="bg-white w-full border border-[#212121/80] rounded-md placeholder-[#212121/60] p-2 py-2.5">
                             <div class="flex flex-row justify-between relative">

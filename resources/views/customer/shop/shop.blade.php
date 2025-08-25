@@ -60,7 +60,8 @@
     <div class="flex bg-[#FCFCFC] flex-col">
         <!-- Header Section -->
         @include('components.header')
-
+        @include('components.cart-notification')
+        
         <!-- Main Product Display Section -->
         <main class="flex flex-row w-full px-16 py-12">
             <!-- Left Column - Product Image -->
@@ -159,17 +160,8 @@
 
                     <!-- Add to Cart and Quantity Section -->
                     <div class="pt-8">
-                        @if(session('success'))
-                            <div class="mb-4 p-4 bg-green-100 text-green-700 rounded">
-                                {{ session('success') }}
-                            </div>
-                        @endif
-                        @if($errors->any())
-                            <div class="mb-4 p-4 bg-red-100 text-red-700 rounded">
-                                {{ $errors->first() }}
-                            </div>
-                        @endif
-                        
+
+
                         <form action="{{ route('cart.add') }}" method="POST" class="flex flex-row gap-4 w-full">
                             @csrf
                             <input type="hidden" name="product_id" value="{{ $product->id }}">
