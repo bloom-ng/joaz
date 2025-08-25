@@ -7,7 +7,9 @@
     <div class="flex flex-row items-center gap-11 text-md font-semibold">
         @auth
             <div>
+                <a href="{{ route('account-center') }}">
                 <img class="h-4" src="/images/profile.png" alt="">
+                </a>
             </div>
         @endauth
         <div>
@@ -23,7 +25,7 @@
             <a href="{{ route('contact-us') }}">CONTACT US</a>
         </div>
         <div>
-            <a href="{{ route('cart.index') }}" class="relative">
+            <a href="{{ route('cart.index') }}#cart" class="relative">
                 <img class="h-5" src="/images/cart.png" alt="Cart">
                 @if(auth()->check() && auth()->user()->cart && auth()->user()->cart->items->count() > 0)
                     <span class="absolute -top-2 -right-2 bg-[#85BB3F] text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">

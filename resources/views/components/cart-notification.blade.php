@@ -4,7 +4,7 @@
         <img src="/images/success-circle.png" alt="Success" class="w-6 h-6">
     </div>
     <div class="flex-1">
-        <div class="font-semibold text-sm">Product has been successfully added to your cart</div>
+        <div class="font-semibold text-sm">{{ session('success') }}</div>
     </div>
     <button onclick="closeCartNotification()" class="flex-shrink-0 text-[#FCFCFC] hover:opacity-80 transition-opacity">
         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -30,4 +30,4 @@
         closeCartNotification();
     }, 5000);
 </script>
-@endif 
+@endif

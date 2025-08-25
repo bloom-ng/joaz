@@ -36,9 +36,10 @@
 </head>
 
 <body class="bg-[#FCFCFC] text-[#212121]">
-    @include('components.cart-notification')
+
     <div class="flex flex-col">
         @include('components.header')
+        @include('components.cart-notification')
         <div class="text-center flex flex-col">
             <h1
                 class="text-[110px] font-rustler font-light text-transparent bg-clip-text bg-[linear-gradient(89.8deg,#212121_-12.04%,#85BB3F_104.11%)]">

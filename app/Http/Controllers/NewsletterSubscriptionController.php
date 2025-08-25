@@ -37,9 +37,8 @@ class NewsletterSubscriptionController extends Controller
             ]);
 
             return back()->with('success', 'Thank you for subscribing to our newsletter!');
-            
+
         } catch (\Exception $e) {
-            \Log::error('Newsletter subscription error: ' . $e->getMessage());
             return back()
                 ->with('error', 'Failed to subscribe. Please try again later.')
                 ->withInput();
