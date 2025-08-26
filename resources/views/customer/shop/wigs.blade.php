@@ -50,7 +50,7 @@
                         <div class="w-16 h-16 rounded-full flex items-center justify-center bg-[linear-gradient(89.8deg,#212121_-12.04%,#85BB3F_104.11%)] text-[#fff] text-4xl font-rustler font-light">
                             {{ ucfirst(substr($parentCategory->name, 0, 1)) }}
                         </div>
-                        <p class="text-3xl z-20 font-rustler font-light text-transparent bg-clip-text bg-[linear-gradient(89.8deg,#212121_-12.04%,#85BB3F_104.11%)] hover:opacity-80 transition-opacity">
+                        <p class="text-3xl z-20 font-rustler font-light {{ $parentCategory->id == $selectedCategory->id ? 'text-[#85BB3F]' : 'text-[#212121]' }} hover:opacity-80 transition-opacity">
                             {{ $parentCategory->name }}
                         </p>
                     </a>
@@ -82,7 +82,7 @@
             <div class="text-center flex flex-col pt-16 pb-10 px-16">
                 <div class="flex flex-row justify-between items-center">
                     <div class="relative">
-                        <div class="flex flex-row items-center gap-3 cursor-pointer" onclick="toggleDropdown()">
+                        <div class="flex flex-row items-center gap-3 cursor-pointer" onclick="toggleDropdown(event)">
                             <h1 class="text-2xl font-bold font-bricolage" id="selected-category">
                                 {{ $selectedCategory ? $selectedCategory->name : 'SELECT CATEGORY' }}
                             </h1>
@@ -234,11 +234,20 @@
 
 
 <script>
-    function toggleDropdown() {
+    function toggleDropdown(event) {
+        event.stopPropagation();
         const dropdownMenu = document.getElementById('dropdown-menu');
         const dropdownArrow = document.getElementById('dropdown-arrow');
-
-        if (dropdownMenu.classList.contains('hidden')) {
+        
+        const isHidden = dropdownMenu.classList.contains('hidden');
+        
+        // Close all dropdowns first
+        document.querySelectorAll('.dropdown-menu').forEach(menu => {
+            menu.classList.add('hidden');
+        });
+        
+        // Toggle current dropdown
+        if (isHidden) {
             dropdownMenu.classList.remove('hidden');
             dropdownArrow.style.transform = 'rotate(180deg)';
         } else {
@@ -248,16 +257,23 @@
     }
 
     // Close dropdown when clicking outside
-    document.addEventListener('click', function(event) {
-        const dropdown = document.querySelector('.relative');
+    document.addEventListener('click', function() {
         const dropdownMenu = document.getElementById('dropdown-menu');
         const dropdownArrow = document.getElementById('dropdown-arrow');
-        const target = event.target;
-
-        // Check if click is outside the dropdown menu and not on a child category link
-        if (!dropdown.contains(target) && !target.closest('#child-categories')) {
+        
+        if (dropdownMenu && !dropdownMenu.classList.contains('hidden')) {
             dropdownMenu.classList.add('hidden');
             dropdownArrow.style.transform = 'rotate(0deg)';
+        }
+    });
+
+    // Prevent dropdown from closing when clicking inside it
+    document.addEventListener('DOMContentLoaded', function() {
+        const dropdownMenu = document.getElementById('dropdown-menu');
+        if (dropdownMenu) {
+            dropdownMenu.addEventListener('click', function(event) {
+                event.stopPropagation();
+            });
         }
     });
 </script>

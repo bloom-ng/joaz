@@ -40,6 +40,10 @@
     <div class="flex flex-col">
         @include('components.header')
         @include('components.cart-notification')
+        @php
+            // Ensure the variable exists to prevent errors
+            $randomCategoryProducts = $randomCategoryProducts ?? collect();
+        @endphp
         <div class="text-center flex flex-col">
             <h1
                 class="text-[110px] font-rustler font-light text-transparent bg-clip-text bg-[linear-gradient(89.8deg,#212121_-12.04%,#85BB3F_104.11%)]">
@@ -146,28 +150,34 @@
             <div class="flex flex-col items-center justify-center px-16 py-10">
                 <h1 class="text-3xl font-rustler pb-4">OUR COLLECTION</h1>
                 <div class="flex flex-row justify-center gap-4">
-                    @foreach($randomCategoryProducts as $product)
-                        <div class="flex text-left flex-col gap-2">
-                            @if($product->images->isNotEmpty())
-                                <img src="{{ asset("storage/" . $product->images->first()->image) }}" alt="{{ $product->name }}" class="w-full h-64 object-cover">
-                            @else
-                                <div class="w-full h-64 bg-gray-200 flex items-center justify-center">
-                                    <span>No Image</span>
+                    @if(isset($randomCategoryProducts) && $randomCategoryProducts->count() > 0)
+                        @foreach($randomCategoryProducts as $product)
+                            <div class="flex text-left flex-col gap-2">
+                                @if(isset($product->images) && $product->images->isNotEmpty())
+                                    <img src="{{ asset('storage/' . $product->images->first()->image) }}" alt="{{ $product->name }}" class="w-full h-64 object-cover">
+                                @else
+                                    <div class="w-full h-64 bg-gray-200 flex items-center justify-center">
+                                        <span>No Image</span>
+                                    </div>
+                                @endif
+                                <h1 class="text-md leading-[2px] pt-2 font-bricolage">{{ strtoupper($product->name) }}</h1>
+                                <p class="text-md font-bricolage">{{ $product->description ?: 'Premium quality product' }}</p>
+                                <div class="-mt-3 flex flex-row justify-between">
+                                    <p class="flex flex-row gap-1 items-center text-md font-bricolage">
+                                        <img class="w-4 h-4" src="{{ asset('images/naira.png') }}" alt="">
+                                        {{ number_format($product->price_ngn) }}
+                                    </p>
+                                    <a href="{{ route('shop.productDetails', $product->id) }}" class="text-md font-semibold font-bricolage border-b-[1px] border-[#212121] hover:text-gray-600">
+                                        SHOP
+                                    </a>
                                 </div>
-                            @endif
-                            <h1 class="text-md leading-[2px] pt-2 font-bricolage">{{ strtoupper($product->name) }}</h1>
-                            <p class="text-md font-bricolage">{{ $product->description ?: 'Premium quality product' }}</p>
-                            <div class="-mt-3 flex flex-row justify-between">
-                                <p class="flex flex-row gap-1 items-center text-md font-bricolage">
-                                    <img class="w-4 h-4" src="{{ asset('images/naira.png') }}" alt="">
-                                    {{ number_format($product->price_ngn) }}
-                                </p>
-                                                                <a href="{{ route('shop.productDetails', $product->id) }}" class="text-md font-semibold font-bricolage border-b-[1px] border-[#212121] hover:text-gray-600">
-                                    SHOP
-                                </a>
                             </div>
+                        @endforeach
+                    @else
+                        <div class="w-full text-center py-10">
+                            <p>No products available at the moment.</p>
                         </div>
-                    @endforeach
+                    @endif
                 </div>
                 <div class="flex flex-row justify-center pt-10 items-center gap-2">
                     <h1 class="text-md font-semibold font-bricolage border-b-[1px] border-[#212121]">VIEW ALL</h1>
