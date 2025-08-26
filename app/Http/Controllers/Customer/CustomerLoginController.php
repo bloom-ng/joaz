@@ -36,8 +36,14 @@ class CustomerLoginController extends Controller
         $credentials = $request->only('email', 'password');
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
-            if ($user->hasRole('customer')) {
+            // Check if user has customer role
+            if ($user->role === 'customer') {
                 $request->session()->regenerate();
+                
+                // Merge guest cart with user's cart
+                if (session('cart')) {
+                    \App\Http\Controllers\Customer\CartController::mergeGuestCart($user);
+                }
                 
                 // Check if the intended URL is the login page itself
                 $intended = $request->session()->get('url.intended');

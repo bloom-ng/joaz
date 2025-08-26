@@ -40,12 +40,18 @@ Route::get('/category/{category?}', [ShopController::class, 'categoryPage'])
     ->where('category', '[0-9]+') // Only match numeric category IDs
     ->name('shop.category');
 
-// Cart routes
-Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
-Route::patch('/cart/{cartItem}', [CartController::class, 'update'])->name('cart.update');
-Route::delete('/cart/{cartItem}', [CartController::class, 'remove'])->name('cart.remove');
-Route::post('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
+// Cart routes (protected - requires authentication)
+Route::middleware('auth')->group(function () {
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+    Route::patch('/cart/{cartItem}', [CartController::class, 'update'])->name('cart.update');
+    Route::delete('/cart/{cartItem}', [CartController::class, 'remove'])->name('cart.remove');
+    Route::post('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
+});
+
+// Guest cart routes (no authentication required)
+Route::post('/guest/cart/add', [CartController::class, 'add'])->name('guest.cart.add');
+Route::delete('/cart/guest/{itemId}', [CartController::class, 'remove'])->name('cart.guest.remove');
 
 Route::get('/learn', function () {
     return view('customer.learn');

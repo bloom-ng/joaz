@@ -15,7 +15,8 @@ class ReviewController extends Controller
      */
     public function index()
     {
-        //
+        $reviews = Review::with(['user', 'product'])->paginate(10);
+        return view('admin.reviews.index', compact('reviews'));
     }
 
     /**

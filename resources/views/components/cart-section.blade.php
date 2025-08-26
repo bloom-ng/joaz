@@ -1,14 +1,9 @@
 <!-- Cart Section (inner content only) -->
-<div>
+<div id="cart-content">
   <div class="flex flex-row font-rustler text-4xl items-center justify-center py-12">MY CART</div>
 
   <div class="flex flex-row items-stretch gap-4 px-16 rounded-2xl">
-    @forelse($cart->items as $item)
-    @php
-        $total = 0;
-        $product = $item->product;
-        $images = $product->images ?? collect();
-    @endphp
+
     <div class="flex flex-col border border-[1px] border-[#21212199]/30 font-bricolage w-[70%] rounded-2xl">
 
       <table class="table-auto">
@@ -21,6 +16,16 @@
           </tr>
         </thead>
         <tbody>
+            @if(isset($cart->items) && (is_array($cart->items) || (is_object($cart->items) && $cart->items->isNotEmpty())))
+            @forelse($cart->items as $index => $item)
+            @php
+                $isGuest = is_array($cart);
+                $product = $isGuest ? $item['product'] : $item->product;
+                $itemId = $isGuest ? $index : $item->id;
+                $quantity = $isGuest ? $item['quantity'] : $item->quantity;
+                $unitPrice = $isGuest ? $item['unit_price'] : $item->unit_price;
+                $images = $isGuest ? collect([(object)['image' => $product->images->first()->image ?? '']]) : ($product->images ?? collect());
+            @endphp
                 <tr class="border-b-[1px] border-[#212121]/20 last:border-b-0">
                     <td class="px-6 py-4 align-middle">
                         <div class="flex flex-row gap-3 items-center">
@@ -43,38 +48,53 @@
                         <div class="flex flex-row items-center justify-center gap-2">
                             <!-- Decrement -->
                             <button type="button"
-                                    onclick="updateCart({{ $item->id }}, 'decrement')"
+                                    onclick="updateCart('{{ $itemId }}', 'decrement', {{ $isGuest ? 'true' : 'false' }})"
                                     class="w-6 h-6 bg-[#E7E4E1] text-[#212121] rounded-sm flex items-center justify-center font-bold text-xl">-</button>
 
                             <!-- Quantity display -->
-                            <span id="quantity-{{ $item->id }}"
+                            <span id="quantity-{{ $itemId }}"
                                   class="w-6 h-6 text-[#FCFCFC] flex items-center justify-center bg-[#85BB3F] text-center font-semibold">
-                                {{ $item->quantity }}
+                                {{ $quantity }}
                             </span>
 
                             <!-- Increment -->
                             <button type="button"
-                                    onclick="updateCart({{ $item->id }}, 'increment')"
+                                    onclick="updateCart('{{ $itemId }}', 'increment', {{ $isGuest ? 'true' : 'false' }})"
                                     class="w-6 h-6 bg-[#E7E4E1] text-[#212121] rounded-sm flex items-center justify-center font-bold text-xl">+</button>
                         </div>
                     </td>
                     <td class="px-6 py-4 align-middle whitespace-nowrap">
                         <span class="flex flex-row gap-1 items-center">
                             <img class="w-4 h-4" src="/images/naira.png" alt="">
-                            <p id="item-total-{{ $item->id }}">{{ number_format($product->price_ngn * $item->quantity, 2) }}</p>
+                            <p id="item-total-{{ $itemId }}">{{ number_format($unitPrice * $quantity, 2) }}</p>
                         </span>
                     </td>
                     <td class="px-6 py-4 align-middle">
-                        <form action="{{ route('cart.remove', $item->id) }}#cart" method="POST">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit">
+                        @if($isGuest)
+                            <button type="button" onclick="removeFromCart('{{ $itemId }}', true)">
                                 <img class="w-4 h-4 cursor-pointer" src="/images/trash.png" alt="Remove">
                             </button>
-                        </form>
+                        @else
+                            <form action="{{ route('cart.remove', $item->id) }}#cart" method="POST">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit">
+                                    <img class="w-4 h-4 cursor-pointer" src="/images/trash.png" alt="Remove">
+                                </button>
+                            </form>
+                        @endif
                     </td>
                 </tr>
-
+                @empty
+                <div class="font-rustler text-4xl items-center justify-center py-8 w-full">
+                  <p class="text-center">Your cart is empty</p>
+                </div>
+                @endforelse
+                @else
+                <div class="font-rustler text-4xl items-center justify-center py-8 w-full">
+                  <p class="text-center">Your cart is empty</p>
+                </div>
+                @endif
         </tbody>
       </table>
     </div>
@@ -82,17 +102,29 @@
       <div class="font-semibold flex flex-row items-start pt-7 pb-4 items-center px-4 border-b-[1px] border-[#212121]/20 justify-start">Cart Summary</div>
       <div class="flex flex-row justify-between py-4 px-4 border-b-[1px] border-[#212121]/20 items-center">
         <p class="font-semibold">Total Items</p>
-        <p id="total-items">{{ $cart->items->sum('quantity') }}</p>
+        <p id="total-items">
+            @php
+                $totalItems = 0;
+                $total = 0;
+                if(isset($isGuest) && $isGuest) {
+                    $totalItems = !empty($cart['items']) ? array_sum(array_column($cart['items'], 'quantity')) : 0;
+                    $total = !empty($cart['items']) ? array_reduce($cart['items'], function($carry, $item) {
+                        return $carry + ($item['unit_price'] * $item['quantity']);
+                    }, 0) : 0;
+                } else {
+                    $totalItems = $cart->items->sum('quantity');
+                    $total = $cart->items->sum(function($item) {
+                        return $item->unit_price * $item->quantity;
+                    });
+                }
+            @endphp
+            {{ $totalItems }}
+        </p>
     </div>
     <div class="flex flex-row font-semibold py-4 px-4 border-b-[1px] border-[#212121]/20 justify-between items-center">
         <p>Price</p>
         <span class="flex flex-row gap-1 items-center">
             <img class="w-4 h-4" src="/images/naira.png" alt="">
-            @php
-                $total = $cart->items->sum(function($item) {
-                    return $item->product->price_ngn * $item->quantity;
-                });
-            @endphp
             <p id="cart-total">{{ number_format($total, 2) }}</p>
         </span>
     </div>
@@ -115,11 +147,7 @@
         </button>
       </div>
     </div>
-    @empty
-    <div class="font-rustler text-4xl items-center justify-center py-8">
-    <p class="text-center">Your cart is empty</p>
-    </div>
-    @endforelse
+
   </div>
 
   <div class="flex flex-row justify-start px-16 pb-10 pt-10 items-center gap-2">
@@ -163,6 +191,32 @@
         } catch (err) {
             console.error(err);
             alert('Something went wrong updating the cart.');
+        }
+    }
+
+    async function removeFromCart(cartItemId, isGuest = false) {
+        if (!confirm('Are you sure you want to remove this item from your cart?')) return;
+
+        try {
+            const url = isGuest ? `/cart/guest/${cartItemId}` : `/cart/${cartItemId}`;
+            const response = await fetch(url, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            if (response.ok) {
+                window.location.reload();
+            } else {
+                const data = await response.json();
+                alert(data.message || 'Failed to remove item');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while removing the item.');
         }
     }
     </script>

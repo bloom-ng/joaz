@@ -46,6 +46,11 @@ class RegistrationController extends Controller
 
         Auth::login($user);
 
+        // Merge guest cart with user's cart after registration
+        if (session('cart')) {
+            \App\Http\Controllers\Customer\CartController::mergeGuestCart($user);
+        }
+
         return redirect()->route('home')->with('success', 'Registration successful!');
     }
 }
