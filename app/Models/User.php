@@ -7,11 +7,12 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
+use App\Models\Profile;
 
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, HasRoles;
-
+    
     /**
      * The attributes that are mass assignable.
      *
@@ -47,6 +48,13 @@ class User extends Authenticatable
     ];
 
     /**
+     * The relationships that should be eager loaded.
+     *
+     * @var array<string, string>
+     */
+    protected $with = ['profile', 'addresses'];
+
+    /**
      * Get the profile associated with the user.
      */
     public function profile()
@@ -55,12 +63,6 @@ class User extends Authenticatable
     }
 
     /**
-     * Get the cart for the user.
-     */
-    public function cart()
-    {
-        return $this->hasOne(Cart::class);
-    }
 
     /**
      * Get the addresses for the user.

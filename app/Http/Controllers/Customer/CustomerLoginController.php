@@ -17,7 +17,7 @@ class CustomerLoginController extends Controller
 {
     public function showLoginForm()
     {
-        return view('auth.login'); 
+        return view('auth.login');
     }
 
     public function login(Request $request)
@@ -39,19 +39,19 @@ class CustomerLoginController extends Controller
             // Check if user has customer role
             if ($user->role === 'customer') {
                 $request->session()->regenerate();
-                
+
                 // Merge guest cart with user's cart
                 if (session('cart')) {
                     \App\Http\Controllers\Customer\CartController::mergeGuestCart($user);
                 }
-                
+
                 // Check if the intended URL is the login page itself
                 $intended = $request->session()->get('url.intended');
                 if ($intended && (str_contains($intended, '/login') || str_contains($intended, '/signin'))) {
                     // If intended URL is login page, redirect to welcome page
                     return redirect()->route('home');
                 }
-                
+
                 // Otherwise use the intended URL or default to welcome page
                 return redirect()->intended(route('home'));
             } else {
@@ -62,12 +62,14 @@ class CustomerLoginController extends Controller
         return redirect()->back()->withErrors(['email' => 'Invalid credentials.'])->withInput();
     }
 
-    public function logout(Request $request)
+    
+
+    public function userLogout(Request $request)
     {
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect()->route('login')->with('success', 'Logged out successfully.');
+        return redirect()->route('home')->with('success', 'Logged out successfully.');
     }
 
     // Forgot Password
@@ -88,10 +90,10 @@ class CustomerLoginController extends Controller
 
         $email = $request->email;
         $user = \App\Models\User::where('email', $email)->first();
-        
+
         // Generate reset token
         $token = Str::random(64);
-        
+
         // Store token in password_reset_tokens table
         DB::table('password_reset_tokens')->updateOrInsert(
             ['email' => $email],
@@ -101,17 +103,17 @@ class CustomerLoginController extends Controller
                 'created_at' => now()
             ]
         );
-        
+
         // Generate reset URL
         $resetUrl = route('password.reset', ['token' => $token, 'email' => $email]);
-        
+
         // Prepare email data
         $emailData = [
             'name' => $user->name ?? $user->email,
             'reset_url' => $resetUrl,
             'email' => $email
         ];
-        
+
         // Send custom email
         try {
             Mail::to($email)->send(new PasswordResetMail($emailData));

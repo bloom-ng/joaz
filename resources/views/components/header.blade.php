@@ -37,7 +37,7 @@
                             {{ $itemCount }}
                         </span>
                     @endif
-                </a>
+                </a>    
             @else
                 <a href="{{ route('login') }}" class="relative">
                     <img class="h-5" src="/images/cart.png" alt="Cart">

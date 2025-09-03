@@ -1,7 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\RegistrationController;
@@ -40,8 +42,13 @@ Route::get('/category/{category?}', [ShopController::class, 'categoryPage'])
     ->where('category', '[0-9]+') // Only match numeric category IDs
     ->name('shop.category');
 
-// Cart routes (protected - requires authentication)
+// Profile routes (protected - requires authentication)
 Route::middleware('auth')->group(function () {
+    // Profile update route
+    Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile/update-address', [ProfileController::class, 'updateAddress'])->name('profile.update-address');
+
+    // Cart routes
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
     Route::patch('/cart/{cartItem}', [CartController::class, 'update'])->name('cart.update');
@@ -86,8 +93,9 @@ Route::get('/payment-redirect', function () {
 })->name('payment-redirect');
 
 Route::get('/account-center', function () {
-    return view('customer.shop.account-center');
-})->name('account-center');
+    $user = Auth::user();
+    return view('customer.shop.account-center', ['user' => $user]);
+})->middleware('auth')->name('account-center');
 
 Route::get('/address-book', function () {
     return view('customer.shop.address-book');
@@ -113,7 +121,7 @@ Route::get('/reset-password', function () {
 
 // Route::get('/login', [\App\Http\Controllers\Customer\CustomerLoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [\App\Http\Controllers\Customer\CustomerLoginController::class, 'login'])->name('login.post');
-Route::post('/logout', [\App\Http\Controllers\Customer\CustomerLoginController::class, 'logout'])->name('logout');
+Route::post('/user-logout', [\App\Http\Controllers\Customer\CustomerLoginController::class, 'userLogout'])->name('user-logout');
 
 // Customer password reset/forgot
 Route::get('/password/forgot', [\App\Http\Controllers\Customer\CustomerLoginController::class, 'showLinkRequestForm'])->name('password.request');

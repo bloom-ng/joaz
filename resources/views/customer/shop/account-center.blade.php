@@ -48,6 +48,9 @@
     <!-- Load Bricolage Grotesque from Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;700&display=swap" rel="stylesheet">
 
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
     <title>Account Center - JOAZ</title>
 </head>
 <body class="bg-[#FCFCFC] text-[#212121]">
@@ -67,7 +70,7 @@
     <main>
       <section id="section-account">@include('components.account-section')</section>
       <section id="section-address" class="hidden">@include('components.address-book-section')</section>
-      <section id="section-cart" class="hidden">@include('components.cart-section', ['cart' => auth()->user()->cart])</section>
+      <section id="section-cart" class="hidden">@include('components.cart-section', ['cart' => $cart])</section>
       <section id="section-orders" class="hidden">@include('components.orders-section')</section>
     </main>
 
