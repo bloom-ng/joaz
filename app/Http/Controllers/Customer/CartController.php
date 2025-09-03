@@ -31,23 +31,25 @@ class CartController extends Controller
                 'total' => 0,
                 'item_count' => 0
             ]);
-            
+
             // If we have items in the session, load the product data
             if (!empty($cart['items'])) {
                 $productIds = array_column($cart['items'], 'product_id');
                 $products = Product::with('images')->whereIn('id', $productIds)->get()->keyBy('id');
-                
+
                 foreach ($cart['items'] as &$item) {
                     if (isset($products[$item['product_id']])) {
                         $item['product'] = $products[$item['product_id']];
                     }
                 }
             }
-            
+
             // Convert to object for consistent view handling
             $cart = (object) $cart;
         }
+
         
+
         return view('customer.shop.account-center', compact('cart'));
     }
 
@@ -129,7 +131,7 @@ class CartController extends Controller
             // Check if item already exists in cart
             $itemKey = null;
             foreach ($cart['items'] as $key => $item) {
-                if ($item['product_id'] == $request->product_id && 
+                if ($item['product_id'] == $request->product_id &&
                     $item['variant_id'] == ($request->variant_id ?? null)) {
                     $itemKey = $key;
                     break;
@@ -144,7 +146,7 @@ class CartController extends Controller
             if ($itemKey !== null) {
                 // Update existing item
                 $newQuantity = $cart['items'][$itemKey]['quantity'] + $request->quantity;
-                
+
                 if ($product->quantity < $newQuantity) {
                     return back()->withErrors(['quantity' => 'Insufficient stock available.']);
                 }
@@ -185,8 +187,8 @@ class CartController extends Controller
 
         if (Auth::check()) {
             // For authenticated users
-            $cartItem = CartItem::findOrFail($itemId);
-            
+            $cartItem = CartItem::with('product')->findOrFail($itemId);
+
             // Check if cart belongs to authenticated user
             if ($cartItem->cart->user_id !== Auth::id()) {
                 return response()->json(['error' => 'Forbidden'], 403);
@@ -202,8 +204,10 @@ class CartController extends Controller
             // Update the cart item
             $cartItem->update(['quantity' => $newQuantity]);
 
+            // Refresh the relationship
+            $cart = $cartItem->cart->load('items');
+            
             // Update cart total
-            $cart = $cartItem->cart;
             $cart->update([
                 'total' => $cart->items->sum(function($item) {
                     return $item->quantity * $item->unit_price;
@@ -212,6 +216,7 @@ class CartController extends Controller
 
             $itemTotal = $cartItem->unit_price * $newQuantity;
             $cartTotal = $cart->total;
+            $totalItems = $cart->items->sum('quantity');
         } else {
             // For guests, use session
             $cart = session('cart', [
@@ -241,24 +246,29 @@ class CartController extends Controller
 
             // Update the item
             $cart['items'][$itemKey]['quantity'] = $newQuantity;
-            
+
             // Update cart totals
             $cart['total'] = collect($cart['items'])->sum(function($item) {
                 return $item['quantity'] * $item['unit_price'];
             });
             
+            // Update item count
+            $cart['item_count'] = collect($cart['items'])->sum('quantity');
+
             // Save to session
             session(['cart' => $cart]);
-            
+
             $itemTotal = $cart['items'][$itemKey]['unit_price'] * $newQuantity;
             $cartTotal = $cart['total'];
+            $totalItems = $cart['item_count'];
         }
 
         return response()->json([
             'success' => true,
             'quantity' => $newQuantity,
-            'itemTotal' => number_format($itemTotal, 2),
-            'cartTotal' => number_format($cartTotal, 2),
+            'itemTotal' => number_format($itemTotal, 2, '.', ''),
+            'cartTotal' => number_format($cartTotal, 2, '.', ''),
+            'totalItems' => $totalItems ?? $newQuantity
         ]);
     }
 
@@ -268,14 +278,14 @@ class CartController extends Controller
         if (Auth::check()) {
             // For authenticated users
             $cartItem = CartItem::findOrFail($itemId);
-            
+
             // Check if cart belongs to authenticated user
             if ($cartItem->cart->user_id !== Auth::id()) {
                 abort(403);
             }
 
             $cartItem->delete();
-            
+
             // Update cart total
             $cart = $cartItem->cart;
             $cart->update([
@@ -298,16 +308,16 @@ class CartController extends Controller
                     break;
                 }
             }
-            
+
             // Re-index array
             $cart['items'] = array_values($cart['items']);
-            
+
             // Update cart totals
             $cart['total'] = collect($cart['items'])->sum(function($item) {
                 return $item['quantity'] * $item['unit_price'];
             });
             $cart['item_count'] = count($cart['items']);
-            
+
             // Save to session
             session(['cart' => $cart]);
         }
@@ -346,7 +356,7 @@ class CartController extends Controller
     public static function mergeGuestCart($user)
     {
         $guestCart = session('cart');
-        
+
         if (empty($guestCart['items'])) {
             return;
         }

@@ -22,7 +22,7 @@ class Profile extends Model
         'bio',
         'social_links',
     ];
-
+    
     /**
      * The attributes that should be cast.
      *
