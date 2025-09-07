@@ -8,6 +8,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use App\Models\Profile;
+use App\Models\Cart;
 
 class User extends Authenticatable
 {
@@ -60,6 +61,16 @@ class User extends Authenticatable
     public function profile()
     {
         return $this->hasOne(Profile::class);
+    }
+
+    /**
+     * Get the user's cart.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function cart()
+    {
+        return $this->hasOne(Cart::class, 'user_id');
     }
 
     /**

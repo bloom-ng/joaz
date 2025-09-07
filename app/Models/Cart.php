@@ -21,7 +21,9 @@ class Cart extends Model
     protected $appends = ['total'];
 
     /**
-     * Get the user that owns the cart.
+     * The user that owns the cart.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function user()
     {

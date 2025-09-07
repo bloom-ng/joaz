@@ -70,7 +70,7 @@
     <main>
       <section id="section-account">@include('components.account-section')</section>
       <section id="section-address" class="hidden">@include('components.address-book-section')</section>
-      <section id="section-cart" class="hidden">@include('components.cart-section', ['cart' => $cart])</section>
+      <section id="section-cart" class="hidden">@include('components.cart-section', ['cart' => $cart ?? null])</section>
       <section id="section-orders" class="hidden">@include('components.orders-section')</section>
     </main>
 

@@ -153,19 +153,33 @@
                         });
                     } else {
                         // Empty card: create input fields for new address
-                        const fields = ["address type", "address", "country", "state", "city",
-                            "postal_code"
+                        const fields = [
+                            { name: 'label', placeholder: 'Address Type' },
+                            { name: 'address', placeholder: 'Address' },
+                            { name: 'country', placeholder: 'Country' },
+                            { name: 'state', placeholder: 'State' },
+                            { name: 'city', placeholder: 'City' },
+                            { name: 'postal_code', placeholder: 'Postal Code' }
                         ];
                         const container = document.createElement("div");
                         container.className = "flex flex-col gap-3";
                         fields.forEach(field => {
+                            const wrapper = document.createElement("div");
+                            wrapper.className = "flex justify-between items-center";
+                            
+                            const label = document.createElement("span");
+                            label.className = "text-[#212121] text-lg font-bold";
+                            label.textContent = field.placeholder;
+                            
                             const input = document.createElement("input");
                             input.type = "text";
-                            input.name = field;
-                            input.placeholder = field.replace("_", " ").toUpperCase();
-                            input.className =
-                            "border-b border-gray-400 focus:outline-none focus:border-black text-right bg-transparent";
-                            container.appendChild(input);
+                            input.name = field.name;
+                            input.placeholder = field.placeholder;
+                            input.className = "border-b border-gray-400 focus:outline-none focus:border-black text-right bg-transparent";
+                            
+                            wrapper.appendChild(label);
+                            wrapper.appendChild(input);
+                            container.appendChild(wrapper);
                         });
                         form.appendChild(container);
                     }
