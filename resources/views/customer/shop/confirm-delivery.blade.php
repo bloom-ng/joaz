@@ -33,7 +33,7 @@
 
     <!-- Load Bricolage Grotesque from Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;700&display=swap" rel="stylesheet">
-    
+
     <title>Cart - JOAZ</title>
 </head>
 <body class="bg-[#FCFCFC] text-[#212121]">
@@ -58,15 +58,15 @@
                 <input type="text" placeholder="Name" class="w-full font-bricolage border border-[#21212199]/30 rounded-lg p-4 bg-transparent placeholder:text-black">
                 <input type="email" placeholder="Email address" class="w-full font-bricolage border border-[#21212199]/30 rounded-lg p-4 bg-transparent placeholder:text-black">
                 <input type="tel" placeholder="Phone number" class="w-full font-bricolage border border-[#21212199]/30 rounded-lg p-4 bg-transparent placeholder:text-black">
-                <button style="background: linear-gradient(91.36deg, #85BB3F 0%, #212121 162.21%);"
-                        class="text-[#FCFCFC] text-sm px-10 py-5 rounded-lg w-full mt-8 mb-3">
+               <button style="background: linear-gradient(91.36deg, #85BB3F 0%, #212121 162.21%);"
+                        class="text-[#FCFCFC] text-sm px-10 py-5 rounded-lg w-full mt-8 mb-3"> <a href="{{ route('confirm-delivery2') }}">
                     PROCEED
-                </button>
+                </a></button>
             </div>
         </div>
-        
 
-        
+
+
         @include('components.footer')
     </div>
 </body>
@@ -76,7 +76,7 @@
     function toggleDropdown() {
         const dropdownMenu = document.getElementById('dropdown-menu');
         const dropdownArrow = document.getElementById('dropdown-arrow');
-        
+
         if (dropdownMenu.classList.contains('hidden')) {
             dropdownMenu.classList.remove('hidden');
             dropdownArrow.style.transform = 'rotate(180deg)';
@@ -96,7 +96,7 @@
         const dropdown = document.querySelector('.relative');
         const dropdownMenu = document.getElementById('dropdown-menu');
         const dropdownArrow = document.getElementById('dropdown-arrow');
-        
+
         if (!dropdown.contains(event.target)) {
             dropdownMenu.classList.add('hidden');
             dropdownArrow.style.transform = 'rotate(0deg)';

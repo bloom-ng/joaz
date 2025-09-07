@@ -84,6 +84,10 @@ Route::get('/confirm-delivery', function () {
     return view('customer.shop.confirm-delivery');
 })->name('confirm-delivery');
 
+Route::get('/confirm-delivery2', function () {
+    return view('customer.shop.confirm-delivery2');
+})->name('confirm-delivery2');
+
 Route::get('/order-summary2', function () {
     return view('customer.shop.order-summary2');
 })->name('order-summary2');
@@ -92,13 +96,12 @@ Route::get('/payment-redirect', function () {
     return view('customer.shop.payment-redirect');
 })->name('payment-redirect');
 
-Route::get('/account-center', function () {
-    $user = Auth::user();
-    return view('customer.shop.account-center', ['user' => $user]);
-})->middleware('auth')->name('account-center');
+// Account center route - uses CartController@index to handle cart logic
+Route::get('/account-center', [CartController::class, 'index'])->name('account-center');
 
 Route::get('/address-book', function () {
-    return view('customer.shop.address-book');
+    $user = Auth::user();
+    return view('customer.shop.address-book', ['user' => $user]);
 })->name('address-book');
 
 Route::get('/my-orders', function () {
