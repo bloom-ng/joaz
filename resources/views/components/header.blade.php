@@ -37,7 +37,7 @@
                             {{ $itemCount }}
                         </span>
                     @endif
-                </a>    
+                </a>
             @else
                 <a href="{{ route('login') }}" class="relative">
                     <img class="h-5" src="/images/cart.png" alt="Cart">
@@ -59,3 +59,6 @@
         @endguest
     </div>
 </div>
+
+@include('components.cart-notification')
+@include('components.cancel-order-notification')

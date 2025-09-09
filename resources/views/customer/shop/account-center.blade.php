@@ -56,7 +56,7 @@
 <body class="bg-[#FCFCFC] text-[#212121]">
   <div class="min-h-screen flex flex-col">
     @include('components.header')
-    @include('components.cart-notification')
+   
 
     <!-- Tabs Header -->
     <div class="flex font-bricolage font-semibold px-16 py-12 text-[#212121]/60 flex-row text-xl gap-10">

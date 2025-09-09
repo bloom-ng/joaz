@@ -1,10 +1,10 @@
-@if(session('cancel_order_success'))
+@if(session('error'))
 <div id="cancel-order-notification" class="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 bg-[#BB413F] text-[#FCFCFC] px-6 py-4 rounded-lg shadow-lg flex items-center gap-4 w-[95%] max-w-none">
     <div class="flex-shrink-0">
         <img src="/images/error-circle.png" alt="Success" class="w-6 h-6">
     </div>
     <div class="flex-1">
-        <div class="font-semibold text-sm">Your order has been cancelled and removed from your cart</div>
+        <div class="font-semibold text-sm">{{ session('error') }}</div>
     </div>
     <button onclick="closeCancelOrderNotification()" class="flex-shrink-0 text-[#FCFCFC] hover:opacity-80 transition-opacity">
         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">

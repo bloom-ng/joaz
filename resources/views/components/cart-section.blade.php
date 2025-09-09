@@ -68,14 +68,14 @@
                                 $unitPrice = $item->unit_price;
                                 $totalItems = $cart->items->sum('quantity');
                                 $itemId =    $item->id;
-                   
+
                             @endphp
-                    
+
                             <tr class="border-b-[1px] border-[#212121]/20 last:border-b-0">
                                 <td class="px-6 py-4 align-middle">
                                     <div class="flex flex-row gap-3 items-center">
                                         @if($images)
-                                            <img class="w-[100px] h-[112px] object-cover rounded-xl"
+                                            <img class="w-[120px] h-[132px] object-cover rounded-xl"
                                                  src="{{ asset('storage/' . $images) }}"
                                                  alt="{{ $product->name }}">
                                         @else
@@ -96,17 +96,17 @@
                                         class="w-6 h-6 bg-[#E7E4E1] text-[#212121] rounded-sm flex items-center justify-center font-bold text-xl">
                                     -
                                 </button>
-                                
+
                                         <span id="quantity-{{ $item->id }}" class="w-6 h-6 text-[#FCFCFC] flex items-center justify-center bg-[#85BB3F] text-center font-semibold">
                                         {{ $item->quantity }}
                                     </span>
-                                    
+
                                         <button type="button"
                                         onclick="updateQuantity({{ $item->id }}, 'increment')"
                                         class="w-6 h-6 bg-[#E7E4E1] text-[#212121] rounded-sm flex items-center justify-center font-bold text-xl">
                                     +
                                 </button>
-                                
+
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 align-middle whitespace-nowrap">
@@ -133,7 +133,7 @@
                             </tr>
                         @endforelse
                     </tbody>
-                    
+
                 </table>
             </div>
             <div class="flex flex-col h-full border border-[1px] border-[#21212199]/30 font-bricolage w-[30%] rounded-2xl">
@@ -162,10 +162,10 @@
                             <p class="cart-total">{{ number_format($cart->total, 2) }}</p>
                         </span>
                     </div>
-                    <button style="background: linear-gradient(91.36deg, #85BB3F 0%, #212121 162.21%);"
+                    <a href="{{ route('confirm-delivery') }}"><button style="background: linear-gradient(91.36deg, #85BB3F 0%, #212121 162.21%);"
                             class="text-[#FCFCFC] text-sm px-10 py-5 rounded-lg">
                         CONFIRM ORDER
-                    </button>
+                    </button></a>
                 </div>
             </div>
 
@@ -214,10 +214,10 @@
 
     async function removeFromCart(itemId, event) {
         event.preventDefault();
-        
+
 
         const form = event.target.closest('form');
-        
+
         try {
             const response = await fetch(form.action, {
                 method: 'POST',
