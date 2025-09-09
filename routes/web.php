@@ -80,17 +80,21 @@ Route::get('/order-summary', function () {
     return view('customer.shop.order-summary');
 })->name('order-summary');
 
-Route::get('/confirm-delivery', function () {
-    return view('customer.shop.confirm-delivery');
-})->name('confirm-delivery');
+use App\Http\Controllers\CheckoutController;
+
+// Checkout routes
+Route::get('/confirm-delivery', [CheckoutController::class, 'showDeliveryForm'])->name('confirm-delivery');
+Route::post('/process-delivery', [CheckoutController::class, 'processDelivery'])->name('process-delivery');
+Route::post('/checkout/add-address', [CheckoutController::class, 'addAddress'])
+    ->name('checkout.addAddress');
+Route::post('/checkout/set-default-address', [CheckoutController::class, 'setDefaultAddress'])
+    ->name('checkout.setDefaultAddress');
 
 Route::get('/confirm-delivery2', function () {
     return view('customer.shop.confirm-delivery2');
 })->name('confirm-delivery2');
 
-Route::get('/order-summary2', function () {
-    return view('customer.shop.order-summary2');
-})->name('order-summary2');
+Route::get('/order-summary2', [CheckoutController::class, 'index'])->name('order-summary2');
 
 Route::get('/payment-redirect', function () {
     return view('customer.shop.payment-redirect');
