@@ -186,7 +186,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('newsletters/{newsletter}', [NewsletterController::class, 'destroy'])->name('newsletters.destroy');
         Route::get('newsletters/export', [NewsletterController::class, 'exportToCsv'])->name('newsletters.export');
 
+        // Pickup Addresses management
+        Route::resource('pickup-addresses', \App\Http\Controllers\Admin\PickupAddressController::class)->except(['show']);
+
+        // Delivery Fees management
+        Route::resource('delivery-fees', \App\Http\Controllers\Admin\DeliveryFeeController::class)->except(['show']);
+
     });
+
+    Route::resource('settings', \App\Http\Controllers\Admin\SettingController::class)->except(['show']);
 });
 
 // Authentication routes

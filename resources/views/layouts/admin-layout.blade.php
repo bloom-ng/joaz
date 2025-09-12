@@ -68,7 +68,7 @@
     @endif
 
     <!-- side bar -->
-    <aside class="relative bg-[#ffffff] h-screen w-[20%] hidden lg:block">
+    <aside class="relative bg-[#ffffff] w-[20%] hidden lg:block">
         <div class="p-6">
             <img src="/images/logo.png" alt="logo" class="h-14 w-42">
         </div>
@@ -277,6 +277,47 @@
                 class="pl-5 text-[13.5px] {{ request()->routeIs('admin.newsletters.*') ? 'text-[#ffffff]' : 'text-[#222222B2]' }}">Newsletters</span>
         </a>
 
+        <a href="{{ route('admin.pickup-addresses.index') }}"
+            class="{{ request()->routeIs('admin.pickup-addresses.*') ? 'flex items-center py-[12px] px-5 bg-gradient-to-r from-[#85BB3F] to-[#2B2B2B] text-white rounded-xl ml-8 shadow-md mt-7 mr-4 font-[bricolage]' : 'flex items-center py-2 px-8 text-gray-600 mt-7 font-[bricolage]' }}">
+            @if (request()->routeIs('admin.pickup-addresses.*'))
+                <svg width="25" height="25" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="white"/>
+                </svg>
+            @else
+                <svg width="25" height="25" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="#222222" fill-opacity="0.7"/>
+                </svg>
+            @endif
+            <span class="pl-5 text-[13.5px] {{ request()->routeIs('admin.pickup-addresses.*') ? 'text-[#ffffff]' : 'text-[#222222B2]' }}">Pickup Addresses</span>
+        </a>
+
+        <a href="{{ route('admin.delivery-fees.index') }}"
+            class="{{ request()->routeIs('admin.delivery-fees.*') ? 'flex items-center py-[12px] px-5 bg-gradient-to-r from-[#85BB3F] to-[#2B2B2B] text-white rounded-xl ml-8 shadow-md mt-7 mr-4 font-[bricolage]' : 'flex items-center py-2 px-8 text-gray-600 mt-7 font-[bricolage]' }}">
+            @if (request()->routeIs('admin.delivery-fees.*'))
+                <svg width="25" height="25" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm2.4-4.5h-2l1.3-3.9c.2-.6.76-1 1.4-1h2v5zm4.6 0H9v-5h4v5zm5.5 4.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM17 12V9.5h2.5l1.96 2.5H17z" fill="white"/>
+                </svg>
+            @else
+                <svg width="25" height="25" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm2.4-4.5h-2l1.3-3.9c.2-.6.76-1 1.4-1h2v5zm4.6 0H9v-5h4v5zm5.5 4.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM17 12V9.5h2.5l1.96 2.5H17z" fill="#222222" fill-opacity="0.7"/>
+                </svg>
+            @endif
+            <span class="pl-5 text-[13.5px] {{ request()->routeIs('admin.delivery-fees.*') ? 'text-[#ffffff]' : 'text-[#222222B2]' }}">Delivery Fees</span>
+        </a>
+
+        <a href="{{ route('admin.settings.index') }}"
+        class="{{ request()->routeIs('admin.settings.*') ? 'flex items-center py-[12px] px-5 bg-gradient-to-r from-[#85BB3F] to-[#2B2B2B] text-white rounded-xl ml-8 shadow-md mt-7 mr-4 font-[bricolage]' : 'flex items-center py-2 px-8 text-gray-600 mt-7 font-[bricolage]' }}">
+        @if (request()->routeIs(''))
+            <svg width="25" height="25" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm2.4-4.5h-2l1.3-3.9c.2-.6.76-1 1.4-1h2v5zm4.6 0H9v-5h4v5zm5.5 4.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM17 12V9.5h2.5l1.96 2.5H17z" fill="white"/>
+            </svg>
+        @else
+            <svg width="25" height="25" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 1H5C3.9 1 3 1.9 3 3V21C3 22.1 3.9 23 5 23H19C20.1 23 21 22.1 21 21V9ZM19 21H5V3H13V9H19V21Z" fill="#222222" fill-opacity="0.7"/>
+            </svg>
+        @endif
+        <span class="pl-5 text-[13.5px] {{ request()->routeIs('') ? 'text-[#ffffff]' : 'text-[#222222B2]' }}">Settings</span>
+    </a>
 
             <form method="POST" action="{{ route('admin.logout') }}"
                 class="flex items-center py-2 px-8 text-gray-600 mt-7 font-[bricolage]">
