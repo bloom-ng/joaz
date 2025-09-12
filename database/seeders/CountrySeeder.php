@@ -188,7 +188,7 @@ class CountrySeeder extends Seeder
             ['name' => 'Ukraine', 'iso_code' => 'UKR'],
             ['name' => 'United States Minor Outlying Islands', 'iso_code' => 'UMI'],
             ['name' => 'Uruguay', 'iso_code' => 'URY'],
-            ['name' => 'United States', 'iso_code' => 'USA'],
+            ['name' => 'United States of America', 'iso_code' => 'USA'],
             ['name' => 'Uzbekistan', 'iso_code' => 'UZB'],
             ['name' => 'Holy See (Vatican City State)', 'iso_code' => 'VAT'],
             ['name' => 'Saint Vincent and the Grenadines', 'iso_code' => 'VCT'],
