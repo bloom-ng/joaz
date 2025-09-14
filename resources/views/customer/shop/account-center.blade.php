@@ -56,9 +56,6 @@
 <body class="bg-[#FCFCFC] text-[#212121]">
   <div class="min-h-screen flex flex-col">
     @include('components.header')
-   
-
-    <!-- Tabs Header -->
     <div class="flex font-bricolage font-semibold px-16 py-12 text-[#212121]/60 flex-row text-xl gap-10">
       <h1 class="cursor-pointer" data-tab="account">ACCOUNT</h1>
       <h1 class="cursor-pointer" data-tab="address">ADDRESS BOOK</h1>
@@ -71,7 +68,8 @@
       <section id="section-account">@include('components.account-section')</section>
       <section id="section-address" class="hidden">@include('components.address-book-section')</section>
       <section id="section-cart" class="hidden">@include('components.cart-section', ['cart' => $cart ?? null])</section>
-      <section id="section-orders" class="hidden">@include('components.orders-section')</section>
+      <section id="section-orders" class="hidden">@include('components.orders-section') </section>
+
     </main>
 
     @include('components.footer')

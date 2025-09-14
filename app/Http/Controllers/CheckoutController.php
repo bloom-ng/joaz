@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Setting;
+use App\Models\DeliveryFee;
 use Illuminate\Http\Request;
+use App\Models\PickupAddress;
 use Illuminate\Support\Facades\Auth;
 
 class CheckoutController extends Controller
@@ -23,6 +26,10 @@ class CheckoutController extends Controller
         session(['checkout.delivery_method' => $request->delivery_method]);
 
 
+        if ($request->delivery_method === 'pickup') {
+            return redirect()->route('select-pickup');
+        }
+
         return redirect()->route('confirm-delivery2');
     }
 
@@ -41,6 +48,28 @@ class CheckoutController extends Controller
         $address->update(['is_default' => true]);
 
     }
+
+    public function showPickupSelect()
+{
+    $user = auth()->user();
+    $defaultAddress = $user->addresses()->where("is_default", true)->first();
+
+
+    $pickupAddresses = PickupAddress::where('country', $defaultAddress->country)->get();
+
+    return view('customer.shop.pickup', compact('pickupAddresses', 'user'));
+}
+
+public function setPickup(Request $request)
+{
+    $request->validate([
+        'pickup_address_id' => 'required|exists:pickup_addresses,id',
+    ]);
+
+    session(['checkout.pickup_address_id' => $request->pickup_address_id]);
+
+    return redirect()->route('order-summary2');
+}
 
 
     public function addAddress(Request $request)
@@ -74,17 +103,12 @@ class CheckoutController extends Controller
 {
     $user = auth()->user();
 
-    // Assuming you have a relationship in User model: user()->cartItems()
     $cart = $user->cart()->with(['items.product.images'])->first();
     $cartItems = $cart ? $cart->items : collect();
-
-    // // Calculate totals
-    // $subTotal = $cart->sum(fn($item) => $item->product->price * $item->quantity);
-    // $delivery = 5000;
-    // $vat = 500;
-    // $grandTotal = $subTotal + $delivery + $vat;
-
-    return view('customer.shop.order-summary2', compact('cartItems'));
+    $defaultAddress = $user->addresses()->where("is_default", true)->first();
+    $deliveryFee = DeliveryFee::where('country', $defaultAddress->country)->first();
+    $VAT = Setting::where('name', 'Value Added Tax')->value('value');
+    return view('customer.shop.order-summary2', compact('cartItems', 'deliveryFee', 'VAT'));
 }
 
 }

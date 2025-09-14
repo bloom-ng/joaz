@@ -46,7 +46,10 @@
             $deliveryMethod = session("checkout.delivery_method");
             $user = auth()->user();
             $defaultAddress = $user->addresses()->where("is_default", true)->first();
-
+            $pickupAddress = null;
+            if (session()->has("checkout.pickup_address_id")) {
+                $pickupAddress = \App\Models\PickupAddress::find(session("checkout.pickup_address_id"));
+            }
         @endphp
 
         <div class="flex flex-row font-rustler text-4xl items-center justify-center pb-8 pt-12">ORDER SUMMARY</div>
@@ -65,59 +68,85 @@
                     </thead>
                     <tbody>
                         @forelse($cartItems as $index => $item)
-                        @php
-                        $product = $item->product;
-                        $images = $product->images->first()->image ?? null;
-                        $quantity = $item->quantity;
-                        $subTotal = $cartItems->sum(fn($item) => $item->unit_price * $item->quantity);
+                            @php
+                                $product = $item->product;
+                                $images = $product->images->first()->image ?? null;
+                                $quantity = $item->quantity;
+                                $subTotal = $cartItems->sum(fn($item) => $item->unit_price * $item->quantity);
+                                $addTotal = $subTotal + ($deliveryFee->amount ?? 0);
+                                $vatAmount = ($VAT / 100) * $addTotal;
+                                $grandTotal = $addTotal + $vatAmount;
 
-                    @endphp
+                            @endphp
 
-                        <tr class="border-b-[1px] border-[#212121]/20 last:border-b-0">
-                            <td class="px-6 py-4 align-middle">{{ $index +1 }}</td>
-                            <td class="px-6 py-4 align-middle">
-                                <div class="flex flex-row gap-3 items-center">
-                                    @if($images)
+                            <tr class="border-b-[1px] border-[#212121]/20 last:border-b-0">
+                                <td class="px-6 py-4 align-middle">{{ $index + 1 }}</td>
+                                <td class="px-6 py-4 align-middle">
+                                    <div class="flex flex-row gap-3 items-center">
+                                        @if ($images)
                                             <img class="w-[120px] h-[132px] object-cover rounded-xl"
-                                                 src="{{ asset('storage/' . $images) }}"
-                                                 alt="{{ $product->name }}">
+                                                src="{{ asset("storage/" . $images) }}" alt="{{ $product->name }}">
                                         @else
-                                            <div class="w-[140px] h-[132px] bg-gray-200 rounded-xl flex items-center justify-center">
-                                                <span class="w-[100px] h-[112px] object-cover rounded-xl text-center mt-7">No Image</span>
+                                            <div
+                                                class="w-[140px] h-[132px] bg-gray-200 rounded-xl flex items-center justify-center">
+                                                <span
+                                                    class="w-[100px] h-[112px] object-cover rounded-xl text-center mt-7">No
+                                                    Image</span>
                                             </div>
                                         @endif
-                                    <div class="flex flex-col gap-1">
-                                        <h1 class="font-semibold">{{ $product->name }}</h1>
-                                        <p>{{ $product->description }}</p>
+                                        <div class="flex flex-col gap-1">
+                                            <h1 class="font-semibold">{{ $product->name }}</h1>
+                                            <p>{{ $product->description }}</p>
+                                        </div>
                                     </div>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 align-middle">
-                                <p class="font-semibold">{{ $item->quantity }}</p>
-                            </td>
-                            <td class="px-6 py-4 align-middle whitespace-nowrap">
-                                <span class="flex flex-row gap-1 items-center">
-                                    <img class="w-4 h-4" src="/images/naira.png" alt="">
-                                    <p>{{ number_format($item->unit_price * $item->quantity, 2) }}</p>
-                                </span>
-                            </td>
-                        </tr>
+                                </td>
+                                <td class="px-6 py-4 align-middle">
+                                    <p class="font-semibold">{{ $item->quantity }}</p>
+                                </td>
+                                <td class="px-6 py-4 align-middle whitespace-nowrap">
+                                    <span class="flex flex-row gap-1 items-center">
+                                        <img class="w-4 h-4" src="/images/naira.png" alt="">
+                                        <p>{{ number_format($item->unit_price * $item->quantity, 2) }}</p>
+                                    </span>
+                                </td>
+                            </tr>
                         @empty
-                        <tr>
-                            <td colspan="4" class="text-center py-6 text-gray-500">
-                                Your cart is empty.
-                            </td>
-                        </tr>
-                    @endforelse
+                            <tr>
+                                <td colspan="4" class="text-center py-6 text-gray-500">
+                                    Your cart is empty.
+                                </td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
 
                 <div class="flex flex-col absolute -bottom-16">
-                    @if($defaultAddress)
-                    <p>* Delivery to <span class="font-semibold">{{ $defaultAddress->address }}, {{ $defaultAddress->city }}, {{ $defaultAddress->state }} {{ $defaultAddress->country }}.</span></p>
+                    @if ($deliveryMethod == 'delivery')
+                    @if ($defaultAddress)
+                        <p>
+                            * Delivery to
+                            <span class="font-semibold">
+                                {{ $defaultAddress->address }}, {{ $defaultAddress->city }}, {{ $defaultAddress->state }} {{ $defaultAddress->country }}.
+                            </span>
+                        </p>
                     @else
-                    <p>No default address selected</p>
+                        <p>No default address selected</p>
                     @endif
+
+                @elseif ($deliveryMethod == 'pickup')
+                    @if ($pickupAddress)
+                        <p>
+                            * Pickup from
+                            <span class="font-semibold">
+                                {{ $pickupAddress->address }}, {{ $pickupAddress->city }}, {{ $pickupAddress->state }}.
+                            </span>
+                        </p>
+                    @else
+                        <p>No pickup address selected</p>
+                    @endif
+                @endif
+
+
                 </div>
             </div>
 
@@ -128,7 +157,7 @@
                     Order Summary</div>
                 <div class="flex flex-row justify-between py-4 px-4 border-b-[1px] border-[#212121]/20 items-center">
                     <p class="font-semibold">Total Items</p>
-                    <p>{{ $cartItems->sum('quantity') }}</p>
+                    <p>{{ $cartItems->sum("quantity") }}</p>
                 </div>
                 <div
                     class="flex flex-row font-semibold py-4 px-4 border-b-[1px] border-[#212121]/20 justify-between items-center">
@@ -142,27 +171,39 @@
                     <p class="font-semibold">Delivery Fee</p>
                     <span class="flex flex-row gap-1 items-center">
                         <img class="w-4 h-4" src="/images/naira.png" alt="">
-                        <p class="font-semibold">5000.00</p>
+                        <p class="font-semibold">{{ $deliveryFee->amount ?? 0}}</p>
                     </span>
                 </div>
                 <div class="flex flex-row justify-between py-4 px-4 border-b-[1px] border-[#212121]/20 items-center">
                     <p class="font-semibold">Vat</p>
                     <span class="flex flex-row gap-1 items-center">
                         <img class="w-4 h-4" src="/images/naira.png" alt="">
-                        <p class="font-semibold">500.00</p>
+                        <p class="font-semibold">{{ $VAT }}%</p>
                     </span>
                 </div>
                 <div class="flex flex-col justify-between gap-4 p-4 pb-7 mt-auto">
                     <div class="flex flex-row justify-between pb-8 items-center">
+                        @if ($deliveryMethod == 'delivery')
                         <p class="font-semibold">Address</p>
+                        @else
+                        <p class="font-semibold">Pickup Address</p>
+                        @endif
                         <span class="flex flex-col text-right">
-                            @if($defaultAddress)
+                            @if ($deliveryMethod == 'delivery')
+                            @if ($defaultAddress)
                                 <p class="font-semibold">
-                                    {{ $defaultAddress->city }}, {{ $defaultAddress->state }}, {{ $defaultAddress->country }}
+                                    {{ $defaultAddress->city }}, {{ $defaultAddress->state }},
+                                    {{ $defaultAddress->country->name ?? $defaultAddress->country }}
                                 </p>
                             @else
                                 <p class="text-red-500 text-sm">No Address</p>
                             @endif
+                        @elseif ($deliveryMethod == 'pickup' && $pickupAddress)
+                            <p class="font-semibold">
+                                {{ $pickupAddress->address }}, {{ $pickupAddress->city }}, {{ $pickupAddress->state }}
+                            </p>
+                        @endif
+
                         </span>
                     </div>
 
@@ -170,7 +211,7 @@
                         <p>Total</p>
                         <span class="flex flex-row gap-1 items-center">
                             <img class="w-4 h-4" src="/images/naira.png" alt="">
-                            <p>184,000.00</p>
+                            <p>{{ number_format($grandTotal, 2) }}</p>
                         </span>
                     </div>
                     <button style="background: linear-gradient(91.36deg, #85BB3F 0%, #212121 162.21%);"
