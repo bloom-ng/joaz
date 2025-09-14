@@ -94,6 +94,16 @@ Route::get('/confirm-delivery2', function () {
     return view('customer.shop.confirm-delivery2');
 })->name('confirm-delivery2');
 
+// Route::get('/select-pickup', function () {
+//     return view('customer.shop.pickup');
+// })->name('select-pickup');
+
+// web.php
+Route::get('/select-pickup', [CheckoutController::class, 'showPickupSelect'])->name('select-pickup');
+Route::post('/checkout/set-pickup', [CheckoutController::class, 'setPickup'])->name('checkout.setPickup');
+
+
+
 Route::get('/order-summary2', [CheckoutController::class, 'index'])->name('order-summary2');
 
 Route::get('/payment-redirect', function () {
@@ -212,7 +222,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
 
         // Customer orders
-        Route::get('/orders', [CustomerOrderController::class, 'index'])->name('orders.index');
+        Route::get('/account-center', [OrderController::class, 'index'])->name('account.center');
+
         Route::get('/orders/{order}', [CustomerOrderController::class, 'show'])->name('orders.show');
         Route::post('/orders', [CustomerOrderController::class, 'store'])->name('orders.store');
     });

@@ -16,10 +16,10 @@ class CartController extends Controller
     public function index()
     {
         $user = Auth::user();
-        
+
         // Get or create cart with items and product relationships
         $cart = $user->cart()->with(['items.product.images'])->first();
-        
+
         return view('customer.shop.account-center', compact('cart'));
     }
 
@@ -40,14 +40,14 @@ class CartController extends Controller
         if (Auth::check()) {
             $user = Auth::user();
             $cart = $user->cart()->with(['items.product.images'])->first();
-            
+
             if (!$cart) {
                 $cart = $user->cart()->create([
                     'total' => 0,
                     'item_count' => 0
                 ]);
             }
-            
+
             $cartItems = $cart->items;
         } else {
             $cartItems = collect(session('cart.items', []));
@@ -153,7 +153,7 @@ class CartController extends Controller
 
         // Refresh the cart item to get updated quantity
         $cartItem->refresh();
-        
+
         // Update cart total
         $cart = $cartItem->cart;
         $cart->update([
