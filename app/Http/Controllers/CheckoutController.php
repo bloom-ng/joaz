@@ -46,30 +46,34 @@ class CheckoutController extends Controller
 
         $user->addresses()->update(['is_default' => false]);
         $address->update(['is_default' => true]);
-
     }
 
     public function showPickupSelect()
-{
-    $user = auth()->user();
-    $defaultAddress = $user->addresses()->where("is_default", true)->first();
+    {
+        $user = auth()->user();
+        $defaultAddress = $user->addresses()->where('is_default', true)->first();
+
+        $pickupAddresses = collect(); // empty collection by default
+
+        if ($defaultAddress && $defaultAddress->country) {
+            $pickupAddresses = PickupAddress::where('country', $defaultAddress->country)->get();
+        }
+
+        return view('customer.shop.pickup', compact('pickupAddresses', 'user', 'defaultAddress'));
+    }
 
 
-    $pickupAddresses = PickupAddress::where('country', $defaultAddress->country)->get();
 
-    return view('customer.shop.pickup', compact('pickupAddresses', 'user'));
-}
+    public function setPickup(Request $request)
+    {
+        $request->validate([
+            'pickup_address_id' => 'required|exists:pickup_addresses,id',
+        ]);
 
-public function setPickup(Request $request)
-{
-    $request->validate([
-        'pickup_address_id' => 'required|exists:pickup_addresses,id',
-    ]);
+        session(['checkout.pickup_address_id' => $request->pickup_address_id]);
 
-    session(['checkout.pickup_address_id' => $request->pickup_address_id]);
-
-    return redirect()->route('order-summary2');
-}
+        return redirect()->route('order-summary2');
+    }
 
 
     public function addAddress(Request $request)
@@ -100,15 +104,14 @@ public function setPickup(Request $request)
     }
 
     public function index()
-{
-    $user = auth()->user();
+    {
+        $user = auth()->user();
 
-    $cart = $user->cart()->with(['items.product.images'])->first();
-    $cartItems = $cart ? $cart->items : collect();
-    $defaultAddress = $user->addresses()->where("is_default", true)->first();
-    $deliveryFee = DeliveryFee::where('country', $defaultAddress->country)->first();
-    $VAT = Setting::where('name', 'Value Added Tax')->value('value');
-    return view('customer.shop.order-summary2', compact('cartItems', 'deliveryFee', 'VAT'));
-}
-
+        $cart = $user->cart()->with(['items.product.images'])->first();
+        $cartItems = $cart ? $cart->items : collect();
+        $defaultAddress = $user->addresses()->where("is_default", true)->first();
+        $deliveryFee = DeliveryFee::where('country', $defaultAddress->country)->first();
+        $VAT = Setting::where('name', 'Value Added Tax')->value('value');
+        return view('customer.shop.order-summary2', compact('cartItems', 'deliveryFee', 'VAT'));
+    }
 }
