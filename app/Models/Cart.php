@@ -17,7 +17,7 @@ class Cart extends Model
     protected $fillable = [
         'user_id',
     ];
-    
+
     protected $appends = ['total'];
 
     /**
@@ -41,12 +41,28 @@ class Cart extends Model
     /**
      * Get the total amount of the cart.
      */
+    public function getTotalNgnAttribute(): float
+    {
+        return $this->items->sum(function ($item) {
+            return ($item->product->price_ngn ?? 0) * $item->quantity;
+        });
+    }
+
+    public function getTotalUsdAttribute(): float
+    {
+        return $this->items->sum(function ($item) {
+            return ($item->product->price_usd ?? 0) * $item->quantity;
+        });
+    }
+
+    // keep your existing total if you still need it
     public function getTotalAttribute(): float
     {
         return $this->items->sum(function ($item) {
             return $item->unit_price * $item->quantity;
         });
     }
+
 
     /**
      * Get the total number of items in the cart.

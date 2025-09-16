@@ -72,11 +72,14 @@
                                 $product = $item->product;
                                 $images = $product->images->first()->image ?? null;
                                 $quantity = $item->quantity;
-                                $subTotal = $cartItems->sum(fn($item) => $item->unit_price * $item->quantity);
-                                $addTotal = $subTotal + ($deliveryFee->amount ?? 0);
-                                $vatAmount = ($VAT / 100) * $addTotal;
-                                $grandTotal = $addTotal + $vatAmount;
-
+                                $subTotal_usd = $cartItems->sum(fn($item) => $item->product->price_usd * $item->quantity);
+                                $subTotal_ngn = $cartItems->sum(fn($item) => $item->product->price_ngn * $item->quantity);
+                                $addTotal_ngn = $subTotal_ngn + ($deliveryFee->amount_ngn ?? 0);
+                                $addTotal_usd = $subTotal_usd + ($deliveryFee->amount_usd ?? 0);
+                                $vatAmount_ngn = ($VAT / 100) * $subTotal_ngn;
+                                $vatAmount_usd = ($VAT / 100) * $subTotal_usd;
+                                $grandTotal_ngn = $addTotal_ngn + $vatAmount_ngn + $deliveryFee->amount;
+                                $grandTotal_usd = $addTotal_usd + $vatAmount_usd + $deliveryFee->amount;
                             @endphp
 
                             <tr class="border-b-[1px] border-[#212121]/20 last:border-b-0">
@@ -103,12 +106,26 @@
                                 <td class="px-6 py-4 align-middle">
                                     <p class="font-semibold">{{ $item->quantity }}</p>
                                 </td>
-                                <td class="px-6 py-4 align-middle whitespace-nowrap">
-                                    <span class="flex flex-row gap-1 items-center">
-                                        <img class="w-4 h-4" src="/images/naira.png" alt="">
-                                        <p>{{ number_format($item->unit_price * $item->quantity, 2) }}</p>
-                                    </span>
-                                </td>
+                               {{-- Product row total --}}
+<td class="px-6 py-4 align-middle whitespace-nowrap">
+    @if (Auth::check() && Auth::user()->country->name == "Nigeria")
+        <span class="flex flex-row gap-1 items-center">
+            <img class="w-4 h-4 mr-1" src="{{ asset('images/naira.png') }}" alt="">
+            <p>{{ number_format($item->product->price_ngn * $item->quantity, 2) }}</p>
+        </span>
+    @elseif(isset($location) && $location->country == "Nigeria")
+        <span class="flex flex-row gap-1 items-center">
+            <img class="w-4 h-4 mr-1" src="{{ asset('images/naira.png') }}" alt="">
+            <p>{{ number_format($item->product->price_ngn * $item->quantity, 2) }}</p>
+        </span>
+    @else
+        <span class="flex flex-row gap-1 items-center">
+            <img class="w-4 h-4" src="{{ asset('images/mdi_dollar.png') }}" alt="">
+            <p>{{ number_format($item->product->price_usd * $item->quantity, 2) }}</p>
+        </span>
+    @endif
+</td>
+
                             </tr>
                         @empty
                             <tr>
@@ -159,61 +176,91 @@
                     <p class="font-semibold">Total Items</p>
                     <p>{{ $cartItems->sum("quantity") }}</p>
                 </div>
-                <div
-                    class="flex flex-row font-semibold py-4 px-4 border-b-[1px] border-[#212121]/20 justify-between items-center">
+                <div class="flex flex-row font-semibold py-4 px-4 border-b-[1px] border-[#212121]/20 justify-between items-center">
                     <p>Price</p>
-                    <span class="flex flex-row gap-1 items-center">
-                        <img class="w-4 h-4" src="/images/naira.png" alt="">
-                        <p class="font-semibold">{{ number_format($subTotal, 2) }}</p>
-                    </span>
+                    @if (Auth::check() && Auth::user()->country->name == "Nigeria")
+                        <span class="flex flex-row gap-1 items-center">
+                            <img class="w-4 h-4" src="{{ asset('images/naira.png') }}" alt="">
+                            <p class="font-semibold">{{ number_format($subTotal_ngn, 2) }}</p>
+                        </span>
+                    @elseif(isset($location) && $location->country == "Nigeria")
+                        <span class="flex flex-row gap-1 items-center">
+                            <img class="w-4 h-4" src="{{ asset('images/naira.png') }}" alt="">
+                            <p class="font-semibold">{{ number_format($subTotal_ngn, 2) }}</p>
+                        </span>
+                    @else
+                        <span class="flex flex-row gap-1 items-center">
+                            <img class="w-4 h-4" src="{{ asset('images/mdi_dollar.png') }}" alt="">
+                            <p class="font-semibold">{{ number_format($subTotal_usd, 2) }}</p>
+                        </span>
+                    @endif
                 </div>
+{{-- Delivery Fee --}}
+<div class="flex flex-row justify-between py-4 px-4 border-b-[1px] border-[#212121]/20 items-center">
+    <p class="font-semibold">Delivery Fee</p>
+    @if (Auth::check() && Auth::user()->country->name == "Nigeria")
+        <span class="flex flex-row gap-1 items-center">
+            <img class="w-4 h-4" src="{{ asset('images/naira.png') }}" alt="">
+            <p class="font-semibold">{{ number_format($deliveryFee->amount ?? 0, 2) }}</p>
+        </span>
+    @elseif(isset($location) && $location->country == "Nigeria")
+        <span class="flex flex-row gap-1 items-center">
+            <img class="w-4 h-4" src="{{ asset('images/naira.png') }}" alt="">
+            <p class="font-semibold">{{ number_format($deliveryFee->amount ?? 0, 2) }}</p>
+        </span>
+    @else
+        <span class="flex flex-row gap-1 items-center">
+            <img class="w-4 h-4" src="{{ asset('images/mdi_dollar.png') }}" alt="">
+            <p class="font-semibold">{{ number_format($deliveryFee->amount ?? 0, 2) }}</p>
+        </span>
+    @endif
+</div>
+
                 <div class="flex flex-row justify-between py-4 px-4 border-b-[1px] border-[#212121]/20 items-center">
-                    <p class="font-semibold">Delivery Fee</p>
+                    <p class="font-semibold">Vat ({{ $VAT }}%)</p>
+                    @if (Auth::check() && Auth::user()->country->name == "Nigeria")
                     <span class="flex flex-row gap-1 items-center">
                         <img class="w-4 h-4" src="/images/naira.png" alt="">
-                        <p class="font-semibold">{{ $deliveryFee->amount ?? 0}}</p>
+                        <p class="font-semibold">{{ number_format($vatAmount_ngn, 2) }}</p>
                     </span>
-                </div>
-                <div class="flex flex-row justify-between py-4 px-4 border-b-[1px] border-[#212121]/20 items-center">
-                    <p class="font-semibold">Vat</p>
+                    @elseif(isset($location) && $location->country == "Nigeria")
                     <span class="flex flex-row gap-1 items-center">
                         <img class="w-4 h-4" src="/images/naira.png" alt="">
-                        <p class="font-semibold">{{ $VAT }}%</p>
+                        <p class="font-semibold">{{ number_format($vatAmount_ngn, 2) }}</p>
                     </span>
+                    @else
+                    <span class="flex flex-row gap-1 items-center">
+                        <img class="w-4 h-4" src="/images/mdi_dollar.png" alt="">
+                        <p class="font-semibold">{{ number_format($vatAmount_usd, 2) }}</p>
+                    </span>
+                    @endif
                 </div>
                 <div class="flex flex-col justify-between gap-4 p-4 pb-7 mt-auto">
                     <div class="flex flex-row justify-between pb-8 items-center">
-                        @if ($deliveryMethod == 'delivery')
-                        <p class="font-semibold">Address</p>
-                        @else
-                        <p class="font-semibold">Pickup Address</p>
-                        @endif
-                        <span class="flex flex-col text-right">
-                            @if ($deliveryMethod == 'delivery')
-                            @if ($defaultAddress)
-                                <p class="font-semibold">
-                                    {{ $defaultAddress->city }}, {{ $defaultAddress->state }},
-                                    {{ $defaultAddress->country->name ?? $defaultAddress->country }}
-                                </p>
-                            @else
-                                <p class="text-red-500 text-sm">No Address</p>
-                            @endif
-                        @elseif ($deliveryMethod == 'pickup' && $pickupAddress)
-                            <p class="font-semibold">
-                                {{ $pickupAddress->address }}, {{ $pickupAddress->city }}, {{ $pickupAddress->state }}
-                            </p>
-                        @endif
 
-                        </span>
+
                     </div>
 
-                    <div class="flex pb-5 flex-row font-bold justify-between">
-                        <p>Total</p>
-                        <span class="flex flex-row gap-1 items-center">
-                            <img class="w-4 h-4" src="/images/naira.png" alt="">
-                            <p>{{ number_format($grandTotal, 2) }}</p>
-                        </span>
-                    </div>
+                   {{-- Grand Total --}}
+<div class="flex pb-5 flex-row font-bold justify-between">
+    <p>Total</p>
+    @if (Auth::check() && Auth::user()->country->name == "Nigeria")
+        <span class="flex flex-row gap-1 items-center">
+            <img class="w-4 h-4" src="{{ asset('images/naira.png') }}" alt="">
+            <p>{{ number_format($grandTotal_ngn, 2) }}</p>
+        </span>
+    @elseif(isset($location) && $location->country == "Nigeria")
+        <span class="flex flex-row gap-1 items-center">
+            <img class="w-4 h-4" src="{{ asset('images/naira.png') }}" alt="">
+            <p>{{ number_format($grandTotal_ngn, 2) }}</p>
+        </span>
+    @else
+        <span class="flex flex-row gap-1 items-center">
+            <img class="w-4 h-4" src="{{ asset('images/mdi_dollar.png') }}" alt="">
+            <p>{{ number_format($grandTotal_usd, 2) }}</p>
+        </span>
+    @endif
+</div>
                     <button style="background: linear-gradient(91.36deg, #85BB3F 0%, #212121 162.21%);"
                         class="text-[#FCFCFC] text-sm px-10 py-5 rounded-lg">
                         PROCEED TO PAY

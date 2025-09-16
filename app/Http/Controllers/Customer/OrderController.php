@@ -30,7 +30,6 @@ class OrderController extends Controller
 
         $orders = $query->orderBy('created_at', 'desc')->paginate(10);
 
-
         return view('customer.shop.account-center', compact('orders'));
     }
 

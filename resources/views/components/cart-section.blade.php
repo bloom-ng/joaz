@@ -39,10 +39,18 @@
 @php
     $cart = $cart ?? \App\Models\Cart::with('items.product')
                 ->firstOrCreate(['user_id' => auth()->id()]);
-                $total = $cart->items->sum(function($item) {
-                        return $item->unit_price * $item->quantity;
-                    });
+
+    // Calculate NGN total
+    $total_ngn = $cart->items->sum(function($item) {
+        return $item->product->price_ngn * $item->quantity;
+    });
+
+    // Calculate USD total
+    $total_usd = $cart->items->sum(function($item) {
+        return $item->product->price_usd * $item->quantity;
+    });
 @endphp
+
 <body class="bg-[#FCFCFC] text-[#212121]">
     <div class="min-h-screen flex flex-col">
 
@@ -111,8 +119,23 @@
                                 </td>
                                 <td class="px-6 py-4 align-middle whitespace-nowrap">
                                     <span class="flex flex-row gap-1 items-center">
-                                        <img class="w-4 h-4" src="/images/naira.png" alt="">
-                                        <p id="item-total-{{ $item->id }}">{{ number_format($item->unit_price * $item->quantity, 2) }}</p>
+                                        @if (Auth::check() && Auth::user()->country->name == "Nigeria")
+                                        <p class="flex items-center text-md font-bricolage">
+                                            <img class="w-4 h-4 mr-1" src="{{ asset('images/naira.png') }}" alt="">
+                                            {{ number_format($item->product->price_ngn * $item->quantity, 2) }}
+                                        </p>
+                                    @elseif(isset($location) && $location->country == "Nigeria")
+                                        <p class="flex items-center text-md font-bricolage">
+                                            <img class="w-4 h-4 mr-1" src="{{ asset('images/naira.png') }}" alt="">
+                                            {{ number_format($item->product->price_ngn * $item->quantity, 2) }}
+                                        </p>
+                                    @else
+                                        <p class="flex items-center text-md font-bricolage">
+                                            <img class="w-4 h-4" src="{{ asset('images/mdi_dollar.png') }}" alt="">
+                                            {{ number_format($item->product->price_usd * $item->quantity, 2) }}
+                                        </p>
+                                    @endif
+
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 align-middle">
@@ -145,8 +168,23 @@
                 <div class="flex flex-row font-semibold py-4 px-4 border-b-[1px] border-[#212121]/20 justify-between items-center">
                     <p>Price</p>
                     <span class="flex flex-row gap-1 items-center">
-                        <img class="w-4 h-4" src="/images/naira.png" alt="">
-                        <p id="cart-total">{{ number_format($total, 2) }}</p>
+                        @if (Auth::check() && Auth::user()->country->name == "Nigeria")
+    <p class="flex items-center text-md font-bricolage">
+        <img class="w-4 h-4 mr-1" src="{{ asset('images/naira.png') }}" alt="">
+        {{ number_format($total_ngn, 2) }}
+    </p>
+@elseif(isset($location) && $location->country == "Nigeria")
+    <p class="flex items-center text-md font-bricolage">
+        <img class="w-4 h-4 mr-1" src="{{ asset('images/naira.png') }}" alt="">
+        {{ number_format($total_ngn, 2) }}
+    </p>
+@else
+    <p class="flex items-center text-md font-bricolage">
+        <img class="w-4 h-4" src="{{ asset('images/mdi_dollar.png') }}" alt="">
+        {{ number_format($total_usd, 2) }}
+    </p>
+@endif
+
                     </span>
                 </div>
                 <div class="flex flex-row justify-between py-4 px-4 border-b-[1px] border-[#212121]/20 items-center">
@@ -158,8 +196,23 @@
                     <div class="flex flex-row font-bold justify-between">
                         <p>Total</p>
                         <span class="flex flex-row gap-1 items-center">
-                            <img class="w-4 h-4" src="{{ asset('images/naira.png') }}" alt="">
-                            <p class="cart-total">{{ number_format($cart->total, 2) }}</p>
+                            @if (Auth::check() && Auth::user()->country->name == "Nigeria")
+                            <p class="flex items-center text-md font-bricolage cart-total">
+                                <img class="w-4 h-4 mr-1" src="{{ asset('images/naira.png') }}" alt="">
+                                {{ number_format($cart->total_ngn, 2) }}
+                            </p>
+                        @elseif(isset($location) && $location->country == "Nigeria")
+                            <p class="flex items-center text-md font-bricolage cart-total">
+                                <img class="w-4 h-4 mr-1" src="{{ asset('images/naira.png') }}" alt="">
+                                {{ number_format($cart->total_ngn, 2) }}
+                            </p>
+                        @else
+                            <p class="flex items-center text-md font-bricolage cart-total">
+                                <img class="w-4 h-4" src="{{ asset('images/mdi_dollar.png') }}" alt="">
+                                {{ number_format($cart->total_usd, 2) }}
+                            </p>
+                        @endif
+
                         </span>
                     </div>
                     <a href="{{ route('confirm-delivery') }}"><button style="background: linear-gradient(91.36deg, #85BB3F 0%, #212121 162.21%);"

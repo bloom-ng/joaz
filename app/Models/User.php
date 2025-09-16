@@ -83,6 +83,11 @@ class User extends Authenticatable
         return $this->hasMany(Address::class);
     }
 
+    public function country()
+{
+    return $this->belongsTo(Country::class, 'country_id');
+}
+
     /**
      * Get the orders for the user.
      */

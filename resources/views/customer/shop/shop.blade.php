@@ -61,7 +61,7 @@
         <!-- Header Section -->
         @include('components.header')
         @include('components.cart-notification')
-        
+
         <!-- Main Product Display Section -->
         <main class="flex flex-row w-full px-16 py-12">
             <!-- Left Column - Product Image -->
@@ -198,7 +198,18 @@
                         document.addEventListener('DOMContentLoaded', function() {
                             // Data from Blade
                             const variants = @json($product->variants->keyBy('id'));
-                            const initialPrice = parseFloat('{{ $product->variants->first()->price_ngn ?? $product->price_ngn }}');
+
+                            // Detect currency preference from Blade (Nigeria or not)
+                            const isNaira = @json(
+                                (Auth::check() && Auth::user()->country->name == "Nigeria") ||
+                                (isset($location) && $location->country == "Nigeria")
+                            );
+
+                            // Pick correct initial price
+                            const initialPrice = parseFloat(isNaira
+                                ? '{{ $product->variants->first()->price_ngn ?? $product->price_ngn }}'
+                                : '{{ $product->variants->first()->price_usd ?? $product->price_usd }}'
+                            );
 
                             // DOM Elements
                             const priceElement = document.getElementById('product-price');
@@ -216,7 +227,17 @@
                             // Function to update the displayed price
                             function updatePriceDisplay() {
                                 const total = currentPrice * currentQuantity;
-                                priceElement.textContent = '₦' + total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                                if (isNaira) {
+                                    priceElement.textContent = '₦' + total.toLocaleString('en-US', {
+                                        minimumFractionDigits: 2,
+                                        maximumFractionDigits: 2
+                                    });
+                                } else {
+                                    priceElement.textContent = '$' + total.toLocaleString('en-US', {
+                                        minimumFractionDigits: 2,
+                                        maximumFractionDigits: 2
+                                    });
+                                }
                             }
 
                             // Event Listener for variant dropdown
@@ -224,9 +245,12 @@
                                 variantSelect.addEventListener('change', function() {
                                     const selectedVariantId = this.value;
                                     if (variants[selectedVariantId]) {
-                                        currentPrice = parseFloat(variants[selectedVariantId].price_ngn);
-                                        if(formVariantIdInput) {
-                                            formVariantIdInput.value = selectedVariantId; // Update hidden variant ID for the form
+                                        currentPrice = parseFloat(isNaira
+                                            ? variants[selectedVariantId].price_ngn
+                                            : variants[selectedVariantId].price_usd
+                                        );
+                                        if (formVariantIdInput) {
+                                            formVariantIdInput.value = selectedVariantId; // Update hidden variant ID
                                         }
                                         updatePriceDisplay();
                                     }
@@ -234,7 +258,7 @@
                             }
 
                             // Event Listener for increment button
-                            if(incrementBtn) {
+                            if (incrementBtn) {
                                 incrementBtn.addEventListener('click', function() {
                                     currentQuantity++;
                                     quantityDisplay.textContent = currentQuantity;
@@ -244,7 +268,7 @@
                             }
 
                             // Event Listener for decrement button
-                            if(decrementBtn) {
+                            if (decrementBtn) {
                                 decrementBtn.addEventListener('click', function() {
                                     if (currentQuantity > 1) {
                                         currentQuantity--;
@@ -361,9 +385,26 @@
                         <h1 class="text-md leading-[2px] pt-2 font-bricolage">{{ $relatedProduct->name }}</h1>
                         <p class="text-md font-bricolage">{{ $relatedProduct->description }}</p>
                         <div class="-mt-3 flex flex-row justify-between items-center">
-                            <p class="flex flex-row gap-1 items-center text-md font-bricolage">
-                                <img class="w-4 h-4" src="/images/naira.png" alt="">{{ number_format($relatedProduct->price_ngn, 2) }}
+
+                            @if (Auth::check() && Auth::user()->country->name == "Nigeria")
+                            <p class="flex items-center text-md font-bricolage">
+                                <img class="w-4 h-4 mr-1" src="{{ asset("images/naira.png") }}"
+                                    alt="">
+                                {{ number_format($product->price_ngn, 2) }}
                             </p>
+                        @elseif(isset($location) && $location->country == "Nigeria")
+                            <p class="flex items-center text-md font-bricolage">
+                                <img class="w-4 h-4 mr-1" src="{{ asset("images/naira.png") }}"
+                                    alt="">
+                                {{ number_format($product->price_ngn, 2) }}
+                            </p>
+                        @else
+                            <p class="flex items-center text-md font-bricolage">
+                                <img class="w-4 h-4" src="{{ asset("images/mdi_dollar.png") }}"
+                                    alt="">
+                                {{ number_format($product->price_usd, 2) }}
+                            </p>
+                        @endif
                             <a href="{{ route('shop.productDetails', $relatedProduct->id) }}" class="text-md font-semibold font-bricolage border-b-[1px] border-[#212121]">SHOP</a>
                         </div>
                     </div>
