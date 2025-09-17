@@ -120,10 +120,22 @@
                                 </td>
                                 <td class="px-6 py-4 align-middle">{{ $order->items->sum("quantity") }}</td>
                                 <td class="px-6 py-4 align-middle whitespace-nowrap">
+                                    @if (Auth::check() && Auth::user()->country->name == "Nigeria")
                                     <span class="flex flex-row gap-1 items-center">
                                         <img class="w-4 h-4" src="/images/naira.png" alt="">
                                         <p>{{ number_format($order->total_amount, 2) }}</p>
                                     </span>
+                                    @elseif(isset($location) && $location->country == "Nigeria")
+                                    <span class="flex flex-row gap-1 items-center">
+                                        <img class="w-4 h-4" src="/images/naira.png" alt="">
+                                        <p>{{ number_format($order->total_amount, 2) }}</p>
+                                    </span>
+                                    @else
+                                    <span class="flex flex-row gap-1 items-center">
+                                        <img class="w-4 h-4" src="/images/mdi_dollar.png" alt="">
+                                        <p>{{ number_format($order->total_amount, 2) }}</p>
+                                    </span>
+                                    @endif  
                                 </td>
                                 <td class="px-6 py-4 align-middle">
                                     @php

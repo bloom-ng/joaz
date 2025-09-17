@@ -83,8 +83,13 @@ class ShopController extends Controller
             ->limit(4)
             ->get();
 
-        return view('customer.shop.shop', compact('product', 'relatedProducts'));
-    }
+       // Get cart from session
+    $cart = session()->get('cart', []);
+    $variantId = $product->variants->first()->id ?? $product->id;
+    $cartQuantity = $cart[$variantId]['quantity'] ?? 0;
+
+    return view('customer.shop.shop', compact('product', 'relatedProducts', 'cartQuantity'));
+}
 
     public function productDetails($id)
     {

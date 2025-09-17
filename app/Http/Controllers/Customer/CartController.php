@@ -127,6 +127,36 @@ class CartController extends Controller
         return back()->with('success', 'Product added to cart successfully!');
     }
 
+    public function updateItem(Request $request)
+    {
+        $request->validate([
+            'cart_item_id' => 'required|exists:cart_items,id',
+            'action' => 'required|in:increment,decrement',
+        ]);
+
+        $cartItem = \App\Models\CartItem::findOrFail($request->cart_item_id);
+
+        // Ensure the item belongs to the logged-in user
+        if ($cartItem->cart->user_id !== auth()->id()) {
+            return redirect()->back()->with('error', 'Unauthorized action.');
+        }
+
+        if ($request->action === 'increment') {
+            $cartItem->increment('quantity');
+            return redirect()->back()->with('success', 'Item quantity increased.');
+        } else {
+            $cartItem->decrement('quantity');
+
+            if ($cartItem->quantity <= 0) {
+                $cartItem->delete();
+                return redirect()->back()->with('success', 'Item removed from cart.');
+            }
+
+            return redirect()->back()->with('success', 'Item quantity decreased.');
+        }
+    }
+
+
     public function update(Request $request, CartItem $cartItem)
     {
         $request->validate([
@@ -141,12 +171,25 @@ class CartController extends Controller
         if ($request->action === 'increment') {
             $cartItem->increment('quantity');
         } else {
-            if ($cartItem->quantity > 1) {
+            if ($cartItem->quantity > 0) {
                 $cartItem->decrement('quantity');
+                
+                // If quantity reaches 0, delete the item
+                if ($cartItem->quantity <= 0) {
+                    $cartItem->delete();
+                    return response()->json([
+                        'success' => true,
+                        'quantity' => 0,
+                        'itemTotal' => 0,
+                        'cartTotal' => $cartItem->cart->total - $cartItem->unit_price,
+                        'totalItems' => $cartItem->cart->items->sum('quantity') - 1,
+                        'removed' => true
+                    ]);
+                }
             } else {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Quantity cannot be less than 1'
+                    'message' => 'Quantity cannot be less than 0'
                 ]);
             }
         }
@@ -228,58 +271,5 @@ class CartController extends Controller
             ->with('success', 'Cart cleared successfully.');
     }
 
-    /**
-     * Merge guest cart with user cart after login/registration
-     */
-    public static function mergeGuestCart($user)
-    {
-        $guestCart = session('cart');
 
-        if (empty($guestCart['items'])) {
-            return;
-        }
-
-        // Get or create user's cart
-        $userCart = Cart::firstOrCreate(
-            ['user_id' => $user->id],
-            ['total' => 0]
-        );
-
-        foreach ($guestCart['items'] as $item) {
-            // Check if product exists and is active
-            $product = Product::find($item['product_id']);
-            if (!$product) continue;
-
-            // Check if item already exists in user's cart
-            $existingItem = $userCart->items()
-                ->where('product_id', $item['product_id'])
-                ->where('variant_id', $item['variant_id'] ?? null)
-                ->first();
-
-            if ($existingItem) {
-                // Update quantity if item exists
-                $existingItem->update([
-                    'quantity' => $existingItem->quantity + $item['quantity']
-                ]);
-            } else {
-                // Add new item
-                $userCart->items()->create([
-                    'product_id' => $item['product_id'],
-                    'variant_id' => $item['variant_id'] ?? null,
-                    'quantity' => $item['quantity'],
-                    'unit_price' => $item['unit_price']
-                ]);
-            }
-        }
-
-        // Update cart total
-        $userCart->update([
-            'total' => $userCart->items->sum(function ($item) {
-                return $item->quantity * $item->unit_price;
-            })
-        ]);
-
-        // Clear guest cart from session
-        session()->forget('cart');
-    }
 }

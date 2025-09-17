@@ -113,4 +113,13 @@ class Order extends Model
     {
         return $this->delivery_method === 'pickup';
     }
+
+    public static function generateTrackingNumber()
+    {
+        do {
+            $tracking = 'TRK' . mt_rand(100000, 999999);
+        } while (self::where('tracking_number', $tracking)->exists());
+
+        return $tracking;
+    }
 }
