@@ -56,9 +56,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
 });
 
-// Guest cart routes (no authentication required)
-Route::post('/guest/cart/add', [CartController::class, 'add'])->name('guest.cart.add');
-Route::delete('/cart/guest/{itemId}', [CartController::class, 'remove'])->name('cart.guest.remove');
+
 
 Route::get('/learn', function () {
     return view('customer.learn');
@@ -89,6 +87,11 @@ Route::post('/checkout/add-address', [CheckoutController::class, 'addAddress'])
     ->name('checkout.addAddress');
 Route::post('/checkout/set-default-address', [CheckoutController::class, 'setDefaultAddress'])
     ->name('checkout.setDefaultAddress');
+
+    Route::post('/orders/place', [CheckoutController::class, 'placeOrder'])->name('orders.place');
+
+    Route::get('/orders/{order}/processing', [CheckoutController::class, 'processing'])->name('orders.processing');
+
 
 Route::get('/confirm-delivery2', function () {
     return view('customer.shop.confirm-delivery2');
@@ -214,12 +217,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');
         Route::get('/products/{product}', [ShopController::class, 'show'])->name('products.show');
 
-        // Cart routes
-        Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-        Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
-        Route::put('/cart/update/{cartItem}', [CartController::class, 'update'])->name('cart.update');
-        Route::delete('/cart/remove/{cartItem}', [CartController::class, 'remove'])->name('cart.remove');
-        Route::post('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
+        // // Cart routes
+        // Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+        // Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+        // Route::put('/cart/update/{cartItem}', [CartController::class, 'update'])->name('cart.update');
+        // Route::delete('/cart/remove/{cartItem}', [CartController::class, 'remove'])->name('cart.remove');
+        // Route::post('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
 
         // Customer orders
         Route::get('/account-center', [OrderController::class, 'index'])->name('account.center');
@@ -232,6 +235,7 @@ Route::middleware('auth')->group(function () {
 // Payment routes (public but with CSRF protection)
 Route::middleware('web')->group(function () {
     Route::post('/payment/initialize', [PaymentController::class, 'initialize'])->name('payment.initialize');
+
     Route::get('/payment/callback', [PaymentController::class, 'callback'])->name('payment.callback');
     Route::post('/payment/webhook', [PaymentController::class, 'webhook'])->name('payment.webhook');
     Route::get('/payment/verify/{reference}', [PaymentController::class, 'verify'])->name('payment.verify');

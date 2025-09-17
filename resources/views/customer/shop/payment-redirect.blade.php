@@ -52,7 +52,7 @@
 
     <!-- Load Bricolage Grotesque from Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;700&display=swap" rel="stylesheet">
-    
+
     <title>Redirecting - JOAZ</title>
 </head>
 <body class="bg-[#FCFCFC] text-[#212121]">
@@ -68,8 +68,18 @@
             <h1 class="font-bricolage text-4xl font-bold">You will be redirected shortly to our</h1>
             <h1 class="font-bricolage text-4xl font-bold">payment platform ...</h1>
         </main>
-        
+        <form id="paystackForm" action="{{ route('payment.initialize') }}" method="POST">
+            @csrf
+            <input type="hidden" name="order_id" value="{{ $order->id }}">
+        </form>
+
         @include('components.footer')
     </div>
 </body>
 </html>
+<script>
+    setTimeout(function(){
+        document.getElementById('paystackForm').submit();
+    }, 5000);
+</script>
+

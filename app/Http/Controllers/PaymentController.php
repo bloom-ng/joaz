@@ -19,7 +19,7 @@ class PaymentController extends Controller
     /**
      * Initialize payment for an order.
      */
-    public function initialize(Request $request): JsonResponse
+    public function initialize(Request $request)
     {
         $request->validate([
             'order_id' => 'required|exists:orders,id',
@@ -27,7 +27,7 @@ class PaymentController extends Controller
 
         $order = Order::findOrFail($request->order_id);
 
-        // Check if user owns the order
+        // Ensure user owns it
         if ($order->user_id !== $request->user()->id) {
             return response()->json([
                 'success' => false,
@@ -37,37 +37,45 @@ class PaymentController extends Controller
 
         $result = $this->paymentService->initializePayment($order);
 
-        return response()->json($result);
+        if ($result['success']) {
+            // ✅ Send user directly to Paystack checkout
+            return redirect()->away($result['authorization_url']);
+        }
+
+        return redirect('/')->with('error', 'Payment initialization failed.');
     }
+
 
     /**
      * Verify payment after callback.
      */
-    public function verify(string $reference): JsonResponse
+    public function verify(string $reference)
     {
-        $result = $this->paymentService->verifyPayment($reference);
-
-        return response()->json($result);
+        return $this->paymentService->verifyPayment($reference);
     }
 
     /**
      * Handle Paystack callback.
      */
-    public function callback(Request $request): JsonResponse
+    public function callback(Request $request)
     {
         $reference = $request->query('reference');
 
         if (!$reference) {
-            return response()->json([
-                'success' => false,
-                'message' => 'No reference provided'
-            ], 400);
+            return redirect('/')->with('error', 'No payment reference provided.');
         }
 
         $result = $this->paymentService->verifyPayment($reference);
 
-        return response()->json($result);
+        if ($result['success']) {
+            // Payment was successful
+            return redirect('/')->with('success', 'Payment completed successfully!');
+        } else {
+            // Payment failed
+            return redirect('/')->with('error', $result['message'] ?? 'Payment failed.');
+        }
     }
+
 
     /**
      * Handle Paystack webhook.

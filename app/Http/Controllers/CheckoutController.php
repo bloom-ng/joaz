@@ -2,9 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cart;
 use App\Models\User;
+use App\Models\Order;
 use App\Models\Setting;
+use App\Models\CartItem;
+use App\Models\OrderItem;
 use App\Models\DeliveryFee;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\PickupAddress;
 use Illuminate\Support\Facades\Auth;
@@ -15,6 +20,76 @@ class CheckoutController extends Controller
     {
         return view('customer.shop.confirm-delivery');
     }
+    public function placeOrder(Request $request)
+    {
+        $request->validate([
+            'address_id' => 'required|exists:addresses,id',
+            'delivery_method' => 'required|in:pickup,delivery',
+            'payment_currency' => 'required|in:NGN,USD',
+            'total_amount' => 'required',
+        ]);
+
+        $user = $request->user();
+
+        // ✅ Get cart items from DB instead of session
+        $cartItems = CartItem::whereHas('cart', fn($q) => $q->where('user_id', $user->id))
+            ->with('product')
+            ->get();
+
+
+
+        if ($cartItems->isEmpty()) {
+            return back()->with('error', 'Cart is empty.');
+        }
+
+        // 1️⃣ Create order
+        $order = Order::create([
+            'user_id' => $user->id,
+            'address_id' => $request->address_id,
+            'payment_currency' => $request->payment_currency,
+            'total_amount' => (float) $request->total_amount,
+            'delivery_method' => $request->delivery_method,
+            'payment_status' => 'pending',
+            'order_status' => 'pending',
+            'tracking_number' => Order::generateTrackingNumber(),
+
+        ]);
+
+
+
+        // 2️⃣ Attach order items
+        foreach ($cartItems as $item) {
+            $cartItem = $item;
+            $product = $cartItem->product;
+
+            // Check if enough stock is available
+            if ($product->quantity < $cartItem->quantity) {
+                return back()->with('error', "Not enough stock for {$product->name}");
+            }
+
+            OrderItem::create([
+                'order_id'   => $order->id,
+                'product_id' => $cartItem->product_id,
+                'quantity'   => $cartItem->quantity,
+                'unit_price' => $cartItem->unit_price,
+            ]);
+
+            // Decrease product stock
+            $product->decrement('quantity', $cartItem->quantity);
+        }
+
+        // 3️⃣ Clear cart after order is placed
+        Cart::where('user_id', $user->id)->delete();
+
+        return redirect()->route('orders.processing', $order->id);
+    }
+
+    public function processing(Order $order)
+    {
+        return view('customer.shop.payment-redirect', compact('order'));
+    }
+
+
 
     public function processDelivery(Request $request)
     {
