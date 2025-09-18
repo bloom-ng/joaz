@@ -41,11 +41,11 @@
 
 <body class="bg-[#FCFCFC] text-[#212121]">
     @php
-        $deliveryMethod = session('checkout.delivery_method');
+        $deliveryMethod = session("checkout.delivery_method");
     @endphp
 
     <div class="min-h-screen flex flex-col">
-        @include('components.header')
+        @include("components.header")
 
         <div class="flex flex-row font-rustler text-4xl items-center justify-center pt-24 py-12">
             DELIVERY DETAILS
@@ -60,20 +60,18 @@
 
 
                 @if (!$defaultAddress)
-                <div class="flex flex-col items-center mt-4 text-center">
-                    <p class="text-gray-500 text-sm mb-3">
-                        Please add a default address first before selecting a pickup location.
-                    </p>
-                    <a href="{{ route('account-center') }}#address"
-                        class="px-6 py-3 rounded-lg text-white font-medium"
-                        style="background: linear-gradient(91.36deg, #85BB3F 0%, #212121 162.21%);">
-                        Manage Addresses
-                    </a>
-                </div>
-
-
+                    <div class="flex flex-col items-center mt-4 text-center">
+                        <p class="text-gray-500 text-sm mb-3">
+                            Please add a default address first before selecting a pickup location.
+                        </p>
+                        <a href="{{ route("account-center") }}#address"
+                            class="px-6 py-3 rounded-lg text-white font-medium"
+                            style="background: linear-gradient(91.36deg, #85BB3F 0%, #212121 162.21%);">
+                            Manage Addresses
+                        </a>
+                    </div>
                 @elseif ($pickupAddresses->isNotEmpty())
-                    <form action="{{ route('checkout.setPickup') }}" method="POST" class="w-full">
+                    <form action="{{ route("checkout.setPickup") }}" method="POST" class="w-full">
                         @csrf
                         @foreach ($pickupAddresses as $pickup)
                             <div
@@ -96,18 +94,40 @@
                             PROCEED
                         </button>
                     </form>
-
-
                 @else
                     <p class="text-gray-500 text-sm mt-3">
                         Sorry, no pickup locations are available in your country.
                     </p>
+                    @if ($allAddresses->isNotEmpty())
+                        <form action="{{ route("checkout.setPickup") }}" method="POST" class="w-full mt-4">
+                            @csrf
+                            <label for="fallbackPickup" class="block text-sm font-medium text-gray-700 mb-2">
+                                Select available pickup locations:
+                            </label>
+                            <select name="pickup_address_id" id="fallbackPickup"
+                                class="w-full border border-[#21212199]/30 rounded-lg px-4 py-3 text-sm focus:ring-[#85BB3F] focus:border-[#85BB3F]">
+                                @foreach ($allAddresses as $pickup)
+                                    <option value="{{ $pickup->id }}">
+                                        {{ $pickup->address }}, {{ $pickup->city }}, {{ $pickup->state }},
+                                        {{ $pickup->country }}
+                                    </option>
+                                @endforeach
+                            </select>
+
+                            <button type="submit"
+                                style="background: linear-gradient(91.36deg, #85BB3F 0%, #212121 162.21%);"
+                                class="text-[#FCFCFC] text-sm px-10 py-4 rounded-lg w-full mt-6">
+                                PROCEED
+                            </button>
+                        </form>
+                    @endif
                 @endif
 
             </div>
         </div>
 
-        @include('components.footer')
+        @include("components.footer")
     </div>
 </body>
+
 </html>
