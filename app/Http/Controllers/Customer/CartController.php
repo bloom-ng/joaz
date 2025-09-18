@@ -32,11 +32,12 @@ class CartController extends Controller
 
         $product = Product::findOrFail($request->product_id);
 
-        // Check stock availability
+        // Stock check
         if ($product->quantity < $request->quantity) {
             return back()->withErrors(['quantity' => 'Insufficient stock available.']);
         }
 
+        // Determine if user is logged in
         if (Auth::check()) {
             $user = Auth::user();
             $cart = $user->cart()->with(['items.product.images'])->first();
@@ -50,41 +51,46 @@ class CartController extends Controller
 
             $cartItems = $cart->items;
         } else {
+            // Guest cart stored in session
             $cartItems = collect(session('cart.items', []));
         }
 
-        // Check if product already in cart with same variant
+        // Find if product already exists in cart (with same variant if applicable)
         $query = $cartItems->where('product_id', $request->product_id);
 
         if ($request->has('variant_id') && $request->variant_id) {
-            $query->where('variant_id', $request->variant_id);
+            $query = $query->where('variant_id', $request->variant_id);
         } else {
-            $query->whereNull('variant_id');
+            $query = $query->whereNull('variant_id');
         }
 
         $existingItem = $query->first();
 
-        // Get unit price based on variant if available
+        // Unit price (use variant if available)
         $unitPrice = $product->price_ngn;
         if ($request->has('variant_id') && $variant = $product->variants->find($request->variant_id)) {
             $unitPrice = $variant->price_ngn;
         }
 
         if ($existingItem) {
-            // Update quantity
+            // Update existing item
             $newQuantity = $existingItem->quantity + $request->quantity;
 
             if ($product->quantity < $newQuantity) {
                 return back()->withErrors(['quantity' => 'Insufficient stock available.']);
             }
 
-            // Update the existing item
-            $existingItem->update([
-                'quantity' => $newQuantity,
-                'unit_price' => $unitPrice,
-            ]);
+            if (Auth::check()) {
+                $existingItem->update([
+                    'quantity' => $newQuantity,
+                    'unit_price' => $unitPrice,
+                ]);
+            } else {
+                $existingItem['quantity'] = $newQuantity;
+                $existingItem['unit_price'] = $unitPrice;
+            }
         } else {
-            // Create new cart item
+            // Add new item
             if (Auth::check()) {
                 $cart->items()->create([
                     'product_id' => $product->id,
@@ -93,7 +99,6 @@ class CartController extends Controller
                     'variant_id' => $request->variant_id ?? null,
                 ]);
             } else {
-                // Add new item
                 $cartItems[] = [
                     'product_id' => $product->id,
                     'quantity' => $request->quantity,
@@ -104,28 +109,24 @@ class CartController extends Controller
             }
         }
 
-        // Update cart total
+        // Update totals
         if (Auth::check()) {
             $cart->update([
-                'total' => $cart->items->sum(function ($item) {
-                    return $item->quantity * $item->unit_price;
-                })
+                'total' => $cart->items->sum(fn($item) => $item->quantity * $item->unit_price),
+                'item_count' => $cart->items->sum('quantity')
             ]);
         } else {
             $cart = [
                 'items' => $cartItems,
-                'total' => collect($cartItems)->sum(function ($item) {
-                    return $item['quantity'] * $item['unit_price'];
-                }),
-                'item_count' => count($cartItems)
+                'total' => collect($cartItems)->sum(fn($item) => $item['quantity'] * $item['unit_price']),
+                'item_count' => collect($cartItems)->sum('quantity')
             ];
-
-            // Store cart in session
             session(['cart' => $cart]);
         }
 
         return back()->with('success', 'Product added to cart successfully!');
     }
+
 
     public function updateItem(Request $request)
     {
@@ -173,7 +174,7 @@ class CartController extends Controller
         } else {
             if ($cartItem->quantity > 0) {
                 $cartItem->decrement('quantity');
-                
+
                 // If quantity reaches 0, delete the item
                 if ($cartItem->quantity <= 0) {
                     $cartItem->delete();

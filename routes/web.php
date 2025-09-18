@@ -42,18 +42,20 @@ Route::get('/category/{category?}', [ShopController::class, 'categoryPage'])
     ->where('category', '[0-9]+') // Only match numeric category IDs
     ->name('shop.category');
 
+     // Cart routes
+     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+     Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+     Route::patch('/cart/{cartItem}', [CartController::class, 'update'])->name('cart.update');
+     Route::delete('/cart/{cartItem}', [CartController::class, 'remove'])->name('cart.remove');
+     Route::post('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
+
 // Profile routes (protected - requires authentication)
 Route::middleware('auth')->group(function () {
     // Profile update route
     Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
     Route::post('/profile/update-address', [ProfileController::class, 'updateAddress'])->name('profile.update-address');
 
-    // Cart routes
-    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-    Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
-    Route::patch('/cart/{cartItem}', [CartController::class, 'update'])->name('cart.update');
-    Route::delete('/cart/{cartItem}', [CartController::class, 'remove'])->name('cart.remove');
-    Route::post('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
+
 });
 
 

@@ -22,6 +22,7 @@ class CustomerLoginController extends Controller
 
     public function login(Request $request)
     {
+        // Validate input
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required|string',
@@ -33,36 +34,83 @@ class CustomerLoginController extends Controller
                 ->withInput();
         }
 
+        // Build credentials
         $credentials = $request->only('email', 'password');
+
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
-            // Check if user has customer role
+
             if ($user->role === 'customer') {
+                // 🔑 Save guest session cart BEFORE regenerate
+                $guestCart = session('cart', []);
+
                 $request->session()->regenerate();
 
-                // Merge guest cart with user's cart
-                if (session('cart')) {
-                    \App\Http\Controllers\Customer\CartController::mergeGuestCart($user);
+                // 🔑 Restore cart AFTER regenerate
+                if (!empty($guestCart)) {
+                    session(['cart' => $guestCart]);
                 }
 
-                // Check if the intended URL is the login page itself
+                // Merge guest cart into DB cart
+                if (!empty($guestCart['items'] ?? [])) {
+                    $cart = $user->cart()->firstOrCreate([
+                        'user_id' => $user->id,
+                    ], [
+                        'total' => 0,
+                        'item_count' => 0,
+                    ]);
+
+                    foreach ($guestCart['items'] as $item) {
+                        $existing = $cart->items()
+                            ->where('product_id', $item['product_id'])
+                            ->where('variant_id', $item['variant_id'] ?? null)
+                            ->first();
+
+                        if ($existing) {
+                            $existing->update([
+                                'quantity' => $existing->quantity + $item['quantity'],
+                                'unit_price' => $item['unit_price'],
+                            ]);
+                        } else {
+                            $cart->items()->create([
+                                'product_id' => $item['product_id'],
+                                'quantity' => $item['quantity'],
+                                'unit_price' => $item['unit_price'],
+                                'variant_id' => $item['variant_id'] ?? null,
+                            ]);
+                        }
+                    }
+
+                    // Update totals
+                    $cart->update([
+                        'total' => $cart->items->sum(fn($i) => $i->quantity * $i->unit_price),
+                        'item_count' => $cart->items->sum('quantity')
+                    ]);
+
+                    // Clear guest session cart
+                    session()->forget('cart');
+                }
+
+                // Redirect logic
                 $intended = $request->session()->get('url.intended');
                 if ($intended && (str_contains($intended, '/login') || str_contains($intended, '/signin'))) {
-                    // If intended URL is login page, redirect to welcome page
                     return redirect()->route('home');
                 }
 
-                // Otherwise use the intended URL or default to welcome page
                 return redirect()->intended(route('home'));
             } else {
                 Auth::logout();
-                return redirect()->back()->withErrors(['email' => 'You do not have customer access.']);
+                return redirect()->back()->with('error', 'Unauthorized Access');
+
             }
         }
-        return redirect()->back()->withErrors(['email' => 'Invalid credentials.'])->withInput();
+
+        return redirect()->back()->with('error', 'Invalid email or password.');
+
     }
 
-    
+
+
 
     public function userLogout(Request $request)
     {
@@ -157,4 +205,3 @@ class CustomerLoginController extends Controller
         return redirect()->back()->withErrors(['email' => [__($status)]]);
     }
 }
-

@@ -134,7 +134,9 @@ class CheckoutController extends Controller
             $pickupAddresses = PickupAddress::where('country', $defaultAddress->country)->get();
         }
 
-        return view('customer.shop.pickup', compact('pickupAddresses', 'user', 'defaultAddress'));
+        $allAddresses = PickupAddress::all();
+
+        return view('customer.shop.pickup', compact('pickupAddresses', 'user', 'defaultAddress', 'allAddresses'));
     }
 
 
@@ -185,7 +187,9 @@ class CheckoutController extends Controller
         $cart = $user->cart()->with(['items.product.images'])->first();
         $cartItems = $cart ? $cart->items : collect();
         $defaultAddress = $user->addresses()->where("is_default", true)->first();
-        $deliveryFee = DeliveryFee::where('country', $defaultAddress->country)->first();
+        $country = $defaultAddress?->country ?? 'United States of America';
+        $deliveryFee = DeliveryFee::where('country', $country)->first()
+            ?? DeliveryFee::where('country', 'United States of America')->first();
         $VAT = Setting::where('name', 'Value Added Tax')->value('value');
         return view('customer.shop.order-summary2', compact('cartItems', 'deliveryFee', 'VAT'));
     }

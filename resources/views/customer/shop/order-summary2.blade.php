@@ -43,7 +43,7 @@
     <div class="min-h-screen flex flex-col">
         @include("components.header")
         @php
-            $deliveryMethod = session("checkout.delivery_method");
+            $deliveryMethod = !empty(session("checkout.delivery_method")) ? session("checkout.delivery_method") : "";
             $user = auth()->user();
             $defaultAddress = $user->addresses()->where("is_default", true)->first();
             $pickupAddress = null;
@@ -204,26 +204,29 @@
                         </span>
                     @endif
                 </div>
-                {{-- Delivery Fee --}}
-                <div class="flex flex-row justify-between py-4 px-4 border-b-[1px] border-[#212121]/20 items-center">
-                    <p class="font-semibold">Delivery Fee</p>
-                    @if (Auth::check() && Auth::user()->country->name == "Nigeria")
-                        <span class="flex flex-row gap-1 items-center">
-                            <img class="w-4 h-4" src="{{ asset("images/naira.png") }}" alt="">
-                            <p class="font-semibold">{{ number_format($deliveryFee->amount ?? 0, 2) }}</p>
-                        </span>
-                    @elseif(isset($location) && $location->country == "Nigeria")
-                        <span class="flex flex-row gap-1 items-center">
-                            <img class="w-4 h-4" src="{{ asset("images/naira.png") }}" alt="">
-                            <p class="font-semibold">{{ number_format($deliveryFee->amount ?? 0, 2) }}</p>
-                        </span>
-                    @else
-                        <span class="flex flex-row gap-1 items-center">
-                            <img class="w-4 h-4" src="{{ asset("images/mdi_dollar.png") }}" alt="">
-                            <p class="font-semibold">{{ number_format($deliveryFee->amount ?? 0, 2) }}</p>
-                        </span>
-                    @endif
-                </div>
+                @if ($deliveryMethod == "delivery")
+                    {{-- Delivery Fee --}}
+                    <div
+                        class="flex flex-row justify-between py-4 px-4 border-b-[1px] border-[#212121]/20 items-center">
+                        <p class="font-semibold">Delivery Fee</p>
+                        @if (Auth::check() && Auth::user()->country->name == "Nigeria")
+                            <span class="flex flex-row gap-1 items-center">
+                                <img class="w-4 h-4" src="{{ asset("images/naira.png") }}" alt="">
+                                <p class="font-semibold">{{ number_format($deliveryFee->amount ?? 0, 2) }}</p>
+                            </span>
+                        @elseif(isset($location) && $location->country == "Nigeria")
+                            <span class="flex flex-row gap-1 items-center">
+                                <img class="w-4 h-4" src="{{ asset("images/naira.png") }}" alt="">
+                                <p class="font-semibold">{{ number_format($deliveryFee->amount ?? 0, 2) }}</p>
+                            </span>
+                        @else
+                            <span class="flex flex-row gap-1 items-center">
+                                <img class="w-4 h-4" src="{{ asset("images/mdi_dollar.png") }}" alt="">
+                                <p class="font-semibold">{{ number_format($deliveryFee->amount ?? 0, 2) }}</p>
+                            </span>
+                        @endif
+                    </div>
+                @endif
 
                 <div class="flex flex-row justify-between py-4 px-4 border-b-[1px] border-[#212121]/20 items-center">
                     <p class="font-semibold">Vat ({{ $VAT }}%)</p>
@@ -283,12 +286,12 @@
                         @endif
 
                         @if (Auth::check() && Auth::user()->country->name == "Nigeria")
-                        <input type="hidden" name="payment_currency" value="NGN">
-                        <input type="hidden" name="total_amount" value="{{ $grandTotal_ngn }}">
-                    @else
-                        <input type="hidden" name="payment_currency" value="USD">
-                        <input type="hidden" name="total_amount" value="{{ $grandTotal_usd }}">
-                    @endif
+                            <input type="hidden" name="payment_currency" value="NGN">
+                            <input type="hidden" name="total_amount" value="{{ $grandTotal_ngn }}">
+                        @else
+                            <input type="hidden" name="payment_currency" value="USD">
+                            <input type="hidden" name="total_amount" value="{{ $grandTotal_usd }}">
+                        @endif
 
 
 

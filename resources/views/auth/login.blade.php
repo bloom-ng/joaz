@@ -21,6 +21,7 @@
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
+@include('components.cancel-order-notification')
 <body class="h-screen font-bricolage md:overflow-hidden">
     <div class="flex flex-col md:flex-row">
         <div class="w-full md:w-[45%] h-[40vh] md:h-screen">
