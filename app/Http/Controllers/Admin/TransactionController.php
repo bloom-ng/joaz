@@ -7,14 +7,35 @@ use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\DB;
 
 class TransactionController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        $transactions = Transaction::with(['order.user'])
-            ->latest()
-            ->paginate(15);
+        $query = Transaction::with(['order.user'])
+            ->latest();
+
+        // Search functionality
+        if ($request->has('search')) {
+            $search = $request->input('search');
+            $query->where(function($q) use ($search) {
+                $q->where('transaction_reference', 'like', "%{$search}%")
+                  ->orWhere('gateway', 'like', "%{$search}%")
+                  ->orWhere('amount', $search)
+                  ->orWhere('status', 'like', "%{$search}%")
+                  ->orWhereHas('order', function($q) use ($search) {
+                      $q->where('id', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        // Filter by status
+        if ($request->has('status') && in_array($request->status, ['pending', 'successful', 'failed', 'cancelled'])) {
+            $query->where('status', $request->status);
+        }
+
+        $transactions = $query->paginate(15);
 
         return view('admin.transactions.index', compact('transactions'));
     }
@@ -25,42 +46,7 @@ class TransactionController extends Controller
         return view('admin.transactions.show', compact('transaction'));
     }
 
-    public function edit(Transaction $transaction): View
-    {
-        $transaction->load('order');
-        return view('admin.transactions.edit', compact('transaction'));
-    }
 
-    public function update(Request $request, Transaction $transaction): RedirectResponse
-    {
-        $validated = $request->validate([
-            'status' => 'required|in:pending,successful,failed,cancelled',
-            'notes' => 'nullable|string',
-        ]);
 
-        $transaction->update($validated);
 
-        return redirect()->route('admin.transactions.show', $transaction)
-            ->with('success', 'Transaction updated successfully.');
-    }
-
-    public function destroy(Transaction $transaction): RedirectResponse
-    {
-        // Only allow deletion of failed or cancelled transactions
-        if (!in_array($transaction->status, ['failed', 'cancelled'])) {
-            return redirect()->route('admin.transactions.index')
-                ->with('error', 'Only failed or cancelled transactions can be deleted.');
-        }
-
-        $transaction->delete();
-
-        return redirect()->route('admin.transactions.index')
-            ->with('success', 'Transaction deleted successfully.');
-    }
-
-    public function details(Transaction $transaction): View
-    {
-        $transaction->load(['order.user', 'order.orderItems.product', 'order.delivery']);
-        return view('admin.transactions.details', compact('transaction'));
-    }
 }
