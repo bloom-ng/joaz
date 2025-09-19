@@ -46,6 +46,21 @@ class OrderController extends Controller
         return view('customer.orders.show', compact('order'));
     }
 
+    public function productOrder($id)
+    {
+        $user = auth()->user();
+
+        // Find the order by id, making sure it belongs to this user
+        $order = Order::with(["items.product.images"])
+            ->where("user_id", $user->id)
+            ->where("id", $id)
+            ->firstOrFail();
+
+        return view("customer.shop.order-product", compact("order", "user"));
+    }
+
+
+
     // public function store(Request $request)
     // {
     //     $request->validate([
