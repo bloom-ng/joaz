@@ -232,6 +232,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/orders/{order}', [CustomerOrderController::class, 'show'])->name('orders.show');
         Route::post('/orders', [CustomerOrderController::class, 'store'])->name('orders.store');
     });
+    Route::get('/orders/{id}/products', [CustomerOrderController::class, 'productOrder'])
+    ->name('orders.products');
+
 });
 
 // Payment routes (public but with CSRF protection)

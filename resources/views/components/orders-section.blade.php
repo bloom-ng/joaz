@@ -85,16 +85,18 @@
                     <thead class="sticky top-0 bg-[#FCFCFC] z-10 w-full border-b-[1px] border-[#212121]/20">
                         <tr>
                             <th class="text-left px-6 py-4">#</th>
-                            <th class="text-left px-6 py-4">Product Name</th>
-                            <th class="text-left px-6 py-4">Quantity</th>
-                            <th class="text-left px-6 py-4">Total</th>
+                            <th class="text-left px-6 py-4">Order ID</th>
+                            <th class="text-left px-6 py-4">Total Quantity</th>
+                            <th class="text-left px-6 py-4">Total Amount</th>
                             <th class="text-left px-6 py-4">Status</th>
+                            <th class="text-left px-6 py-4">View Products</th>
                         </tr>
                     </thead>
                     <tbody class="bg-[#FFFFFF]">
                         @forelse ($orders as $order)
                             @php
                                 $firstItem = $order->items->first();
+                                $order = $firstItem->order;
                                 $product = $firstItem?->product;
                                 $image = $product?->images->first()->image ?? null;
                             @endphp
@@ -103,22 +105,16 @@
                                 <td class="px-6 py-4 align-middle">{{ $loop->iteration }}</td>
                                 <td class="px-6 py-4 align-middle">
                                     <div class="flex flex-row gap-3 items-center">
-                                        @if ($image)
-                                            <img class="w-[120px] h-[132px] object-cover rounded-xl"
-                                                src="{{ asset("storage/" . $image) }}" alt="{{ $product?->name }}">
-                                        @else
-                                            <div
-                                                class="w-[120px] h-[132px] bg-gray-200 rounded-xl flex items-center justify-center">
-                                                <span class="text-sm">No Image</span>
-                                            </div>
-                                        @endif
+
+                                            <img class="w-[30px] h-[30px] object-cover rounded-xl"
+                                                src="{{  asset("images/order-icon.png") }}" alt="">
+
                                         <div class="flex flex-col gap-1">
-                                            <h1 class="font-semibold">{{ $product?->name }}</h1>
-                                            <p>{{ $product?->description }}</p>
+                                            <h1 class="font-semibold">{{ $order->tracking_number}}</h1>
                                         </div>
                                     </div>
                                 </td>
-                                <td class="px-6 py-4 align-middle">{{ $order->items->sum("quantity") }}</td>
+                                <td class="px-6 py-4 align-middle text-center">{{ $order->items->sum("quantity") }}</td>
                                 <td class="px-6 py-4 align-middle whitespace-nowrap">
                                     @if (Auth::check() && Auth::user()->country->name == "Nigeria")
                                     <span class="flex flex-row gap-1 items-center">
@@ -135,7 +131,7 @@
                                         <img class="w-4 h-4" src="/images/mdi_dollar.png" alt="">
                                         <p>{{ number_format($order->total_amount, 2) }}</p>
                                     </span>
-                                    @endif  
+                                    @endif
                                 </td>
                                 <td class="px-6 py-4 align-middle">
                                     @php
@@ -148,10 +144,16 @@
                                         };
                                     @endphp
 
-                                    <p class="w-full text-sm text-center rounded-3xl px-5 py-2 {{ $statusClass }}">
+                                    <p class="w-full text-sm text-center rounded-3xl px-1 py-1 {{ $statusClass }}">
                                         {{ ucfirst($order->order_status) }}
                                     </p>
 
+                                </td>
+                                <td class="px-6 py-4 align-middle">
+                                    <a href="{{ route('orders.products', $order->id) }}"
+                                       class="text-sm font-medium text-[#85BB3F] hover:underline">
+                                        View Products
+                                    </a>
                                 </td>
                             </tr>
                         @empty
