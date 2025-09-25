@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Cart;
 use App\Models\User;
 use App\Models\Order;
+use App\Models\Product;
 use App\Models\Setting;
 use App\Models\CartItem;
 use App\Models\OrderItem;
@@ -12,6 +13,7 @@ use App\Models\DeliveryFee;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\PickupAddress;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
 class CheckoutController extends Controller
@@ -20,6 +22,117 @@ class CheckoutController extends Controller
     {
         return view('customer.shop.confirm-delivery');
     }
+
+
+    public function saveGuestDetails(Request $request)
+    {
+        $validated = $request->validate([
+            'guest_name' => 'required|string|max:255',
+            'guest_email' => 'required|email',
+            'guest_phone' => 'required|string|max:20',
+            'guest_address' => 'required|string|max:500',
+            'country_id' => 'required|exists:countries,id'
+        ]);
+
+        // Get country name
+        $country = DB::table('countries')->where('id', $validated['country_id'])->value('name');
+
+
+        // Replace id with name
+        $validated['country'] = $country;
+        unset($validated['country_id']);
+
+        $deliveryFee = DeliveryFee::where('country', $country)->first()
+            ?? DeliveryFee::where('country', 'United States of America')->first();
+
+        $VAT = Setting::where('name', 'Value Added Tax')->value('value');
+
+        $totalAmount = $request->input('total_amount');
+        $totalAmount += $deliveryFee->fee;
+        $totalAmount += $totalAmount * ($VAT / 100);
+
+        // Save details in session
+        session([
+            'guest_details' => $validated,
+            'delivery_fee'  => $deliveryFee->fee,
+            'vat'           => $VAT,
+        ]);
+
+        return redirect()->back();
+    }
+
+    public function editGuestDetails()
+    {
+        session()->forget('guest_details');
+        return redirect()->route('guest.checkout');
+    }
+
+
+
+    public function placeGuestOrder(Request $request)
+    {
+        $guestDetails = session('guest_details');
+
+        if (!$guestDetails) {
+            return back()->with('error', 'Please provide your details first.');
+        }
+
+        // Validate cart items from session
+        $cart = session('cart', []);
+
+        if (empty($cart)) {
+            return back()->with('error', 'Cart is empty.');
+        }
+
+        // 1️⃣ Create order (no user_id, but store guest info)
+        $order = Order::create([
+            'user_id'         => null,
+            'guest_name'      => $guestDetails['guest_name'],
+            'guest_email'     => $guestDetails['guest_email'],
+            'guest_phone'     => $guestDetails['guest_phone'],
+            'guest_address'   => $guestDetails['guest_address'],
+            'payment_currency' => $request->input('payment_currency', 'NGN'),
+            'total_amount'    => $request->input('total_amount'),
+            'delivery_method' => $request->input('delivery_method', 'delivery'),
+            'payment_status'  => 'pending',
+            'order_status'    => 'pending',
+            'tracking_number' => Order::generateTrackingNumber(),
+        ]);
+
+
+        foreach ($cart['items'] as $item) {
+            $product = $item['product']; // we already saved the product model in session
+
+            if (!$product) continue;
+
+            // Check stock
+            if ($product->quantity < $item['quantity']) {
+                return back()->with('error', "Not enough stock for {$product->name}");
+            }
+
+            OrderItem::create([
+                'order_id'   => $order->id,
+                'product_id' => $product->id,
+                'quantity'   => (int) $item['quantity'],
+                'unit_price' => $item['unit_price'], // ✅ not 'price'
+            ]);
+
+            // Decrease stock
+            $product->decrement('quantity', (int) $item['quantity']);
+        }
+
+        session()->forget(['cart', 'guest_details']);
+
+       
+        return redirect()->route('orders.thankyou', $order->id);
+    }
+
+    public function thankYou($orderId)
+{
+    $order = Order::with('items.product')->findOrFail($orderId);
+
+    return view('customer.thank-you', compact('order'));
+}
     public function placeOrder(Request $request)
     {
         $request->validate([

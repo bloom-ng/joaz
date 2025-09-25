@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Customer;
 
-use App\Http\Controllers\Controller;
-use App\Models\Order;
 use App\Models\Cart;
+use App\Models\Order;
 use App\Models\Address;
-use App\Services\PaymentService;
+use App\Models\DeliveryFee;
 use Illuminate\Http\Request;
+use App\Services\PaymentService;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
 
 class OrderController extends Controller
 {
@@ -32,6 +33,54 @@ class OrderController extends Controller
 
         return view('customer.shop.account-center', compact('orders'));
     }
+
+    public function guestCheckout()
+    {
+        $cartItems = session()->get('cart')['items'] ?? [];
+        $total_usd = 0;
+        $total_ngn = 0;
+
+        foreach ($cartItems as $item) {
+            $total_usd += $item['product']->price_usd * $item['quantity'];
+            $total_ngn += $item['product']->price_ngn * $item['quantity'];
+        }
+
+
+        if (empty($cartItems)) {
+            return redirect()->back()->with('error', 'Your cart is empty.');
+        }
+
+        $guestDetails = session("guest_details");
+
+        $deliveryFee = null;
+
+        if ($guestDetails && isset($guestDetails['country'])) {
+            $deliveryFee = DeliveryFee::where('country', $guestDetails['country'])->first();
+        }
+
+        // fallback to USA if nothing found
+        if (!$deliveryFee) {
+            $deliveryFee = DeliveryFee::where('country', 'United States of America')->first();
+        }
+
+        $deliveryFeeAmount = $deliveryFee ? $deliveryFee->amount : 0;
+
+        $VAT = session('vat', 0);
+
+        $vat_usd = ($total_usd + $deliveryFeeAmount) * ($VAT / 100);
+        $vat_ngn = ($total_ngn + $deliveryFeeAmount) * ($VAT / 100);
+
+        return view('customer.shop.guest-order', compact(
+            'cartItems',
+            'total_ngn',
+            'total_usd',
+            'deliveryFeeAmount',
+            'VAT',
+            'vat_ngn',
+            'vat_usd'
+        ));
+    }
+
 
 
     public function show(Order $order)

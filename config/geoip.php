@@ -51,7 +51,7 @@ return [
 
         'ipapi' => [
             'class'       => \Torann\GeoIP\Services\IPApi::class,
-            'secure'      => true, 
+            'secure'      => true,
         ],
 
         'maxmind_database' => [
@@ -146,7 +146,7 @@ return [
     'default_location' => [
         'ip' => '127.0.0.0',
         'iso_code' => 'US',
-        'country' => 'United States',
+        'country' => 'United States of America',
         'city' => 'New Haven',
         'state' => 'CT',
         'state_name' => 'Connecticut',

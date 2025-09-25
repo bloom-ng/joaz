@@ -7,8 +7,8 @@
     <div class="flex flex-row items-center gap-11 text-md font-semibold">
         @auth
             <div>
-                <a href="{{ route('account-center') }}">
-                <img class="h-4" src="/images/profile.png" alt="">
+                <a href="{{ route("account-center") }}">
+                    <img class="h-4" src="/images/profile.png" alt="">
                 </a>
             </div>
         @endauth
@@ -16,38 +16,41 @@
             <a href="/">HOME</a>
         </div>
         <div>
-            <a href="{{ route('shop.category') }}">SHOP</a>
+            <a href="{{ route("shop.category") }}">SHOP</a>
         </div>
         <div>
-            <a href="{{ route('learn') }}">LEARN</a>
+            <a href="{{ route("learn") }}">LEARN</a>
         </div>
         <div>
-            <a href="{{ route('contact-us') }}">CONTACT US</a>
+            <a href="{{ route("contact-us") }}">CONTACT US</a>
         </div>
         <div>
             @auth
-                <a href="{{ route('cart.index') }}#cart" class="relative">
+                <a href="{{ route("cart.index") }}#cart" class="relative">
                     <img class="h-5" src="/images/cart.png" alt="Cart">
                     @php
-                        $cart = \App\Models\Cart::where('user_id', auth()->id())->first();
-                        $itemCount = $cart ? $cart->items->sum('quantity') : 0;
+                        $cart = \App\Models\Cart::where("user_id", auth()->id())->first();
+                        $itemCount = $cart ? $cart->items->sum("quantity") : 0;
                     @endphp
-                    @if($itemCount > 0)
-                        <span class="absolute -top-2 -right-2 bg-[#85BB3F] text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    @if ($itemCount > 0)
+                        <span
+                            class="absolute -top-2 -right-2 bg-[#85BB3F] text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                             {{ $itemCount }}
                         </span>
                     @endif
                 </a>
             @else
-                <a href="{{ route('login') }}" class="relative">
+                <a href="{{ route("guest.checkout") }}" class="relative">
                     <img class="h-5" src="/images/cart.png" alt="Cart">
-                    @if(session()->has('cart') && !empty(session('cart')['items']))
-                        <span class="absolute -top-2 -right-2 bg-[#85BB3F] text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                            {{ collect(session('cart')['items'])->sum('quantity') }}
+                    @if (session()->has("cart") && !empty(session("cart")["items"]))
+                        <span
+                            class="absolute -top-2 -right-2 bg-[#85BB3F] text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                            {{ collect(session("cart")["items"])->sum("quantity") }}
                         </span>
                     @endif
                 </a>
             @endauth
+
         </div>
         @guest
             <a href="/signin">
@@ -60,5 +63,5 @@
     </div>
 </div>
 
-@include('components.cart-notification')
-@include('components.cancel-order-notification')
+@include("components.cart-notification")
+@include("components.cancel-order-notification")

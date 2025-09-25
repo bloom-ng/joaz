@@ -23,6 +23,10 @@ class Order extends Model
         'delivery_method',
         'order_status',
         'tracking_number',
+        'guest_name',
+        'guest_email',
+        'guest_phone',
+        'guest_address',
     ];
 
     /**

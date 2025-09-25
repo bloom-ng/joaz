@@ -107,17 +107,17 @@
                                             @if (Auth::check() && Auth::user()->country->name == "Nigeria")
                                                 <span class="flex flex-row gap-1 items-center">
                                                     <img class="w-4 h-4" src="/images/naira.png" alt="">
-                                                    <p>{{ number_format(($item->quantity * $item->unit_price), 2) }}</p>
+                                                    <p>{{ number_format(($item->quantity * $item->product->price_ngn), 2) }}</p>
                                                 </span>
                                             @elseif(isset($location) && $location->country == "Nigeria")
                                                 <span class="flex flex-row gap-1 items-center">
                                                     <img class="w-4 h-4" src="/images/naira.png" alt="">
-                                                    <p>{{ number_format(($item->quantity * $item->unit_price), 2) }}</p>
+                                                    <p>{{ number_format(($item->quantity * $item->product->price_ngn), 2) }}</p>
                                                 </span>
                                             @else
                                                 <span class="flex flex-row gap-1 items-center">
                                                     <img class="w-4 h-4" src="/images/mdi_dollar.png" alt="">
-                                                    <p>{{ number_format(($item->quantity * $item->unit_price), 2) }}</p>
+                                                    <p>{{ number_format(($item->quantity * $item->product->price_usd), 2) }}</p>
                                                 </span>
                                             @endif
                                         </td>
