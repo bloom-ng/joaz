@@ -49,6 +49,10 @@ Route::get('/category/{category?}', [ShopController::class, 'categoryPage'])
      Route::delete('/cart/{cartItem}', [CartController::class, 'remove'])->name('cart.remove');
      Route::post('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
 
+
+     Route::get('/guest-checkout', [CustomerOrderController::class, 'guestCheckout'])->name('guest.checkout');
+
+
 // Profile routes (protected - requires authentication)
 Route::middleware('auth')->group(function () {
     // Profile update route
@@ -91,6 +95,13 @@ Route::post('/checkout/set-default-address', [CheckoutController::class, 'setDef
     ->name('checkout.setDefaultAddress');
 
     Route::post('/orders/place', [CheckoutController::class, 'placeOrder'])->name('orders.place');
+    Route::post('/place-guest-order', [CheckoutController::class, 'placeGuestOrder'])->name('orders.guest.place');
+
+    Route::post('/save-details', [CheckoutController::class, 'saveGuestDetails'])->name('orders.saveDetails');
+    Route::post('/orders/guest/edit-details', [CheckoutController::class, 'editGuestDetails'])->name('orders.guest.editDetails');
+Route::get('/thank-you/{order}', [CheckoutController::class, 'thankYou'])->name('orders.thankyou');
+
+
 
     Route::get('/orders/{order}/processing', [CheckoutController::class, 'processing'])->name('orders.processing');
 

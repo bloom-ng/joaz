@@ -74,7 +74,6 @@
     <div class="flex bg-[#FCFCFC] flex-col">
         <!-- Header Section -->
         @include("components.header")
-        @include("components.cart-notification")
 
         <!-- Main Product Display Section -->
         <main class="flex flex-row w-full px-16 py-12">
@@ -236,7 +235,7 @@
         // Get the quantity display element
         const quantityDisplay = document.getElementById('quantity-display');
         const currentQty = parseInt(quantityDisplay.innerText);
-        
+
         // Optimistically update the UI
         if (action === 'increment') {
             quantityDisplay.innerText = currentQty + 1;
@@ -246,11 +245,11 @@
             // If already at 0, just return
             return;
         }
-        
+
         // Disable buttons during API call
         const buttons = document.querySelectorAll('#quantity-selector button');
         buttons.forEach(btn => btn.disabled = true);
-        
+
         // Make the API call
         const response = await fetch(`/cart/${cartItemId}`, {
             method: 'PATCH',
@@ -264,19 +263,19 @@
         });
 
         const data = await response.json();
-        
+
         if (!response.ok) {
             // If API call fails, revert the UI
             quantityDisplay.innerText = currentQty;
             throw new Error(data.message || 'Failed to update quantity');
         }
-        
+
         // If item was removed (quantity reached 0), reload the page
         if (data.removed) {
             window.location.reload();
             return;
         }
-        
+
         // If we get here, the update was successful
         // Show success notification
         const notification = document.createElement('div');
@@ -295,20 +294,20 @@
                 </svg>
             </button>
         `;
-        
+
         // Add the notification to the body
         document.body.appendChild(notification);
-        
+
         // Auto-hide after 3 seconds
         setTimeout(() => {
             closeCartNotification();
         }, 3000);
-        
+
         // Reload the page to reflect all changes after a short delay
         setTimeout(() => {
             window.location.reload();
         }, 300);
-        
+
     } catch (err) {
         console.error('Error updating quantity:', err);
         alert(err.message || 'Error updating cart. Please try again.');
@@ -320,7 +319,7 @@
 }
 
                         </script>
-                        
+
                         <script>
                             function closeCartNotification() {
                                 const notification = document.getElementById('cart-notification');
