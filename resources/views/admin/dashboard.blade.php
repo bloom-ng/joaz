@@ -1,6 +1,6 @@
-@extends('layouts.admin-layout')
+@extends("layouts.admin-layout")
 
-@section('content')
+@section("content")
     <div class="w-full">
         <div class="bg-white shadow-md rounded-lg p-6">
             <h1 class="text-2xl font-bold text-gray-800 mb-4">Admin Dashboard</h1>
@@ -48,7 +48,7 @@
                         <div class="ml-4">
                             <p class="text-sm font-medium">Total Customers</p>
                             <p class="text-2xl font-semibold">
-                                {{ \App\Models\User::whereHas('roles', function ($q) {$q->where('name', 'customer');})->count() }}
+                                {{ \App\Models\User::whereHas("roles", function ($q) {$q->where("name", "customer");})->count() }}
                             </p>
                         </div>
                     </div>
@@ -103,12 +103,13 @@
                                     @foreach ($recentOrders as $order)
                                         <tr>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                                <a href="{{ route('admin.orders.show', $order) }}" class="text-blue-600 underline hover:text-blue-800 transition-colors duration-150">
+                                                <a href="{{ route("admin.orders.show", $order) }}"
+                                                    class="text-blue-600 underline hover:text-blue-800 transition-colors duration-150">
                                                     {{ $order->tracking_number }}
                                                 </a>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                {{ $order->user->name }}
+                                                {{ $order->user->name ?? $order->guest_name }}
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                 ₦{{ number_format($order->total_amount, 2) }}
@@ -117,19 +118,19 @@
                                                 <span
                                                     class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
                                                     @switch($order->order_status)
-                                                        @case('pending')
+                                                        @case("pending")
                                                             bg-yellow-100 text-yellow-800
                                                             @break
-                                                        @case('processing')
+                                                        @case("processing")
                                                             bg-blue-100 text-blue-800
                                                             @break
-                                                        @case('shipped')
+                                                        @case("shipped")
                                                             bg-purple-100 text-purple-800
                                                             @break
-                                                        @case('delivered')
+                                                        @case("delivered")
                                                             bg-green-100 text-green-800
                                                             @break
-                                                        @case('cancelled')
+                                                        @case("cancelled")
                                                             bg-red-100 text-red-800
                                                             @break
                                                         @default
@@ -139,7 +140,7 @@
                                                 </span>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                {{ $order->created_at->format('M d, Y') }}
+                                                {{ $order->created_at->format("M d, Y") }}
                                             </td>
                                         </tr>
                                     @endforeach
