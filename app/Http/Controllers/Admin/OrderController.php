@@ -19,13 +19,15 @@ class OrderController extends Controller
         // Search functionality
         if ($request->filled('search')) {
             $search = $request->input('search');
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('id', $search)
-                  ->orWhereHas('user', function($uq) use ($search) {
-                      $uq->where('name', 'like', "%$search%");
-                  })
-                  ->orWhere('order_status', 'like', "%$search%")
-                  ->orWhere('tracking_number', 'like', "%$search%");
+                    ->orWhereHas('user', function ($uq) use ($search) {
+                        $uq->where('name', 'like', "%$search%");
+                    })
+                    ->orWhere('order_status', 'like', "%$search%")
+                    ->orWhere('tracking_number', 'like', "%$search%")
+                    ->orWhere('guest_name', 'like', "%$search%");
+
             });
         }
 

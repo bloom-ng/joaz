@@ -18,7 +18,7 @@
             </div>
             <div>
                 <p class="text-gray-600 text-sm">Customer</p>
-                <p class="font-semibold text-gray-900">{{ $order->user->name ?? '-' }}</p>
+                <p class="font-semibold text-gray-900">{{ $order->user->name ?? $order->guest_name }}</p>
             </div>
             <div>
                 <p class="text-gray-600 text-sm">Status</p>
@@ -73,7 +73,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <p class="text-gray-600 text-sm">Address</p>
-                    <p class="font-semibold text-gray-900">{{ $order->delivery->address ?? '-' }}</p>
+                    <p class="font-semibold text-gray-900">{{ $order->delivery->address ?? $order->guest_address }}</p>
                 </div>
                 <div>
                     <p class="text-gray-600 text-sm">Status</p>
